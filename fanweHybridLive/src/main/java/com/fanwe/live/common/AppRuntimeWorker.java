@@ -1066,7 +1066,7 @@ public class AppRuntimeWorker
     private static void joinPushPCLiveInside(JoinLiveData data, Activity activity)
     {
         Intent intent = new Intent(activity, LivePCViewerActivity.class);
-        intent.putExtra(LivePushViewerActivity.EXTRA_ROOM_ID, data.getRoomId());
+        intent.putExtra(LivePushViewerActivity.EXTRA_ROOM_ID,  data.getRoomId());
         intent.putExtra(LivePushViewerActivity.EXTRA_PRIVATE_KEY, data.getPrivateKey());
         intent.putExtra(LivePushViewerActivity.EXTRA_GROUP_ID, data.getGroupId());
         intent.putExtra(LivePushViewerActivity.EXTRA_CREATER_ID, data.getCreaterId());
