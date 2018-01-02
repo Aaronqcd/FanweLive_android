@@ -2,13 +2,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00000000">
+    android:background="#00000000"
+    android:id="@+id/fl_cake"
+    >
 
     <ImageView
         android:id="@+id/img_cake_points"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/animation_cake_points" />
+        android:src="@drawable/animation_cake_points"
+        android:visibility="invisible"
+        />
 
     <ImageView
         android:id="@+id/img_cake_left_one"
@@ -16,7 +20,8 @@
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginTop="35dp"
-        android:src="@drawable/animation_cake_left_one" />
+        android:src="@drawable/animation_cake_left_one"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_cake_left_two"
@@ -24,7 +29,8 @@
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/animation_cake_left_two" />
+        android:src="@drawable/animation_cake_left_two"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_cake_right_one"
@@ -32,7 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="35dp"
-        android:src="@drawable/animation_cake_right_one" />
+        android:src="@drawable/animation_cake_right_one"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_cake_right_two"
@@ -40,12 +47,14 @@
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/animation_cake_right_two" />
+        android:src="@drawable/animation_cake_right_two"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_cake"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/animation_cake" />
+        android:src="@drawable/animation_cake"
+        android:visibility="invisible"/>
 </FrameLayout>

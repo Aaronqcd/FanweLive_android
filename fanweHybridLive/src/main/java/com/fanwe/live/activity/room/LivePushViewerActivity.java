@@ -119,6 +119,9 @@ public class LivePushViewerActivity extends LiveLayoutViewerExtendActivity imple
                         getPlayer().setPlayType(TXLivePlayer.PLAY_TYPE_LIVE_RTMP_ACC);
                         getPlayer().setUrl(mAccUrl);
                         getPlayer().startPlay();
+                        if(!mPlayView.getPusher().isBackCamera()){
+                            mPlayView.getPusher().setMirror(true);
+                        }
                         mIsPlayACC = true;
                         LogUtil.i("play acc:" + mAccUrl);
                     }

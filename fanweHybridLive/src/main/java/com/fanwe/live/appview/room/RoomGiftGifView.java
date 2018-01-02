@@ -11,10 +11,15 @@ import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.LiveConstant;
 import com.fanwe.live.R;
 import com.fanwe.live.appview.animator.GifAnimatorCar1;
+import com.fanwe.live.appview.animator.GiftAnimatorCake;
 import com.fanwe.live.appview.animator.GiftAnimatorCar2;
+import com.fanwe.live.appview.animator.GiftAnimatorCastle;
+import com.fanwe.live.appview.animator.GiftAnimatorForever;
+import com.fanwe.live.appview.animator.GiftAnimatorMarry;
 import com.fanwe.live.appview.animator.GiftAnimatorPlane1;
 import com.fanwe.live.appview.animator.GiftAnimatorPlane2;
 import com.fanwe.live.appview.animator.GiftAnimatorRocket1;
+import com.fanwe.live.appview.animator.GiftAnimatorStage;
 import com.fanwe.live.appview.animator.GiftAnimatorView;
 import com.fanwe.live.gif.GifConfigModel;
 import com.fanwe.live.model.custommsg.CustomMsgGift;
@@ -100,7 +105,17 @@ public class RoomGiftGifView extends RoomLooperMainView<CustomMsgGift> {
                     view = new GifAnimatorCar1(getActivity());
                 } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.LAMBORGHINI)) {
                     view = new GiftAnimatorCar2(getActivity());
-                } else {
+                }else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.CAKE)) {
+                    view = new GiftAnimatorCake(getActivity());
+                } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.CASTLE)) {
+                    view = new GiftAnimatorCastle(getActivity());
+                } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.STAGE)) {
+                    view = new GiftAnimatorStage(getActivity());
+                } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.WEDDING)) {
+                    view = new GiftAnimatorMarry(getActivity());
+                } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.THREELIFETIMES)) {
+                    view = new GiftAnimatorForever(getActivity());
+                }else {
                     mCallback.addBigAnimation(msg);
                 }
 

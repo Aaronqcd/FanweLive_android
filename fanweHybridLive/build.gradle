@@ -15,8 +15,8 @@ android {
         applicationId "com.fanwe.live"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 2016120701
-        versionName "2.0.18"
+        versionCode 2016120702
+        versionName "1.0.1"
         buildConfigField 'String', 'SERVER_URL_INIT_URL', '"http://www.xxx.com/app.php?act=init"'
 
         multiDexEnabled true
@@ -97,20 +97,18 @@ android {
 
     productFlavors {
 
-        
-
         //方维百媚直播
         fanwebm {
-            versionCode 2017072001
-            versionName "2.4.1"
+            versionCode 1
+            versionName "1.0.1"
             buildConfigField 'String', 'SERVER_URL', '"http://live.fanwe.net"'
         }
 
         //映秀直播
         yingxiu {
             applicationId "tv.yingxiu.live"
-            versionCode 2017071701
-            versionName "2.4.0"
+            versionCode 2017102502
+            versionName "1.0.1"
             buildConfigField 'String', 'SERVER_URL', '"http://live.yingxiu.tv"'
         }
 
@@ -118,9 +116,10 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            output.outputFile = new File(output.outputFile.parent, variant.name + "_" + variant.versionName + "_" + variant.versionCode + ".apk");
+            output.outputFile = new File(output.outputFile.parent, variant.name + "_" + variant.versionName + ".apk");
         }
     }
+
 }
 
 repositories {

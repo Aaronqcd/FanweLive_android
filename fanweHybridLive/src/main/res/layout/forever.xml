@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/animation_forever_mountain" />
+        android:src="@drawable/animation_forever_mountain"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_forever_peach"
@@ -17,7 +18,8 @@
         android:layout_height="180dp"
         android:layout_gravity="bottom"
         android:scaleType="centerCrop"
-        android:src="@drawable/animation_forever_peach" />
+        android:src="@drawable/animation_forever_peach"
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -32,32 +34,37 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
             android:layout_marginTop="80dp"
-            android:src="@drawable/anim_forever_love_clip" />
+            android:src="@drawable/anim_forever_love_clip"
+            android:visibility="invisible"/>
 
 
         <ImageView
             android:id="@+id/img_forever"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/anim_forever_clip" />
+            android:src="@drawable/anim_forever_clip"
+            android:visibility="invisible"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/img_forever_petal1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/animation_forever_petal1" />
+        android:src="@drawable/animation_forever_petal1"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_forever_petal2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/animation_forever_petal2" />
+        android:src="@drawable/animation_forever_petal2"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_forever_petal3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/animation_forever_petal3" />
+        android:src="@drawable/animation_forever_petal3"
+        android:visibility="invisible"/>
 
 </FrameLayout>

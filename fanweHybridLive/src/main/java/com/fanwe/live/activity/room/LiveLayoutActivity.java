@@ -12,9 +12,7 @@ import com.fanwe.library.utils.LogUtil;
 import com.fanwe.library.utils.SDResourcesUtil;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.library.view.SDReplaceableLayout;
-import com.fanwe.live.LiveConstant;
 import com.fanwe.live.R;
-import com.fanwe.live.appview.animator.GiftAnimatorCar2;
 import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.appview.room.RoomGiftPlayView;
 import com.fanwe.live.appview.room.RoomHeartView;
@@ -28,16 +26,9 @@ import com.fanwe.live.dialog.LiveAddViewerDialog;
 import com.fanwe.live.dialog.LiveChatC2CDialog;
 import com.fanwe.live.dialog.LiveRechargeDialog;
 import com.fanwe.live.dialog.LiveRedEnvelopeNewDialog;
-import com.fanwe.live.gift.CakeFragment;
-import com.fanwe.live.gift.CarFragment;
-import com.fanwe.live.gift.CastleFragment;
-import com.fanwe.live.gift.ForeverFragment;
-import com.fanwe.live.gift.FragmentOps;
-import com.fanwe.live.gift.MarryFragment;
 import com.fanwe.live.model.App_get_videoActModel;
 import com.fanwe.live.model.LiveQualityData;
 import com.fanwe.live.model.UserModel;
-import com.fanwe.live.model.custommsg.CustomMsgGift;
 import com.fanwe.live.model.custommsg.CustomMsgRedEnvelope;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -267,23 +258,6 @@ public class LiveLayoutActivity extends LiveActivity
         if (mRoomGiftGifView == null)
         {
             mRoomGiftGifView = new RoomGiftGifView(this);
-            mRoomGiftGifView.setCallback(new RoomGiftGifView.SendBigGiftAnimationCallback() {
-                @Override
-                public void addBigAnimation(CustomMsgGift msg) {
-                    String type = msg.getAnim_type();
-                    if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.CAKE)) {
-                        FragmentOps.addFragment(getSupportFragmentManager(),new CakeFragment(),"cake",R.id.fl_live_gift_anim);
-                    } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.CASTLE)) {
-                        FragmentOps.addFragment(getSupportFragmentManager(),new CastleFragment(),"castle",R.id.fl_live_gift_anim);
-                    } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.STAGE)) {
-                        FragmentOps.addFragment(getSupportFragmentManager(),new CarFragment(),"car",R.id.fl_live_gift_anim);
-                    } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.WEDDING)) {
-                        FragmentOps.addFragment(getSupportFragmentManager(),new MarryFragment(),"marry",R.id.fl_live_gift_anim);
-                    } else if (type.equalsIgnoreCase(LiveConstant.GiftAnimatorType.THREELIFETIMES)) {
-                        FragmentOps.addFragment(getSupportFragmentManager(),new ForeverFragment(),"forever",R.id.fl_live_gift_anim);
-                    }
-                }
-            });
             replaceView(R.id.fl_live_gift_gif, mRoomGiftGifView);
         }
     }

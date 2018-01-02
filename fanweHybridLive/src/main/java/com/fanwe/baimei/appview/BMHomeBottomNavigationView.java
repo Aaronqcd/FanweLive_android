@@ -11,7 +11,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.fanwe.baimei.util.ViewUtil;
+import com.fanwe.hybrid.dao.InitActModelDao;
+import com.fanwe.hybrid.model.InitActModel;
+import com.fanwe.hybrid.model.InitUpgradeModel;
 import com.fanwe.library.common.SDSelectManager;
+import com.fanwe.library.utils.SDTypeParseUtil;
 import com.fanwe.live.R;
 import com.fanwe.live.appview.BaseAppView;
 
@@ -59,6 +63,19 @@ public class BMHomeBottomNavigationView extends BaseAppView {
         getTabAttentionCenterImageView().setOnClickListener(this);
         getSelectManager().setItems(new ArrayList<LinearLayout>(Arrays.asList(getTabLiveCenterImageView(), getTabAttentionCenterImageView(), getTabGameCenterImageView(), getTabPersonCenterImageView())));
         getSelectManager().setSelected(getTabLiveCenterImageView(), true);
+        InitActModel initActModel = InitActModelDao.query();
+        if (initActModel != null) {
+            InitUpgradeModel model = initActModel.getVersion();
+            if (model != null) {
+                if (SDTypeParseUtil.getInt(model.getServerVersion())==20170101){
+                    getTabAttentionCenterImageView().setVisibility(GONE);
+                    getTabGameCenterImageView().setVisibility(GONE);
+                }else {
+                    getTabAttentionCenterImageView().setVisibility(VISIBLE);
+                    getTabGameCenterImageView().setVisibility(VISIBLE);
+                }
+            }
+        }
     }
 
     private LinearLayout getTabLiveCenterImageView() {

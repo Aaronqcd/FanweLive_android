@@ -227,8 +227,11 @@ public class LivePushSDK implements
         updatePusherConfig();
 
         mPusher.setPushListener(this);
-        startCameraPreview();
         mPusher.startPusher(mUrl);
+        startCameraPreview();
+        if(!isBackCamera()){
+            setMirror(true);
+        }
 
         mCameraId = CAMERA_FRONT;
         mIsPushStarted = true;

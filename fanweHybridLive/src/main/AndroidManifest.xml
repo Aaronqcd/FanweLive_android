@@ -2,8 +2,8 @@
 <manifest package="com.fanwe.live"
           xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          android:versionCode="2016071101"
-          android:versionName="1.6.0">
+          android:versionCode="2017102501"
+          android:versionName="1.0">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
@@ -801,9 +801,10 @@
         <meta-data
             android:name="UMENG_MESSAGE_SECRET"
             android:value="@string/umeng_message_secret_push"/>
+        <!--huawei yingyongbao kuan xiaomi zhushou baidu wandoujia vivo oppo meizu -->
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="Channel ID"/>
+            android:value="yingxiu"/>
         <!-- 友盟Share组件End=============================================================== -->
 
 
