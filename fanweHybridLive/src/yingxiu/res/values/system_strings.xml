@@ -29,9 +29,9 @@
     <!-- QQ 微信 新浪KEY配置 -->
     <string name="wx_app_id">wxd2ddc4d070e9821f</string>
     <string name="wx_app_secret">b960415d50741f02a3cb6890a6cd5407</string>
-    <string name="qq_auth_scheme">tencent1106171679</string>
-    <string name="qq_app_id">1106171679</string>
-    <string name="qq_app_key">GjeDGtYJZI9KgCdY</string>
+    <string name="qq_auth_scheme">tencent1106502350</string>
+    <string name="qq_app_id">1106502350</string>
+    <string name="qq_app_key">SkZ12UQLigHSyyZh</string>
     <string name="sina_app_key">303994563</string>
     <string name="sina_app_secret">3fadd253d821753699163d49ec332a98</string>
     <!--互动直播配置-->

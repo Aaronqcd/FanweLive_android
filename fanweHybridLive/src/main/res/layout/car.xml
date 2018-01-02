@@ -10,27 +10,31 @@
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/animation_car_light" />
+        android:src="@drawable/animation_car_light"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/img_car_color_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/animation_car_color_bar" />
+        android:src="@drawable/animation_car_color_bar"
+        android:visibility="invisible"/>
     <ImageView
         android:id="@+id/img_car_stage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="100dp"
-        android:src="@drawable/animation_car_stage" />
+        android:src="@drawable/animation_car_stage"
+        android:visibility="invisible"/>
     <ImageView
         android:id="@+id/img_car"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="150dp"
-        android:background="@drawable/anim_car" />
+        android:background="@drawable/anim_car"
+        android:visibility="invisible"/>
 
 </FrameLayout>

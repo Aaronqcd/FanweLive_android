@@ -10,12 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </FrameLayout>
-    <!-- 送礼物动画 -->
-    <FrameLayout
-        android:id="@+id/fl_live_gift_anim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </FrameLayout>
 
     <!-- 顶部信息 -->
     <FrameLayout
