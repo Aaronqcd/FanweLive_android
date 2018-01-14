@@ -132,6 +132,45 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/iv_short_video"
+                style="@style/fra_tab_me_btn">
+
+                <ImageView
+                    android:id="@+id/ic_level000"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_me_btn_bianji"/>
+
+                <TextView
+                    style="@style/fra_tab_me_tv"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/ic_level000"
+                    android:text="小视频"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal">
+
+
+                    <ImageView
+                        android:layout_width="17dp"
+                        android:layout_height="17dp"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/ic_arrow_right_gray"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/white"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@color/gray_press"/>
+            <RelativeLayout
                 android:id="@+id/iv_remark"
                 style="@style/fra_tab_me_btn">
 

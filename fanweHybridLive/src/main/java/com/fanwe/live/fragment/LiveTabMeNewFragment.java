@@ -72,6 +72,7 @@ import com.fanwe.live.view.LiveUnReadNumTextView;
 import com.fanwe.o2o.activity.O2OShoppingMystoreActivity;
 import com.fanwe.pay.activity.PayBalanceActivity;
 import com.fanwe.shop.activity.ShopMyStoreActivity;
+import com.fanwe.shortvideo.videorecord.TCVideoSettingActivity;
 
 import org.xutils.view.annotation.ViewInject;
 
@@ -85,8 +86,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  * Created by Administrator on 2016/10/20.
  */
 
-public class LiveTabMeNewFragment extends BaseFragment
-{
+public class LiveTabMeNewFragment extends BaseFragment {
     public static final String TAG = "LiveTabMeFragment";
 
     @ViewInject(R.id.ll_search)
@@ -129,7 +129,7 @@ public class LiveTabMeNewFragment extends BaseFragment
     private ImageView iv_rank;// 等级
 
     @ViewInject(R.id.iv_remark)
-    private RelativeLayout iv_remark;// 编辑
+    private RelativeLayout iv_remark;// 编辑个人资料
 
     @ViewInject(R.id.ll_v_explain)
     private LinearLayout ll_v_explain; // 认证
@@ -210,6 +210,8 @@ public class LiveTabMeNewFragment extends BaseFragment
 
     @ViewInject(R.id.rel_setting)
     private RelativeLayout rel_setting;//设置
+    @ViewInject(R.id.iv_short_video)
+    private RelativeLayout rel_short_video;//小视频
     @ViewInject(R.id.lv_head)
     private LinearLayout lv_head;//整个头部
     @ViewInject(R.id.bg_img_head_bur)
@@ -224,21 +226,18 @@ public class LiveTabMeNewFragment extends BaseFragment
     private LiveJoinCreateSociatyDialog dialogSoc;
 
     @Override
-    protected int onCreateContentView()
-    {
+    protected int onCreateContentView() {
         return R.layout.frag_live_new_tab_me;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
         super.init();
         register();
         bindAuctionAdapter();
     }
 
-    private void register()
-    {
+    private void register() {
         ll_search.setOnClickListener(this);
         ll_chat.setOnClickListener(this);
         fl_head.setOnClickListener(this);
@@ -258,15 +257,14 @@ public class LiveTabMeNewFragment extends BaseFragment
         rel_pay.setOnClickListener(this);
         rel_distribution.setOnClickListener(this);
         rel_setting.setOnClickListener(this);
+        rel_short_video.setOnClickListener(this);
         ll_vip.setOnClickListener(this);
         ll_game_currency_exchange.setOnClickListener(this);
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden)
-    {
-        if (!hidden)
-        {
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
             request();
             changeUI();
         }
@@ -274,62 +272,48 @@ public class LiveTabMeNewFragment extends BaseFragment
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         initUnReadNum();
         request();
         changeUI();
         super.onResume();
     }
 
-    private void changeUI()
-    {
+    private void changeUI() {
         int live_pay = AppRuntimeWorker.getLive_pay();
-        if (live_pay == 1)
-        {
+        if (live_pay == 1) {
             SDViewUtil.setVisible(rel_pay);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(rel_pay);
         }
 
         int distribution = AppRuntimeWorker.getDistribution();
-        if (distribution == 1)
-        {
+        if (distribution == 1) {
             SDViewUtil.setVisible(rel_distribution);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(rel_distribution);
         }
-        if (AppRuntimeWorker.isOpenVip())
-        {
+        if (AppRuntimeWorker.isOpenVip()) {
             SDViewUtil.setVisible(ll_vip);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(ll_vip);
         }
 
-        if (AppRuntimeWorker.isUseGameCurrency())
-        {
+        if (AppRuntimeWorker.isUseGameCurrency()) {
             SDViewUtil.setVisible(ll_game_currency_exchange);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(ll_game_currency_exchange);
         }
 
-        if (AppRuntimeWorker.getOpen_family_module() == 1)
-        {
+        if (AppRuntimeWorker.getOpen_family_module() == 1) {
             SDViewUtil.setVisible(rel_family);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(rel_family);
         }
 
-        if (AppRuntimeWorker.getOpen_sociaty_module() == 1)
-        {
+        if (AppRuntimeWorker.getOpen_sociaty_module() == 1) {
             SDViewUtil.setVisible(rel_sociaty);
-        } else
-        {
+        } else {
             SDViewUtil.setGone(rel_sociaty);
         }
     }
@@ -337,41 +321,32 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * 绑定Adapter
      */
-    private void bindAuctionAdapter()
-    {
-        if (adapter == null)
-        {
+    private void bindAuctionAdapter() {
+        if (adapter == null) {
             auction_gll_info.setColNumber(1);
             adapter = new AuctionTabMeItemNewAdapter(auction_gll_info_array, getActivity());
-            adapter.setItemClickCallback(new SDItemClickCallback<AuctionTabMeItemModel>()
-            {
+            adapter.setItemClickCallback(new SDItemClickCallback<AuctionTabMeItemModel>() {
                 @Override
-                public void onItemClick(int position, AuctionTabMeItemModel item, View view)
-                {
-                    if (AppRuntimeWorker.getIsOpenWebviewMain())
-                    {
-                        if (item.getStr_Tag().equals(AuctionTabMeItemModel.TabMeTag.tag5))
-                        {
+                public void onItemClick(int position, AuctionTabMeItemModel item, View view) {
+                    if (AppRuntimeWorker.getIsOpenWebviewMain()) {
+                        if (item.getStr_Tag().equals(AuctionTabMeItemModel.TabMeTag.tag5)) {
                             Intent intent = new Intent(getActivity(), O2OShoppingMystoreActivity.class);
                             startActivity(intent);
                             return;
                         }
                     }
 
-                    if (item.getStr_Tag().equals(AuctionTabMeItemModel.TabMeTag.tag7))
-                    {
+                    if (item.getStr_Tag().equals(AuctionTabMeItemModel.TabMeTag.tag7)) {
                         Intent intent = new Intent(getActivity(), ShopMyStoreActivity.class);
                         startActivity(intent);
                         return;
                     }
 
-                    if (!TextUtils.isEmpty(item.getUrl()))
-                    {
+                    if (!TextUtils.isEmpty(item.getUrl())) {
                         Intent intent = new Intent(getActivity(), LiveWebViewActivity.class);
                         intent.putExtra(LiveWebViewActivity.EXTRA_URL, item.getUrl());
                         startActivity(intent);
-                    } else
-                    {
+                    } else {
                         SDToast.showToast("url为空");
                     }
                 }
@@ -380,16 +355,12 @@ public class LiveTabMeNewFragment extends BaseFragment
         }
     }
 
-    private void request()
-    {
-        CommonInterface.requestMyUserInfo(new AppRequestCallback<App_userinfoActModel>()
-        {
+    private void request() {
+        CommonInterface.requestMyUserInfo(new AppRequestCallback<App_userinfoActModel>() {
 
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     app_userinfoActModel = actModel;
                     UserModelDao.insertOrUpdate(actModel.getUser());
                     bindAuctionData(actModel);
@@ -398,16 +369,14 @@ public class LiveTabMeNewFragment extends BaseFragment
         });
     }
 
-    private void bindNormalData(UserModel user)
-    {
-        if (user != null)
-        {
+    private void bindNormalData(UserModel user) {
+        if (user != null) {
             SDViewBinder.setTextView(tv_user_id, user.getShowId());
             String user_diamonds = "";
-            if(user.getUse_diamonds() >=10000){
-                user_diamonds = (user.getUse_diamonds()/10000 )+ "." + user.getUse_diamonds()%10000 +"万";
-            }else {
-                user_diamonds=user.getUse_diamonds()+"";
+            if (user.getUse_diamonds() >= 10000) {
+                user_diamonds = (user.getUse_diamonds() / 10000) + "." + user.getUse_diamonds() % 10000 + "万";
+            } else {
+                user_diamonds = user.getUse_diamonds() + "";
             }
             SDViewBinder.setTextView(tv_use_diamonds, user_diamonds);
             GlideUtil.loadHeadImage(user.getHead_image()).into(iv_head);
@@ -422,22 +391,18 @@ public class LiveTabMeNewFragment extends BaseFragment
                     blur(resource,lv_head);
                 }
             }); //方法中设置asBitmap可以设置回调类型*/
-            if (!TextUtils.isEmpty(user.getV_icon()))
-            {
+            if (!TextUtils.isEmpty(user.getV_icon())) {
                 GlideUtil.load(user.getV_icon()).into(iv_level);
                 SDViewUtil.setVisible(iv_level);
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(iv_level);
             }
 
             SDViewBinder.setTextView(tv_nick_name, user.getNick_name());
-            if (user.getSexResId() > 0)
-            {
+            if (user.getSexResId() > 0) {
                 SDViewUtil.setVisible(iv_global_male);
                 iv_global_male.setImageResource(user.getSexResId());
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(iv_global_male);
             }
             iv_rank.setImageResource(user.getLevelImageResId());
@@ -449,12 +414,10 @@ public class LiveTabMeNewFragment extends BaseFragment
 
             SDViewBinder.setTextView(tv_introduce, user.getSignature(), "TA好像忘记写签名了");
 
-            if (!TextUtils.isEmpty(user.getV_explain()))
-            {
+            if (!TextUtils.isEmpty(user.getV_explain())) {
                 SDViewUtil.setVisible(ll_v_explain);
                 SDViewBinder.setTextView(tv_v_explain, user.getV_explain());
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(ll_v_explain);
             }
 
@@ -469,14 +432,11 @@ public class LiveTabMeNewFragment extends BaseFragment
             SDViewBinder.setTextView(tv_accout, LiveUtils.getFormatNumber(user.getDiamonds()));
 
             int v_type = SDTypeParseUtil.getInt(user.getV_type());
-            if (v_type == 0)
-            {
+            if (v_type == 0) {
                 SDViewUtil.setVisible(rel_upgrade);
-            } else if (v_type == 1)
-            {
+            } else if (v_type == 1) {
                 SDViewUtil.setGone(rel_upgrade);
-            } else if (v_type == 2)
-            {
+            } else if (v_type == 2) {
                 SDViewUtil.setGone(rel_upgrade);
             }
 
@@ -485,27 +445,21 @@ public class LiveTabMeNewFragment extends BaseFragment
             SDViewBinder.setTextView(tv_anchor, anchor);
 
             int is_authentication = user.getIs_authentication();
-            if (is_authentication == 0)
-            {
+            if (is_authentication == 0) {
                 tv_v_type.setText("未认证");
-            } else if (is_authentication == 1)
-            {
+            } else if (is_authentication == 1) {
                 tv_v_type.setText("认证待审核");
-            } else if (is_authentication == 2)
-            {
+            } else if (is_authentication == 2) {
                 tv_v_type.setText("已认证");
-            } else if (is_authentication == 3)
-            {
+            } else if (is_authentication == 3) {
                 tv_v_type.setText("认证审核不通过");
             }
 
-            if (user.getIs_vip() == 1)
-            {
+            if (user.getIs_vip() == 1) {
                 SDViewUtil.setVisible(iv_vip);
                 tv_vip.setText("已开通");
                 tv_vip.setTextColor(SDResourcesUtil.getColor(R.color.main_color));
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(iv_vip);
                 tv_vip.setText(user.getVip_expire_time());
                 tv_vip.setTextColor(SDResourcesUtil.getColor(R.color.user_home_text_gray));
@@ -516,29 +470,24 @@ public class LiveTabMeNewFragment extends BaseFragment
     }
 
 
-    private void bindAuctionData(App_userinfoActModel actModel)
-    {
+    private void bindAuctionData(App_userinfoActModel actModel) {
         auction_gll_info_array.clear();
         auction_gll_info_array.addAll(actModel.getItem());
 
-        if (auction_gll_info_array.size() == 0)
-        {
+        if (auction_gll_info_array.size() == 0) {
             SDViewUtil.setGone(ll_auction_gll_info);
-        } else
-        {
+        } else {
             SDViewUtil.setVisible(ll_auction_gll_info);
             auction_gll_info.notifyDataSetChanged();
         }
     }
 
-    private void initUnReadNum()
-    {
+    private void initUnReadNum() {
         TotalConversationUnreadMessageModel model = IMHelper.getC2CTotalUnreadMessageModel();
         setUnReadNumModel(model);
     }
 
-    public void onEventMainThread(ERefreshMsgUnReaded event)
-    {
+    public void onEventMainThread(ERefreshMsgUnReaded event) {
         TotalConversationUnreadMessageModel model = event.model;
         setUnReadNumModel(model);
     }
@@ -546,29 +495,24 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * @param event 接收刷新UserModel信息事件
      */
-    public void onEventMainThread(EUpdateUserInfo event)
-    {
+    public void onEventMainThread(EUpdateUserInfo event) {
         UserModel user = event.user;
         bindNormalData(user);
     }
 
 
-    private void setUnReadNumModel(TotalConversationUnreadMessageModel model)
-    {
+    private void setUnReadNumModel(TotalConversationUnreadMessageModel model) {
         SDViewUtil.setGone(tv_total_unreadnum);
-        if (model != null && model.getTotalUnreadNum() > 0)
-        {
+        if (model != null && model.getTotalUnreadNum() > 0) {
             SDViewUtil.setVisible(tv_total_unreadnum);
             tv_total_unreadnum.setUnReadNumText(model.getTotalUnreadNum());
         }
     }
 
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.ll_search:
                 clickLLSearch();
                 break;
@@ -617,6 +561,9 @@ public class LiveTabMeNewFragment extends BaseFragment
             case R.id.rel_setting:
                 clickSetting();
                 break;
+            case R.id.iv_short_video:
+                clickShortVideo();
+                break;
             case R.id.ll_vip:
                 clickVip();
                 break;
@@ -631,28 +578,23 @@ public class LiveTabMeNewFragment extends BaseFragment
     }
 
     // 搜索
-    private void clickLLSearch()
-    {
+    private void clickLLSearch() {
         Intent intent = new Intent(getActivity(), LiveSearchUserActivity.class);
         startActivity(intent);
 //        getActivity().onBackPressed();
     }
 
     //聊天
-    private void clickLlChat()
-    {
+    private void clickLlChat() {
         Intent intent = new Intent(getActivity(), LiveChatC2CActivity.class);
         startActivity(intent);
     }
 
     // 我的头像
-    private void clickFlHead()
-    {
-        if (app_userinfoActModel != null)
-        {
+    private void clickFlHead() {
+        if (app_userinfoActModel != null) {
             UserModel user = app_userinfoActModel.getUser();
-            if (user != null)
-            {
+            if (user != null) {
                 Intent intent = new Intent(getActivity(), LiveUserPhotoActivity.class);
                 intent.putExtra(LiveUserPhotoActivity.EXTRA_USER_IMG_URL, user.getHead_image());
                 startActivity(intent);
@@ -661,56 +603,47 @@ public class LiveTabMeNewFragment extends BaseFragment
     }
 
     //编辑
-    private void clickIvRemark()
-    {
+    private void clickIvRemark() {
         Intent intent = new Intent(getActivity(), LiveUserEditActivity.class);
         startActivity(intent);
     }
 
     // 回放列表
-    private void clickRlVideo()
-    {
+    private void clickRlVideo() {
         Intent intent = new Intent(getActivity(), LiveUserHomeReplayActivity.class);
         startActivity(intent);
     }
 
     // 我关注的人
-    private void clickLlMyFocus()
-    {
+    private void clickLlMyFocus() {
         UserModel user = UserModelDao.query();
-        if (user != null)
-        {
+        if (user != null) {
             String user_id = user.getUser_id();
-            if (!TextUtils.isEmpty(user_id))
-            {
+            if (!TextUtils.isEmpty(user_id)) {
                 Intent intent = new Intent(getActivity(), LiveFollowActivity.class);
                 intent.putExtra(LiveFollowActivity.EXTRA_USER_ID, user_id);
                 startActivity(intent);
-            } else
-            {
+            } else {
                 SDToast.showToast("本地user_id为空");
             }
         }
     }
 
     // 我的粉丝
-    private void clickLlMyFans()
-    {
+    private void clickLlMyFans() {
         Intent intent = new Intent(getActivity(), LiveMyFocusActivity.class);
         startActivity(intent);
     }
 
     //等级
-    private void clickRlLevel()
-    {
+    private void clickRlLevel() {
         Intent intent = new Intent(getActivity(), LiveWebViewActivity.class);
         intent.putExtra(LiveWebViewActivity.EXTRA_URL, AppRuntimeWorker.getUrl_my_grades());
         startActivity(intent);
     }
 
     //账户
-    private void clickRlAccout()
-    {
+    private void clickRlAccout() {
         Intent intent = new Intent(getActivity(), LiveRechargeDiamondsActivity.class);
         startActivity(intent);
     }
@@ -718,14 +651,12 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * VIP充值页面
      */
-    private void clickVip()
-    {
+    private void clickVip() {
         Intent intent = new Intent(getActivity(), LiveRechargeVipActivity.class);
         startActivity(intent);
     }
 
-    private void doGameExchange()
-    {
+    private void doGameExchange() {
         showProgressDialog("");
         CommonInterface.requestGamesExchangeRate(new AppRequestCallback<App_gameExchangeRateActModel>() {
             @Override
@@ -758,24 +689,20 @@ public class LiveTabMeNewFragment extends BaseFragment
     }
 
     //收益
-    private void clickRlIncome()
-    {
+    private void clickRlIncome() {
         Intent intent = new Intent(getActivity(), LiveUserProfitActivity.class);
         startActivity(intent);
     }
 
     //秀豆贡献榜
-    private void clickIncludeContLinear()
-    {
+    private void clickIncludeContLinear() {
         Intent intent = new Intent(getActivity(), LiveMySelfContActivity.class);
         startActivity(intent);
     }
 
     //认证
-    private void clickLlUpgrade()
-    {
-        if (app_userinfoActModel != null)
-        {
+    private void clickLlUpgrade() {
+        if (app_userinfoActModel != null) {
             Intent intent = new Intent(getActivity(), UserCenterAuthentActivity.class);
             startActivity(intent);
         }
@@ -784,24 +711,19 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * 我的家族
      */
-    private void clickFamily()
-    {
+    private void clickFamily() {
         UserModel dao = UserModelDao.query();
-        if (dao.getFamily_id() == 0)
-        {
+        if (dao.getFamily_id() == 0) {
             showFamDialog();
-        } else
-        {
+        } else {
             //家族详情
             Intent intent = new Intent(getActivity(), LiveFamilyDetailsActivity.class);
             startActivity(intent);
         }
     }
 
-    private void showFamDialog()
-    {
-        if (dialogFam == null)
-        {
+    private void showFamDialog() {
+        if (dialogFam == null) {
             dialogFam = new LiveAddNewFamilyDialog(getActivity());
         }
         dialogFam.showCenter();
@@ -810,32 +732,26 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * 我的公会
      */
-    private void clickSociaty()
-    {
+    private void clickSociaty() {
         UserModel dao = UserModelDao.query();
-        if (dao.getSociety_id() == 0)
-        {
+        if (dao.getSociety_id() == 0) {
             showSocDialog();
-        } else
-        {
+        } else {
             //公会详情
             Intent intent = new Intent(getActivity(), LiveSociatyDetailsActivity.class);
             startActivity(intent);
         }
     }
 
-    private void showSocDialog()
-    {
-        if (dialogSoc == null)
-        {
+    private void showSocDialog() {
+        if (dialogSoc == null) {
             dialogSoc = new LiveJoinCreateSociatyDialog(getActivity());
         }
         dialogSoc.showCenter();
     }
 
     //付费榜
-    private void clickRelPay()
-    {
+    private void clickRelPay() {
         Intent intent = new Intent(getActivity(), PayBalanceActivity.class);
         startActivity(intent);
     }
@@ -843,8 +759,7 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * 我的分销
      */
-    private void clickRelDistribution()
-    {
+    private void clickRelDistribution() {
         Intent intent = new Intent(getActivity(), LiveDistributionActivity.class);
         startActivity(intent);
     }
@@ -852,13 +767,21 @@ public class LiveTabMeNewFragment extends BaseFragment
     /**
      * 设置
      */
-    private void clickSetting()
-    {
+    private void clickSetting() {
         Intent intent = new Intent(getActivity(), LiveUserSettingActivity.class);
         startActivity(intent);
     }
+
+  /**
+     * 设置
+     */
+    private void clickShortVideo() {
+        Intent intent = new Intent(getActivity(), TCVideoSettingActivity.class);
+        startActivity(intent);
+    }
+
     /**
-     *头部虚化
+     * 头部虚化
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void blur(Bitmap bkg, View view, float radius) {
@@ -875,6 +798,7 @@ public class LiveTabMeNewFragment extends BaseFragment
         view.setBackground(new BitmapDrawable(getResources(), overlay));
         rs.destroy();
     }
+
     private void blur(Bitmap bkg, View view) {
         long startMs = System.currentTimeMillis();
         float scaleFactor = 8;

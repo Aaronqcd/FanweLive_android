@@ -96,7 +96,8 @@ public class App extends Application implements ITXLiveBaseListener
             {
                 //直播sdk日志
                 TXLiveBase.getInstance().setLogLevel(TXLiveConstants.LOG_LEVEL_DEBUG);
-                TXLiveBase.getInstance().listener = this;
+                TXLiveBase.getInstance().setListener(this);
+
             }
 
             //聚宝付初始化

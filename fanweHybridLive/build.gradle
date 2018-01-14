@@ -20,9 +20,8 @@ android {
         buildConfigField 'String', 'SERVER_URL_INIT_URL', '"http://www.xxx.com/app.php?act=init"'
 
         multiDexEnabled true
-
         ndk {
-            abiFilter 'armeabi-v7a'
+            abiFilters "armeabi", "armeabi-v7a"
         }
     }
 
@@ -116,7 +115,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            output.outputFile = new File(output.outputFile.parent, variant.name + "_" + variant.versionName + ".apk");
+//            output.outputFile = new File(output.outputFile.parent, variant.name + "_" + variant.versionName + ".apk");
         }
     }
 
@@ -130,6 +129,8 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs/upload', include: ['*.jar'])
+    compile fileTree(dir: 'src/main/jniLibs', includes: ['*.jar'])
     compile(name: 'libraryAdapterHttp-release', ext: 'aar')
     compile(name: 'libraryAndroidPercentSupportExtend-release', ext: 'aar')
     compile(name: 'libraryAndroidPullToRefresh-release', ext: 'aar')
@@ -164,4 +165,12 @@ dependencies {
     //百媚==========================================
     compile 'com.scottsu:stateslayout:1.0.8'
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
+    // 导入短视频SDK aar
+    compile(name: 'LiteAVSDK_UGC_3.9.2754', ext: 'aar')
+    compile 'com.android.support:multidex:1.0.1'
+    compile(name: 'zxing-1.8.4', ext: 'aar')
+    compile(name: 'barcodescanner-core-1.8.4', ext: 'aar')
+
+
+
 }

@@ -1,6 +1,8 @@
 package com.fanwe.libgame.poker.view;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -26,6 +28,7 @@ import java.util.List;
 /**
  * 发牌动画view
  */
+@TargetApi(25)
 public class PokerFlyView extends BaseGameView
 {
     public PokerFlyView(@NonNull Context context)
