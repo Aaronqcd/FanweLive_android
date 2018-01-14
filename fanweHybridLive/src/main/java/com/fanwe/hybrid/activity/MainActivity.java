@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
@@ -75,6 +76,7 @@ import com.tencent.lbssearch.object.result.Geo2AddressResultObject.ReverseAddres
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.map.geolocation.TencentLocationListener;
 import com.tencent.mapsdk.raster.model.LatLng;
+import com.tencent.rtmp.TXLiveBase;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -156,6 +158,8 @@ public class MainActivity extends BaseActivity implements OnCropBitmapListner, P
         mIsExitApp = true;
         x.view().inject(this);
         init();
+        String sdkver = TXLiveBase.getSDKVersionStr();
+        Log.d("liteavsdk", "liteav sdk version is : " + sdkver);
     }
 
     private void init()
