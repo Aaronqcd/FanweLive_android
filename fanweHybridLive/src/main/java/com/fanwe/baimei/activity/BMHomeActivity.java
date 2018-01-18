@@ -26,11 +26,11 @@ import com.fanwe.live.dialog.LevelLoginFirstDialog;
 import com.fanwe.live.dialog.LevelUpgradeDialog;
 import com.fanwe.live.event.EIMLoginError;
 import com.fanwe.live.event.EImOnForceOffline;
-import com.fanwe.live.fragment.LiveTabFollowFragment;
 import com.fanwe.live.fragment.LiveTabLiveFragment;
 import com.fanwe.live.fragment.LiveTabMeNewFragment;
 import com.fanwe.live.model.App_userinfoActModel;
 import com.fanwe.live.model.UserModel;
+import com.fanwe.shortvideo.fragment.LiveTabShortVideoFragment;
 
 /**
  * 包名 com.fanwe.baimei.activity
@@ -256,6 +256,6 @@ public class BMHomeActivity extends BaseActivity
 }
     private void clickTabAttention()
     {
-        getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabFollowFragment.class);
+        getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabShortVideoFragment.class);
     }
 }

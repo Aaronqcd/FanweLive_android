@@ -67,13 +67,13 @@ public class BMHomeBottomNavigationView extends BaseAppView {
         if (initActModel != null) {
             InitUpgradeModel model = initActModel.getVersion();
             if (model != null) {
-                if (SDTypeParseUtil.getInt(model.getServerVersion())==20170101){
-                    getTabAttentionCenterImageView().setVisibility(GONE);
-                    getTabGameCenterImageView().setVisibility(GONE);
-                }else {
-                    getTabAttentionCenterImageView().setVisibility(VISIBLE);
-                    getTabGameCenterImageView().setVisibility(VISIBLE);
-                }
+//                if (SDTypeParseUtil.getInt(model.getServerVersion())==20170101){
+//                    getTabAttentionCenterImageView().setVisibility(GONE);
+//                    getTabGameCenterImageView().setVisibility(GONE);
+//                }else {
+//                    getTabAttentionCenterImageView().setVisibility(VISIBLE);
+//                    getTabGameCenterImageView().setVisibility(VISIBLE);
+//                }
             }
         }
     }

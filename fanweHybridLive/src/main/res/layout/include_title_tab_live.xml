@@ -4,7 +4,6 @@
               android:layout_height="@dimen/height_title_bar"
               android:background="@color/main_color"
               android:gravity="center_vertical">
-   <!-- android:background="@color/bg_title_bar"-->
     <LinearLayout
         android:id="@+id/ll_search"
         android:layout_width="50dp"
@@ -16,7 +15,6 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_search_white"/>
-      <!--  android:src="@drawable/ic_search_white_title"-->
     </LinearLayout>
 
     <LinearLayout
@@ -44,7 +42,6 @@
             android:layout_height="20dp"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_private_chat_tab_live"/>
-       <!-- android:src="@drawable/ic_private_chat_tab_live_title"-->
         <TextView
             android:id="@+id/tv_total_unreadnum"
             android:layout_width="16dp"

@@ -6,10 +6,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.fanwe.baimei.fragment.BMPTBaseFragment;
-import com.fanwe.baimei.fragment.BMPopularityFragment;
 import com.fanwe.hybrid.fragment.BaseFragment;
 import com.fanwe.library.adapter.SDPagerAdapter;
 import com.fanwe.library.common.SDFragmentManager;
@@ -47,8 +44,7 @@ import java.util.List;
  * @author Administrator
  * @date 2016-7-2 上午11:28:44
  */
-public class LiveTabLiveFragment extends BaseFragment
-{
+public class LiveTabLiveFragment extends BaseFragment {
 
     private View ll_search;
     private View ll_private_chat_list;
@@ -58,20 +54,19 @@ public class LiveTabLiveFragment extends BaseFragment
 
     private List<HomeTabTitleModel> mListModel = new ArrayList<>();
     private LiveHomeTitleTabAdapter mAdapterTitleTab;
-   private LiveTabLiveFragment context;
+    private LiveTabLiveFragment context;
     private SparseArray<LiveTabBaseView> mArrContentView = new SparseArray<>();
-    SDFragmentManager sdFragmentManager ;
+    SDFragmentManager sdFragmentManager;
+
     @Override
-    protected int onCreateContentView()
-    {
+    protected int onCreateContentView() {
         return R.layout.frag_live_tab_live;
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
         super.init();
-        context=this;
+        context = this;
         ll_search = findViewById(R.id.ll_search);
         ll_private_chat_list = findViewById(R.id.ll_private_chat_list);
         tv_total_unreadnum = (TextView) findViewById(R.id.tv_total_unreadnum);
@@ -86,28 +81,24 @@ public class LiveTabLiveFragment extends BaseFragment
         initViewPagerIndicator();
     }
 
-    private void initTabsData()
-    {
-        HomeTabTitleModel tabFollow = new HomeTabTitleModel();
-        //tabFollow.setName("关注");
-        tabFollow.setName("附近");
-        HomeTabTitleModel tabHot = new HomeTabTitleModel();
-       // tabHot.setName("热门");
-        tabHot.setName("热门");
-
+    private void initTabsData() {
         HomeTabTitleModel tabNearby = new HomeTabTitleModel();
-       // tabNearby.setName("附近");
-        tabNearby.setName("榜单");
-        mListModel.add(tabFollow);
-        mListModel.add(tabHot);
+        tabNearby.setName("附近");
+        HomeTabTitleModel tabHot = new HomeTabTitleModel();
+        tabHot.setName("热门");
+        HomeTabTitleModel tabFollow = new HomeTabTitleModel();
+        tabFollow.setName("关注");
+        HomeTabTitleModel tabRank = new HomeTabTitleModel();
+        tabRank.setName("榜单");
         mListModel.add(tabNearby);
+        mListModel.add(tabHot);
+        mListModel.add(tabFollow);
+        mListModel.add(tabRank);
     }
 
-    private void initViewPager()
-    {
+    private void initViewPager() {
         vpg_indicator.setViewPager(vpg_content);
-
-        vpg_content.setOffscreenPageLimit(2);
+        vpg_content.setOffscreenPageLimit(3);
         vpg_content.setAdapter(new SDPagerAdapter<HomeTabTitleModel>(mListModel, getActivity()) {
             @Override
             public View getView(ViewGroup container, int position) {
@@ -115,12 +106,14 @@ public class LiveTabLiveFragment extends BaseFragment
                 switch (position) {
                     case 0:
                         view = new LiveTabNewView(getActivity());
-                        //   view = new LiveTabFollowView(getActivity());
                         break;
                     case 1:
                         view = new LiveTabHotView(getActivity());
                         break;
                     case 2:
+                        view = new LiveTabFollowView(getActivity());
+                        break;
+                    case 3:
                         view = new LiveTabRankView(getActivity());
                         ((LiveTabRankView) view).setFragment(context);
                         break;
@@ -138,8 +131,7 @@ public class LiveTabLiveFragment extends BaseFragment
         });
     }
 
-    private void initViewPagerIndicator()
-    {
+    private void initViewPagerIndicator() {
         mAdapterTitleTab = new LiveHomeTitleTabAdapter(mListModel, getActivity());
         mAdapterTitleTab.setItemClickCallback(new SDItemClickCallback<HomeTabTitleModel>() {
             @Override
@@ -170,46 +162,36 @@ public class LiveTabLiveFragment extends BaseFragment
         });
     }
 
-    public void onEventMainThread(ESelectLiveFinish event)
-    {
+    public void onEventMainThread(ESelectLiveFinish event) {
         String text = SDConfig.getInstance().getString(R.string.config_live_select_city, "");
-        if (TextUtils.isEmpty(text))
-        {
+        if (TextUtils.isEmpty(text)) {
             text = LiveConstant.LIVE_HOT_CITY;
         }
         mAdapterTitleTab.getData(1).setName(text);
         mAdapterTitleTab.updateData(1);
     }
 
-    public void onEventMainThread(EReSelectTabLiveBottom event)
-    {
-        if (event.index == 0)
-        {
+    public void onEventMainThread(EReSelectTabLiveBottom event) {
+        if (event.index == 0) {
             int index = vpg_content.getCurrentItem();
             LiveTabBaseView view = mArrContentView.get(index);
-            if (view != null)
-            {
+            if (view != null) {
                 view.scrollToTop();
             }
         }
     }
 
-    public void onEventMainThread(EOnClick event)
-    {
-        if (R.id.tv_tab_live_follow_goto_live == event.view.getId())
-        {
+    public void onEventMainThread(EOnClick event) {
+        if (R.id.tv_tab_live_follow_goto_live == event.view.getId()) {
             vpg_indicator.setCurrentItem(0);
         }
     }
 
     @Override
-    public void onClick(View v)
-    {
-        if (v == ll_search)
-        {
+    public void onClick(View v) {
+        if (v == ll_search) {
             clickSearch();
-        } else if (v == ll_private_chat_list)
-        {
+        } else if (v == ll_private_chat_list) {
             clickChatList();
         }
         super.onClick(v);
@@ -218,8 +200,7 @@ public class LiveTabLiveFragment extends BaseFragment
     /**
      * 私聊列表
      */
-    private void clickChatList()
-    {
+    private void clickChatList() {
         Intent intent = new Intent(getActivity(), LiveChatC2CActivity.class);
         startActivity(intent);
     }
@@ -227,42 +208,35 @@ public class LiveTabLiveFragment extends BaseFragment
     /**
      * 搜索
      */
-    private void clickSearch()
-    {
+    private void clickSearch() {
         Intent intent = new Intent(getActivity(), LiveSearchUserActivity.class);
         startActivity(intent);
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         initUnReadNum();
         super.onResume();
     }
 
-    private void initUnReadNum()
-    {
+    private void initUnReadNum() {
         TotalConversationUnreadMessageModel model = IMHelper.getC2CTotalUnreadMessageModel();
         setUnReadNumModel(model);
     }
 
-    public void onEventMainThread(ERefreshMsgUnReaded event)
-    {
+    public void onEventMainThread(ERefreshMsgUnReaded event) {
         TotalConversationUnreadMessageModel model = event.model;
         setUnReadNumModel(model);
     }
 
     //SDK启动成功接收事件获取未读数量
-    public void onEventMainThread(EIMLoginSuccess event)
-    {
+    public void onEventMainThread(EIMLoginSuccess event) {
         initUnReadNum();
     }
 
-    private void setUnReadNumModel(TotalConversationUnreadMessageModel model)
-    {
+    private void setUnReadNumModel(TotalConversationUnreadMessageModel model) {
         SDViewUtil.setGone(tv_total_unreadnum);
-        if (model != null && model.getTotalUnreadNum() > 0)
-        {
+        if (model != null && model.getTotalUnreadNum() > 0) {
             SDViewUtil.setVisible(tv_total_unreadnum);
             tv_total_unreadnum.setText(model.getStr_totalUnreadNum());
         }

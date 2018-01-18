@@ -17,6 +17,7 @@ import com.fanwe.hybrid.http.AppHttpUtil;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.http.AppRequestCallbackWrapper;
 import com.fanwe.hybrid.http.AppRequestParams;
+import com.fanwe.hybrid.model.BaseActListModel;
 import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.hybrid.umeng.UmengPushManager;
@@ -111,6 +112,7 @@ import com.fanwe.live.model.User_set_blackActModel;
 import com.fanwe.live.model.Video_add_videoActModel;
 import com.fanwe.live.model.Video_check_statusActModel;
 import com.fanwe.live.model.Video_private_room_friendsActModel;
+import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.sunday.eventbus.SDEventManager;
 
 import java.io.File;
@@ -120,6 +122,20 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
 
 public class CommonInterface
 {
+    /**
+     * 小视频tab 请求小视频列表
+     *
+     * @param page
+     */
+    public static void requestShortVideoList(int page, AppRequestCallback<ShortVideoListModel> listener)
+    {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("svlist");
+//        params.put("page", page);
+        AppHttpUtil.getInstance().post(params, listener);
+    }
+
     /**
      * 测试刷礼物接口
      *

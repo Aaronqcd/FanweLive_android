@@ -1,40 +1,22 @@
 package com.fanwe.live.appview.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.fanwe.baimei.adapter.BMHomeLiveCenterTabAdapter;
 import com.fanwe.baimei.fragment.BMPopularityFragment;
 import com.fanwe.baimei.fragment.BMTyrantFragment;
-import com.fanwe.hybrid.activity.BaseActivity;
-import com.fanwe.hybrid.fragment.BaseFragment;
-import com.fanwe.library.activity.SDBaseActivity;
-import com.fanwe.library.adapter.SDFragmentPagerAdapter;
-import com.fanwe.library.common.SDFragmentManager;
 import com.fanwe.library.common.SDSelectManager;
-import com.fanwe.library.customview.SDSlidingPlayView;
-import com.fanwe.library.fragment.SDBaseFragment;
-import com.fanwe.library.listener.SDViewVisibilityCallback;
 import com.fanwe.library.utils.SDResourcesUtil;
-import com.fanwe.library.utils.SDViewSizeLocker;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.library.view.SDTabText;
 import com.fanwe.library.view.select.SDSelectViewManager;
 import com.fanwe.live.R;
-import com.fanwe.live.adapter.LiveTabHotBannerPagerAdapter;
 import com.fanwe.live.event.EFinishAdImg;
 import com.fanwe.live.fragment.LiveTabLiveFragment;
 import com.sunday.eventbus.SDEventManager;
@@ -42,6 +24,7 @@ import com.sunday.eventbus.SDEventManager;
 import org.xutils.view.annotation.ViewInject;
 
 /**
+ * 榜单列表
  * Created by Administrator on 2017-7-29.
  */
 public class LiveTabRankView extends LiveTabBaseView{

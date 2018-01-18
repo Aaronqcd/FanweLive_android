@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.fanwe.baimei.activity.BMHomeActivity;
 import com.fanwe.library.adapter.SDViewHolderAdapter;
 import com.fanwe.library.adapter.viewholder.SDViewHolder;
 import com.fanwe.library.event.EOnClick;
@@ -18,12 +16,10 @@ import com.fanwe.library.utils.SDViewBinder;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
 import com.fanwe.live.common.AppRuntimeWorker;
-import com.fanwe.live.fragment.LiveTabLiveFragment;
 import com.fanwe.live.model.LivePlaybackModel;
 import com.fanwe.live.model.LiveRoomModel;
 import com.fanwe.live.model.PlayBackData;
 import com.fanwe.live.utils.GlideUtil;
-import com.fanwei.jubaosdk.common.util.ToastUtil;
 import com.sunday.eventbus.SDEventManager;
 
 import java.util.List;

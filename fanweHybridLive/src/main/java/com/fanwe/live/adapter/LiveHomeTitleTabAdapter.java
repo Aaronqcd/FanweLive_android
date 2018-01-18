@@ -44,11 +44,9 @@ public class LiveHomeTitleTabAdapter extends SDSimpleAdapter<HomeTabTitleModel>
         SDViewBinder.setTextView(tv_name, model.getName());
         if (model.isSelected())
         {
-            //tv_name.setTextColor(SDResourcesUtil.getColor(R.color.main_color));
             tv_name.setTextColor(SDResourcesUtil.getColor(R.color.white));
         } else
         {
-           // tv_name.setTextColor(SDResourcesUtil.getColor(R.color.text_title));
             tv_name.setTextColor(SDResourcesUtil.getColor(R.color.white));
         }
         if (model.isSelected())
