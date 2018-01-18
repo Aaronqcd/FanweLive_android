@@ -662,6 +662,10 @@
             android:name="com.fanwe.shortvideo.editor.TCVideoPreprocessActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name="com.fanwe.shortvideo.activity.ShortVideoDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
         <!-- 小视频部分End====================================================== -->
         <!--付费模式start===========================================================-->
         <activity

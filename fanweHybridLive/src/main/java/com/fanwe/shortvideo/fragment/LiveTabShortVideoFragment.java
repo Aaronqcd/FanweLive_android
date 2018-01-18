@@ -39,7 +39,7 @@ public class LiveTabShortVideoFragment extends BaseFragment {
         super.init();
         tv_title = (TextView) findViewById(R.id.tv_title);
         tv_title.setText("小视频");
-        lv_content = (SDProgressPullToRefreshRecyclerView) findViewById(R.id.lv_content);
+        lv_content = (SDProgressPullToRefreshRecyclerView) findViewById(R.id.lv_short_video_content);
         lv_content.getRefreshableView().setGridVertical(2);
         setAdapter();
         initPullToRefresh();
