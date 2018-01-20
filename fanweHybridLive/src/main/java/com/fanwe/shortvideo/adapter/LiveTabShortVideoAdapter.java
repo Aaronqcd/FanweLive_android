@@ -1,6 +1,8 @@
 package com.fanwe.shortvideo.adapter;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import com.fanwe.library.adapter.SDSimpleRecyclerAdapter;
 import com.fanwe.library.adapter.viewholder.SDRecyclerViewHolder;
 import com.fanwe.library.utils.SDToast;
 import com.fanwe.live.R;
+import com.fanwe.shortvideo.activity.ShortVideoDetailActivity;
 import com.fanwe.shortvideo.appview.mian.ItemShortVideoView;
 import com.fanwe.shortvideo.model.ShortVideoModel;
 
@@ -20,9 +23,12 @@ import java.util.ArrayList;
 public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideoModel>
 {
 
+    private Activity activity;
+
     public LiveTabShortVideoAdapter(ArrayList<ShortVideoModel> listModel, Activity activity)
     {
         super(listModel, activity);
+        this.activity = activity;
     }
 
     @Override
@@ -47,10 +53,15 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
         {
             ItemShortVideoView view = (ItemShortVideoView) v;
             ShortVideoModel model = view.getModel();
+
             if (model == null)
             {
                 SDToast.showToast("数据为空");
                 return;
+            }else{
+                Intent intent = new Intent(activity, ShortVideoDetailActivity.class);
+                intent.putExtra("ShortVideoModel",model);
+                activity.startActivity(intent);
             }
         }
     };

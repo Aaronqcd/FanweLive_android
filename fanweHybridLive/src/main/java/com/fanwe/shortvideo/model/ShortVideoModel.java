@@ -1,10 +1,13 @@
 package com.fanwe.shortvideo.model;
 
+import com.fanwe.hybrid.model.BaseActListModel;
+import com.fanwe.hybrid.model.BaseActModel;
+
 /**
  * 小视频列表item
  * @author wxy
  */
-public class ShortVideoModel {
+public class ShortVideoModel extends BaseActModel {
     private String sv_id;
     private String sv_userid;
     private String sv_url;

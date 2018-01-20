@@ -112,6 +112,7 @@ import com.fanwe.live.model.User_set_blackActModel;
 import com.fanwe.live.model.Video_add_videoActModel;
 import com.fanwe.live.model.Video_check_statusActModel;
 import com.fanwe.live.model.Video_private_room_friendsActModel;
+import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.sunday.eventbus.SDEventManager;
 
@@ -122,6 +123,19 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
 
 public class CommonInterface
 {
+    /**
+     * 小视频详情
+     *
+     * @param videoId
+     */
+    public static void requestShortVideoDetails(String videoId, AppRequestCallback<ShortVideoDetailModel> listener)
+    {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("videodetail");
+        params.put("sv_id", videoId);
+        AppHttpUtil.getInstance().post(params, listener);
+    }
     /**
      * 小视频tab 请求小视频列表
      *
