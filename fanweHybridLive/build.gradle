@@ -170,6 +170,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile(name: 'zxing-1.8.4', ext: 'aar')
     compile(name: 'barcodescanner-core-1.8.4', ext: 'aar')
+    compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
 
 
 

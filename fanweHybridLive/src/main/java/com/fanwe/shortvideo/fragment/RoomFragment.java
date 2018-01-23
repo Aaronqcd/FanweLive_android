@@ -21,6 +21,7 @@ public class RoomFragment extends Fragment {
 
     private Button mButton;
     private Random random = new Random();
+    public String sv_id;
 
     public static RoomFragment newInstance() {
         Bundle args = new Bundle();
@@ -39,7 +40,7 @@ public class RoomFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mButton = (Button) view.findViewById(R.id.btn_manage);
-        mButton.setText(String.format(Locale.getDefault(), "映客号: %s", "103209" + random.nextInt(10)));
+        mButton.setText(String.format(Locale.getDefault(), "映客号: %s", sv_id + random.nextInt(10)));
     }
 
 

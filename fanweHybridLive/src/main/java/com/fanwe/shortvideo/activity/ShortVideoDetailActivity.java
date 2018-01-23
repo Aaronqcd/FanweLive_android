@@ -23,13 +23,15 @@ import com.fanwe.live.common.CommonInterface;
 import com.fanwe.shortvideo.fragment.RoomFragment;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoModel;
-import com.fanwe.shortvideo.view.VerticalViewPager;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
+
 import org.xutils.view.annotation.ViewInject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 
 public class ShortVideoDetailActivity extends BaseActivity {
@@ -41,6 +43,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
     private TXVodPlayer mVodPlayer;
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
     private static final String DEFAULT_TEST_URL = "http://live.hkstv.hk.lxdns.com/live/hks/playlist.m3u8";
+    private static final String DEFAULT_TEST_URL1 = "http://1253918958.vod2.myqcloud.com/397c1fb2vodgzp1253918958/d8e0466b4564972819123307762/HFMIc1iVVHwA.mp4";
+
     private Toast mToast = null;
     private String mVideoPath = null;
     protected Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -57,6 +61,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
     private FragmentManager mFragmentManager;
     private List<ShortVideoDetailModel.VideoDetail> listModel = new ArrayList<>();
     private ShortVideoModel model ;
+    private List<String> mVideoUrls=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,41 +73,37 @@ public class ShortVideoDetailActivity extends BaseActivity {
         mFragmentManager = getSupportFragmentManager();
         mVideoView = (TXCloudVideoView) mRoomContainer.findViewById(R.id.texture_view);
 
-        //创建player对象
+//        //创建player对象
         mVodPlayer = new TXVodPlayer(getActivity());
         //关键player对象与界面view
         mVodPlayer.setPlayerView(mVideoView);
-
+        mPagerAdapter = new PagerAdapter();
         getIntentData();
-        requestData();
-//        generateUrls();
+//        requestData();
+        generateUrls();
+        mViewPager.setAdapter(mPagerAdapter);
 
-        mViewPager.setOnPageChangeListener(new VerticalViewPager.SimpleOnPageChangeListener() {
+
+
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 Log.e(TAG, "mCurrentId == " + position + ", positionOffset == " + positionOffset +
                         ", positionOffsetPixels == " + positionOffsetPixels);
                 mCurrentItem = position;
             }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                loadVideo(position);
+            }
         });
 
-        mViewPager.setPageTransformer(true, new ViewPager.PageTransformer() {
+        mViewPager.setPageTransformer(false, new ViewPager.PageTransformer() {
             @Override
             public void transformPage(View page, float position) {
                 ViewGroup viewGroup = (ViewGroup) page;
-                if (position < -1) {
-                    page.setAlpha(0);
-
-                } else if (position <= 1) {
-                    page.setAlpha(1);
-                    page.setTranslationX(page.getWidth() * -position);
-                    float yPosition = position * page.getHeight();
-                    page.setTranslationY(yPosition);
-
-                }else {
-                    page.setAlpha(0);
-                }
-
 
                 Log.e(TAG, "page.id == " + page.getId() + ", position == " + position);
 
@@ -124,6 +125,16 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     }
 
+    private void generateUrls() {
+        for (int i = 0; i < 10; i++) {
+            if(i % 2 == 0){
+                mVideoUrls.add(DEFAULT_TEST_URL);
+            }else{
+
+                mVideoUrls.add(DEFAULT_TEST_URL1);
+            }
+        }
+    }
     protected void requestData() {
         if(model == null ) return;
         CommonInterface.requestShortVideoDetails(model.getSv_id(), new AppRequestCallback<ShortVideoDetailModel>() {
@@ -134,6 +145,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
 //                        sortData(listModel);
                     mPagerAdapter = new PagerAdapter();
                     mViewPager.setAdapter(mPagerAdapter);
+
                     mCurrentItem = listModel.indexOf(model);
                     mViewPager.setCurrentItem(mCurrentItem);
                 }
@@ -166,7 +178,12 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     private void loadVideo(int position) {
 
-        mVodPlayer.startPlay(listModel.get(position).sv_url);
+        mVodPlayer.stopPlay(true); // true代表清除最后一帧画面
+        //创建player对象
+        mVodPlayer = new TXVodPlayer(getActivity());
+        //关键player对象与界面view
+        mVodPlayer.setPlayerView(mVideoView);
+        mVodPlayer.startPlay(mVideoUrls.get(position));
     }
 
     @Override
@@ -178,6 +195,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mVodPlayer.resume();
+        mVideoView.onResume();
     }
 
     @Override
@@ -210,7 +229,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return listModel.size();
+            return mVideoUrls.size();
         }
 
         @Override
