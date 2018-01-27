@@ -2,14 +2,17 @@ package com.fanwe.baimei.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 
 import com.fanwe.baimei.appview.BMHomeBottomNavigationView;
 import com.fanwe.baimei.dialog.BMLiveVerifyDialog;
 import com.fanwe.baimei.fragment.BMGameCenterFragment;
 import com.fanwe.hybrid.activity.BaseActivity;
 import com.fanwe.hybrid.app.App;
+import com.fanwe.hybrid.dialog.SelectLiveVideoPopupView;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.service.AppUpgradeHelper;
 import com.fanwe.library.adapter.http.model.SDResponse;
@@ -38,21 +41,18 @@ import com.fanwe.shortvideo.fragment.LiveTabShortVideoFragment;
  * 作者 Su
  * 创建时间 2017/5/15 9:07
  **/
-public class BMHomeActivity extends BaseActivity
-{
+public class BMHomeActivity extends BaseActivity {
     private BMHomeBottomNavigationView mBottomNavigationView;
     private FrameLayout mBottomNavigationContainer;
     private BMLiveVerifyDialog dialogVerify;
 
     @Override
-    protected int onCreateContentView()
-    {
+    protected int onCreateContentView() {
         return R.layout.bm_act_home;
     }
 
     @Override
-    protected void init(Bundle savedInstanceState)
-    {
+    protected void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
         mIsExitApp = true;
 
@@ -61,8 +61,7 @@ public class BMHomeActivity extends BaseActivity
         dialogVerify.show();
     }
 
-    private void afterVerified()
-    {
+    private void afterVerified() {
         setUpHome();
 
         checkUpdate();
@@ -71,8 +70,8 @@ public class BMHomeActivity extends BaseActivity
         CommonInterface.requestMyUserInfo(new AppRequestCallback<App_userinfoActModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {
-                UserModel model=UserModelDao.query();
-                dialogVerify.setTip(model!=null?model.getNick_name():"");
+                UserModel model = UserModelDao.query();
+                dialogVerify.setTip(model != null ? model.getNick_name() : "");
             }
         });
 
@@ -82,37 +81,29 @@ public class BMHomeActivity extends BaseActivity
         initLoginFirstDialog();
     }
 
-    private void setUpHome()
-    {
+    private void setUpHome() {
         getBottomNavigationContainer().addView(getBottomNavigationView());
         clickTabLive();
     }
 
-    private FrameLayout getBottomNavigationContainer()
-    {
-        if (mBottomNavigationContainer == null)
-        {
+    private FrameLayout getBottomNavigationContainer() {
+        if (mBottomNavigationContainer == null) {
             mBottomNavigationContainer = (FrameLayout) findViewById(R.id.fl_container_bottom_navigation);
         }
         return mBottomNavigationContainer;
     }
 
-    private BMHomeBottomNavigationView getBottomNavigationView()
-    {
-        if (mBottomNavigationView == null)
-        {
+    private BMHomeBottomNavigationView getBottomNavigationView() {
+        if (mBottomNavigationView == null) {
             mBottomNavigationView = new BMHomeBottomNavigationView(getActivity());
-            mBottomNavigationView.setCallback(new BMHomeBottomNavigationView.BMHomeBottomNavigationViewCallback()
-            {
+            mBottomNavigationView.setCallback(new BMHomeBottomNavigationView.BMHomeBottomNavigationViewCallback() {
                 @Override
-                public void onTabHomeSelected(View v, int index)
-                {
+                public void onTabHomeSelected(View v, int index) {
                     clickTabLive();
                 }
 
                 @Override
-                public void onTabGameSelected(View v, int index)
-                {
+                public void onTabGameSelected(View v, int index) {
                     clickTabGame();
                 }
 
@@ -120,15 +111,15 @@ public class BMHomeActivity extends BaseActivity
                 public void onTabAttentionSelected(View v, int index) {
                     clickTabAttention();
                 }
+
                 @Override
                 public void onTabPersonSelected(View v, int index) {
                     clickTabMe();
                 }
 
                 @Override
-                public void onLiveClick(View v)
-                {
-                    clickTabCreateLive();
+                public void onLiveClick(View v) {
+                    clickTabCreateLive(v);
                 }
             });
         }
@@ -136,58 +127,49 @@ public class BMHomeActivity extends BaseActivity
     }
 
     @Override
-    protected void onNewIntent(Intent intent)
-    {
+    protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         initUpgradeDialog();
         initLoginFirstDialog();
     }
 
-    private void initUpgradeDialog()
-    {
+    private void initUpgradeDialog() {
         LevelUpgradeDialog.check(this);
     }
 
     //首次登陆奖励和升级提示
-    private void initLoginFirstDialog()
-    {
+    private void initLoginFirstDialog() {
         LevelLoginFirstDialog.check(this);
     }
 
-    private void checkUpdate()
-    {
+    private void checkUpdate() {
         new AppUpgradeHelper(this).check(0);
     }
 
-    public void onEventMainThread(EIMLoginError event)
-    {
+    public void onEventMainThread(EIMLoginError event) {
         SDDialogConfirm dialog = new SDDialogConfirm(this);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setTextContent("登录IM失败").setTextCancel("退出").setTextConfirm("重试");
-        dialog.setmListener(new SDDialogCustom.SDDialogCustomListener()
-        {
+        dialog.setmListener(new SDDialogCustom.SDDialogCustomListener() {
             @Override
-            public void onClickCancel(View v, SDDialogCustom dialog)
-            {
+            public void onClickCancel(View v, SDDialogCustom dialog) {
                 App.getApplication().logout(false);
             }
 
             @Override
-            public void onClickConfirm(View v, SDDialogCustom dialog)
-            {
+            public void onClickConfirm(View v, SDDialogCustom dialog) {
                 AppRuntimeWorker.startContext();
             }
 
             @Override
-            public void onDismiss(SDDialogCustom dialog)
-            {
+            public void onDismiss(SDDialogCustom dialog) {
             }
         }).show();
     }
-    public void onEventMainThread(EOnClick event)
-    {
+
+    public void onEventMainThread(EOnClick event) {
         if (R.id.tv_tab_live_follow_goto_live == event.view.getId()) {
             getBottomNavigationView().setTabSelected(0, true);
             clickTabLive();
@@ -199,8 +181,7 @@ public class BMHomeActivity extends BaseActivity
      *
      * @param event
      */
-    public void onEventMainThread(EImOnForceOffline event)
-    {
+    public void onEventMainThread(EImOnForceOffline event) {
         SDDialogConfirm dialog = new SDDialogConfirm(this);
         dialog.setTextContent("你的帐号在另一台手机上登录");
         dialog.setTextCancel("退出");
@@ -224,38 +205,27 @@ public class BMHomeActivity extends BaseActivity
         dialog.show();
     }
 
-    private void clickTabCreateLive()
-    {
-        if (AppRuntimeWorker.isLogin(this))
-        {
-            final UserModel userModel = UserModelDao.query();
-            if (userModel.getIs_agree() == 1)
-            {
-                Intent intent = new Intent(this, LiveCreateRoomActivity.class);
-                startActivity(intent);
-            } else
-            {
-                Intent intent = new Intent(this, LiveCreaterAgreementActivity.class);
-                startActivity(intent);
-            }
+    private void clickTabCreateLive(View v) {
+        if (AppRuntimeWorker.isLogin(this)) {
+            // popuwindow
+            SelectLiveVideoPopupView popuwindow = new SelectLiveVideoPopupView(this);
+            popuwindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
         }
     }
 
-    private void clickTabLive()
-    {
+    private void clickTabLive() {
         getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabLiveFragment.class);
     }
 
-    private void clickTabGame()
-    {
+    private void clickTabGame() {
         getSDFragmentManager().toggle(R.id.fl_container_content, null, BMGameCenterFragment.class);
     }
-    private void clickTabMe()
-{
-    getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabMeNewFragment.class);
-}
-    private void clickTabAttention()
-    {
+
+    private void clickTabMe() {
+        getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabMeNewFragment.class);
+    }
+
+    private void clickTabAttention() {
         getSDFragmentManager().toggle(R.id.fl_container_content, null, LiveTabShortVideoFragment.class);
     }
 }
