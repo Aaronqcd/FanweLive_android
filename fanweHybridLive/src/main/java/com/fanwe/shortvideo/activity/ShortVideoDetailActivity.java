@@ -2,9 +2,6 @@ package com.fanwe.shortvideo.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -12,14 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.fanwe.hybrid.activity.BaseActivity;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.live.R;
 import com.fanwe.live.common.CommonInterface;
+import com.fanwe.live.utils.GlideUtil;
 import com.fanwe.shortvideo.fragment.RoomFragment;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoModel;
@@ -29,7 +27,6 @@ import com.tencent.rtmp.ui.TXCloudVideoView;
 import org.xutils.view.annotation.ViewInject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
@@ -39,52 +36,46 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     @ViewInject(R.id.vertical_viewpager)
     private VerticalViewPager mViewPager;
-    private TXCloudVideoView mVideoView;
+    private int mCurrentItem;
     private TXVodPlayer mVodPlayer;
-    private static final int MESSAGE_ID_RECONNECTING = 0x01;
-    private static final String DEFAULT_TEST_URL = "http://live.hkstv.hk.lxdns.com/live/hks/playlist.m3u8";
-    private static final String DEFAULT_TEST_URL1 = "http://1253918958.vod2.myqcloud.com/397c1fb2vodgzp1253918958/d8e0466b4564972819123307762/HFMIc1iVVHwA.mp4";
-
-    private Toast mToast = null;
-    private String mVideoPath = null;
-    protected Handler mHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-        }
-    };
+    private TXCloudVideoView mVideoView;
     private RelativeLayout mRoomContainer;
     private PagerAdapter mPagerAdapter;
-    private int mCurrentItem;
-    private RoomFragment mRoomFragment = RoomFragment.newInstance();
     private boolean mInit = false;
     private FrameLayout mFragmentContainer;
     private FragmentManager mFragmentManager;
-    private List<ShortVideoDetailModel.VideoDetail> listModel = new ArrayList<>();
+    private ArrayList<String> mVideoIdList;
+    private ArrayList<String> mVideoImgList;
     private ShortVideoModel model ;
-    private List<String> mVideoUrls=new ArrayList<>();
+    private RoomFragment mRoomFragment = RoomFragment.newInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_short_video_detail);
-        mRoomContainer = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.view_room_container, null);
-        mFragmentContainer = (FrameLayout) mRoomContainer.findViewById(R.id.fragment_container);
-        mVideoPath = DEFAULT_TEST_URL;
-        mFragmentManager = getSupportFragmentManager();
-        mVideoView = (TXCloudVideoView) mRoomContainer.findViewById(R.id.texture_view);
+        getIntentData();
+        initView();
+        initListener();
+        mViewPager.setCurrentItem(mCurrentItem);
+        loadVideo(model.getSv_url());
 
-//        //创建player对象
+    }
+
+    private void initView() {
+        mRoomContainer = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.view_room_container, null);
+        mVideoView = (TXCloudVideoView) mRoomContainer.findViewById(R.id.texture_view);
+        mFragmentContainer = (FrameLayout) mRoomContainer.findViewById(R.id.fragment_container);
+        mFragmentManager = getSupportFragmentManager();
+
+        //创建player对象
         mVodPlayer = new TXVodPlayer(getActivity());
         //关键player对象与界面view
         mVodPlayer.setPlayerView(mVideoView);
         mPagerAdapter = new PagerAdapter();
-        getIntentData();
-//        requestData();
-        generateUrls();
         mViewPager.setAdapter(mPagerAdapter);
+    }
 
-
-
+    private void initListener() {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -96,7 +87,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                loadVideo(position);
+                requestData(mVideoIdList.get(position));
+
             }
         });
 
@@ -122,32 +114,18 @@ public class ShortVideoDetailActivity extends BaseActivity {
                 }
             }
         });
-
     }
 
-    private void generateUrls() {
-        for (int i = 0; i < 10; i++) {
-            if(i % 2 == 0){
-                mVideoUrls.add(DEFAULT_TEST_URL);
-            }else{
 
-                mVideoUrls.add(DEFAULT_TEST_URL1);
-            }
-        }
-    }
-    protected void requestData() {
-        if(model == null ) return;
-        CommonInterface.requestShortVideoDetails(model.getSv_id(), new AppRequestCallback<ShortVideoDetailModel>() {
+    protected void requestData(String svId) {
+        CommonInterface.requestShortVideoDetails(svId, new AppRequestCallback<ShortVideoDetailModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
-                    listModel = actModel.video;
-//                        sortData(listModel);
-                    mPagerAdapter = new PagerAdapter();
-                    mViewPager.setAdapter(mPagerAdapter);
+                    loadVideo(actModel.video.get(0).sv_url);
 
-                    mCurrentItem = listModel.indexOf(model);
-                    mViewPager.setCurrentItem(mCurrentItem);
+//                    mCurrentItem = listModel.indexOf(model);
+//                    mViewPager.setCurrentItem(mCurrentItem);
                 }
             }
 
@@ -157,7 +135,6 @@ public class ShortVideoDetailActivity extends BaseActivity {
             }
         });
 
-//        requestCount++;
     }
 
     /**
@@ -172,24 +149,23 @@ public class ShortVideoDetailActivity extends BaseActivity {
 //            mFragmentManager.beginTransaction().setCustomAnimations(R.animator.slide_in_top,R.animator.slide_out_down);
             mInit = true;
         }
-        loadVideo(currentItem);
+//        loadVideo(currentItem);
         viewGroup.addView(mRoomContainer);
     }
 
-    private void loadVideo(int position) {
+    private void loadVideo(String videoUrl) {
 
         mVodPlayer.stopPlay(true); // true代表清除最后一帧画面
         //创建player对象
         mVodPlayer = new TXVodPlayer(getActivity());
         //关键player对象与界面view
         mVodPlayer.setPlayerView(mVideoView);
-        mVodPlayer.startPlay(mVideoUrls.get(position));
+        mVodPlayer.startPlay(videoUrl);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mToast = null;
     }
 
     @Override
@@ -206,21 +182,11 @@ public class ShortVideoDetailActivity extends BaseActivity {
         mVideoView.onDestroy();
     }
 
-    private void showToastTips(final String tips) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mToast != null) {
-                    mToast.cancel();
-                }
-                mToast = Toast.makeText(ShortVideoDetailActivity.this, tips, Toast.LENGTH_SHORT);
-                mToast.show();
-            }
-        });
-    }
-
     public void getIntentData() {
-        model= (ShortVideoModel) getIntent().getSerializableExtra("ShortVideoModel");
+        mCurrentItem=getIntent().getIntExtra("position",0);
+        model= (ShortVideoModel) getIntent().getSerializableExtra("video_model");
+        mVideoIdList= getIntent().getStringArrayListExtra("video_id_list");
+        mVideoImgList= getIntent().getStringArrayListExtra("video_img_list");
 
     }
 
@@ -229,7 +195,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return mVideoUrls.size();
+            return mVideoIdList.size();
         }
 
         @Override
@@ -240,8 +206,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_room_item, null);
-//            ImageView anchor_img = (ImageView) view.findViewById(R.id.anchor_img);
-//            anchor_img.setImageResource(resId[position]);
+            ImageView anchor_img = (ImageView) view.findViewById(R.id.anchor_img);
+            GlideUtil.load(mVideoImgList.get(position)).into(anchor_img);
             view.setId(position);
             container.addView(view);
             return view;

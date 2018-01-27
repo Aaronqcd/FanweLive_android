@@ -1,9 +1,8 @@
-package com.fanwe.shortvideo.model;//
+package com.fanwe.shortvideo.model;
 
-import com.fanwe.hybrid.model.BaseActListModel;//
 import com.fanwe.hybrid.model.BaseActModel;
 
-import java.util.List;//
+import java.util.List;
 
 /**
  * 小视频列表

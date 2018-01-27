@@ -8,7 +8,6 @@ import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.view.SDRecyclerView;
 import com.fanwe.live.R;
 import com.fanwe.live.common.CommonInterface;
-import com.fanwe.live.fragment.LiveTabLiveFragment;
 import com.fanwe.live.view.SDProgressPullToRefreshRecyclerView;
 import com.fanwe.shortvideo.adapter.LiveTabShortVideoAdapter;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
@@ -23,10 +22,10 @@ import java.util.List;
  * @author wxy
  */
 public class LiveTabShortVideoFragment extends BaseFragment {
+
     private TextView tv_title;
     private SDProgressPullToRefreshRecyclerView lv_content;
     private LiveTabShortVideoAdapter adapter;
-    private LiveTabLiveFragment context;
     private List<ShortVideoModel> listModel = new ArrayList<>();
 
     @Override
@@ -81,7 +80,6 @@ public class LiveTabShortVideoFragment extends BaseFragment {
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     listModel = actModel.getList();
-//                        sortData(listModel);
                     adapter.updateData(listModel);
                 }
             }
@@ -93,6 +91,5 @@ public class LiveTabShortVideoFragment extends BaseFragment {
             }
         });
 
-//        requestCount++;
     }
 }

@@ -16,6 +16,7 @@ import com.fanwe.shortvideo.appview.mian.ItemShortVideoView;
 import com.fanwe.shortvideo.model.ShortVideoModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wxy
@@ -32,10 +33,35 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
     }
 
     @Override
-    public void onBindData(SDRecyclerViewHolder<ShortVideoModel> holder, int position, ShortVideoModel model) {
+    public void onBindData(SDRecyclerViewHolder<ShortVideoModel> holder, final int position, ShortVideoModel model) {
         ItemShortVideoView item0 = holder.get(R.id.item_short_video);
         item0.setModel(model);
-        item0.setOnClickListener(clickImageListener);
+        item0.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ItemShortVideoView view = (ItemShortVideoView) v;
+                ShortVideoModel model = view.getModel();
+
+                if (model == null)
+                {
+                    SDToast.showToast("数据为空");
+                    return;
+                }else{
+                    Intent intent = new Intent(activity, ShortVideoDetailActivity.class);
+                    ArrayList<String> videoIdList=new ArrayList<>();
+                    ArrayList<String> videoImgList=new ArrayList<>();
+                    for (ShortVideoModel videoModel:getData()) {
+                        videoIdList.add(videoModel.getSv_id());
+                        videoImgList.add(videoModel.getSv_img());
+                    }
+                    intent.putExtra("video_model",model);
+                    intent.putExtra("position",position);
+                    intent.putStringArrayListExtra("video_id_list",videoIdList);
+                    intent.putStringArrayListExtra("video_img_list",videoImgList);
+                    activity.startActivity(intent);
+                }
+            }
+        });
     }
 
 
@@ -45,25 +71,5 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
         return R.layout.item_live_tab_shortvideo;
     }
 
-    private OnClickListener clickImageListener = new OnClickListener()
-    {
-
-        @Override
-        public void onClick(View v)
-        {
-            ItemShortVideoView view = (ItemShortVideoView) v;
-            ShortVideoModel model = view.getModel();
-
-            if (model == null)
-            {
-                SDToast.showToast("数据为空");
-                return;
-            }else{
-                Intent intent = new Intent(activity, ShortVideoDetailActivity.class);
-                intent.putExtra("ShortVideoModel",model);
-                activity.startActivity(intent);
-            }
-        }
-    };
 
 }

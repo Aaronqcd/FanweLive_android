@@ -1,6 +1,5 @@
 package com.fanwe.shortvideo.model;
 
-import com.fanwe.hybrid.model.BaseActListModel;
 import com.fanwe.hybrid.model.BaseActModel;
 
 /**
