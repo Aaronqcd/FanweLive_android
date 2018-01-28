@@ -18,7 +18,7 @@ import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.live.R;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.utils.GlideUtil;
-import com.fanwe.shortvideo.fragment.RoomFragment;
+import com.fanwe.shortvideo.fragment.VideoDetailContainerFragment;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoModel;
 import com.tencent.rtmp.TXVodPlayer;
@@ -46,8 +46,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
     private FragmentManager mFragmentManager;
     private ArrayList<String> mVideoIdList;
     private ArrayList<String> mVideoImgList;
-    private ShortVideoModel model ;
-    private RoomFragment mRoomFragment = RoomFragment.newInstance();
+    private VideoDetailContainerFragment mRoomFragment=VideoDetailContainerFragment.newInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
         initView();
         initListener();
         mViewPager.setCurrentItem(mCurrentItem);
-        loadVideo(model.getSv_url());
+        requestData(mVideoIdList.get(mCurrentItem));
 
     }
 
@@ -110,7 +109,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
                     if (mRoomContainer.getParent() != null && mRoomContainer.getParent() instanceof ViewGroup) {
                         ((ViewGroup) (mRoomContainer.getParent())).removeView(mRoomContainer);
                     }
-                    loadVideoAndChatRoom(viewGroup, mCurrentItem);
+                    loadVideoAndChatRoom(viewGroup);
                 }
             }
         });
@@ -123,9 +122,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     loadVideo(actModel.video.get(0).sv_url);
-
-//                    mCurrentItem = listModel.indexOf(model);
-//                    mViewPager.setCurrentItem(mCurrentItem);
+                    mRoomFragment.updataData(actModel.video.get(0));
                 }
             }
 
@@ -139,17 +136,14 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     /**
      * @param viewGroup
-     * @param currentItem
      */
     @SuppressLint("ResourceType")
-    private void loadVideoAndChatRoom(ViewGroup viewGroup, int currentItem) {
+    private void loadVideoAndChatRoom(ViewGroup viewGroup) {
         //聊天室的fragment只加载一次，以后复用
         if (!mInit) {
             mFragmentManager.beginTransaction().add(mFragmentContainer.getId(), mRoomFragment).commitAllowingStateLoss();
-//            mFragmentManager.beginTransaction().setCustomAnimations(R.animator.slide_in_top,R.animator.slide_out_down);
             mInit = true;
         }
-//        loadVideo(currentItem);
         viewGroup.addView(mRoomContainer);
     }
 
@@ -184,7 +178,6 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     public void getIntentData() {
         mCurrentItem=getIntent().getIntExtra("position",0);
-        model= (ShortVideoModel) getIntent().getSerializableExtra("video_model");
         mVideoIdList= getIntent().getStringArrayListExtra("video_id_list");
         mVideoImgList= getIntent().getStringArrayListExtra("video_img_list");
 

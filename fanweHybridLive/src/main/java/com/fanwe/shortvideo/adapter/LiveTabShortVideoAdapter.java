@@ -54,7 +54,6 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
                         videoIdList.add(videoModel.getSv_id());
                         videoImgList.add(videoModel.getSv_img());
                     }
-                    intent.putExtra("video_model",model);
                     intent.putExtra("position",position);
                     intent.putStringArrayListExtra("video_id_list",videoIdList);
                     intent.putStringArrayListExtra("video_img_list",videoImgList);

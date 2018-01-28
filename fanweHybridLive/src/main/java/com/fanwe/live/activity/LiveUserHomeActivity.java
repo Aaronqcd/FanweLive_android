@@ -23,6 +23,7 @@ import com.fanwe.live.common.AppRuntimeWorker;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.fragment.LiveUserHomeBaseFragment;
+import com.fanwe.live.fragment.LiveUserHomeCenterFragment;
 import com.fanwe.live.fragment.LiveUserHomeLeftFragment;
 import com.fanwe.live.fragment.LiveUserHomeRightFragment;
 import com.fanwe.live.model.App_followActModel;
@@ -43,8 +44,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  * @author 作者 E-mail:
  * @version 创建时间：2016-6-11 上午11:52:46 类说明
  */
-public class LiveUserHomeActivity extends BaseActivity
-{
+public class LiveUserHomeActivity extends BaseActivity {
     public static final String EXTRA_USER_ID = "extra_user_id";
     public static final String EXTRA_USER_IMG_URL = "extra_user_img_url";
     /**
@@ -55,8 +55,7 @@ public class LiveUserHomeActivity extends BaseActivity
     @ViewInject(R.id.lsv)
     private SlideToBottomScrollView lsv;
 
-    public SlideToBottomScrollView getLsv()
-    {
+    public SlideToBottomScrollView getLsv() {
         return lsv;
     }
 
@@ -65,6 +64,9 @@ public class LiveUserHomeActivity extends BaseActivity
 
     @ViewInject(R.id.tab_left)
     private SDTabText tab_left;
+
+    @ViewInject(R.id.tab_center)
+    private SDTabText tab_center;
 
     @ViewInject(R.id.tab_right)
     private SDTabText tab_right;
@@ -153,79 +155,63 @@ public class LiveUserHomeActivity extends BaseActivity
     private boolean isSelf = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_user_home);
         x.view().inject(this);
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         getIntentExtra();
         register();
         setHideUserIdView();
         requestUser_home(false);
     }
 
-    private void setHideUserIdView()
-    {
+    private void setHideUserIdView() {
         SDViewUtil.setGone(ll_user_id);
     }
 
-    private void getIntentExtra()
-    {
+    private void getIntentExtra() {
         user_id = getIntent().getStringExtra(EXTRA_USER_ID);
-        if (TextUtils.isEmpty(user_id))
-        {
+        if (TextUtils.isEmpty(user_id)) {
             user_id = "";
         }
         familyStr = getIntent().getStringExtra(EXTRA_FAMILY);
-        if (TextUtils.isEmpty(familyStr))
-        {
+        if (TextUtils.isEmpty(familyStr)) {
             familyStr = "";
         }
     }
 
-    private void register()
-    {
+    private void register() {
         UserModel user = UserModelDao.query();
-        if (user != null)
-        {
+        if (user != null) {
             String localUserId = user.getUser_id();
-            if (!TextUtils.isEmpty(localUserId))
-            {
-                if (TextUtils.equals(user_id, localUserId))
-                {
+            if (!TextUtils.isEmpty(localUserId)) {
+                if (TextUtils.equals(user_id, localUserId)) {
                     isSelf = true;
                     SDViewUtil.setGone(ll_function_layout);
                 }
             }
         }
 
-        if (familyStr.equals(EXTRA_FAMILY))
-        {
+        if (familyStr.equals(EXTRA_FAMILY)) {
             SDViewUtil.setGone(ll_function_layout);
         }
 
-        ll_close.setOnClickListener(new OnClickListener()
-        {
+        ll_close.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 finish();
             }
         });
 
-        ll_my_focus.setOnClickListener(new OnClickListener()
-        {
+        ll_my_focus.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
-                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null)
-                {
+            public void onClick(View v) {
+                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null) {
                     UserModel userModel = app_user_homeActModel.getUser();
                     Intent intent = new Intent(LiveUserHomeActivity.this, LiveFollowActivity.class);
                     intent.putExtra(LiveMyFocusActivity.EXTRA_USER_ID, userModel.getUser_id());
@@ -234,14 +220,11 @@ public class LiveUserHomeActivity extends BaseActivity
             }
         });
 
-        ll_my_fans.setOnClickListener(new OnClickListener()
-        {
+        ll_my_fans.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
-                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null)
-                {
+            public void onClick(View v) {
+                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null) {
                     UserModel userModel = app_user_homeActModel.getUser();
                     Intent intent = new Intent(LiveUserHomeActivity.this, LiveMyFocusActivity.class);
                     intent.putExtra(LiveMyFocusActivity.EXTRA_USER_ID, userModel.getUser_id());
@@ -250,27 +233,21 @@ public class LiveUserHomeActivity extends BaseActivity
             }
         });
 
-        ll_follow.setOnClickListener(new OnClickListener()
-        {
+        ll_follow.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 requestFollow();
             }
         });
-        ll_letter.setOnClickListener(new OnClickListener()
-        {
+        ll_letter.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
-                if (app_user_homeActModel != null)
-                {
+            public void onClick(View v) {
+                if (app_user_homeActModel != null) {
                     UserModel local_user = UserModelDao.query();
                     UserModel to_user = app_user_homeActModel.getUser();
-                    if (local_user != null && to_user != null)
-                    {
+                    if (local_user != null && to_user != null) {
                         Intent intent = new Intent(getActivity(), LivePrivateChatActivity.class);
                         intent.putExtra(LivePrivateChatActivity.EXTRA_USER_ID, to_user.getUser_id());
                         startActivity(intent);
@@ -278,23 +255,18 @@ public class LiveUserHomeActivity extends BaseActivity
                 }
             }
         });
-        ll_set_black.setOnClickListener(new OnClickListener()
-        {
+        ll_set_black.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 requestSet_black();
             }
         });
-        iv_head.setOnClickListener(new OnClickListener()
-        {
+        iv_head.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
-                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null)
-                {
+            public void onClick(View v) {
+                if (app_user_homeActModel != null && app_user_homeActModel.getUser() != null) {
                     Intent intent = new Intent(LiveUserHomeActivity.this, LiveUserHeadImageActivity.class);
                     intent.putExtra(EXTRA_USER_ID, app_user_homeActModel.getUser().getUser_id());
                     intent.putExtra(EXTRA_USER_IMG_URL, app_user_homeActModel.getUser().getHead_image());
@@ -302,11 +274,9 @@ public class LiveUserHomeActivity extends BaseActivity
                 }
             }
         });
-        ll_broadcast_entrance.setOnClickListener(new OnClickListener()
-        {
+        ll_broadcast_entrance.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 //加入直播间
                 joinRoom();
             }
@@ -321,33 +291,34 @@ public class LiveUserHomeActivity extends BaseActivity
         addTab();
     }
 
-    private void addTab()
-    {
+    private void addTab() {
         tab_left.setTextTitle("主页");
         tab_left.getViewConfig(tab_left.mTv_title).setTextColorNormalResId(R.color.black).setTextColorSelectedResId(R.color.main_color);
         tab_left.setTextSizeTitleSp(15);
-        tab_right.setTextTitle("直播");
+        tab_center.setTextTitle("直播");
+        tab_center.getViewConfig(tab_center.mTv_title).setTextColorNormalResId(R.color.black).setTextColorSelectedResId(R.color.main_color);
+        tab_center.setTextSizeTitleSp(15);
+        tab_right.setTextTitle("小视频");
         tab_right.getViewConfig(tab_right.mTv_title).setTextColorNormalResId(R.color.black).setTextColorSelectedResId(R.color.main_color);
         tab_right.setTextSizeTitleSp(15);
 
-        mSelectManager.addSelectCallback(new SDSelectManager.SelectCallback<SDTabText>()
-        {
+        mSelectManager.addSelectCallback(new SDSelectManager.SelectCallback<SDTabText>() {
 
             @Override
-            public void onNormal(int index, SDTabText item)
-            {
+            public void onNormal(int index, SDTabText item) {
             }
 
             @Override
-            public void onSelected(int index, SDTabText item)
-            {
-                switch (index)
-                {
+            public void onSelected(int index, SDTabText item) {
+                switch (index) {
                     case 0:
                         click0();
                         break;
                     case 1:
                         click1();
+                        break;
+                    case 2:
+                        click2();
                         break;
                     default:
                         break;
@@ -357,14 +328,12 @@ public class LiveUserHomeActivity extends BaseActivity
         });
 
         mSelectManager.setItems(new SDTabText[]
-                {tab_left, tab_right});
+                {tab_left, tab_center, tab_right});
     }
 
-    private void joinRoom()
-    {
+    private void joinRoom() {
         LiveRoomModel video = app_user_homeActModel.getVideo();
-        if (video == null)
-        {
+        if (video == null) {
             return;
         }
         AppRuntimeWorker.joinRoom(video, this);
@@ -373,10 +342,8 @@ public class LiveUserHomeActivity extends BaseActivity
     /**
      * 主页
      */
-    protected void click0()
-    {
-        if (app_user_homeActModel != null)
-        {
+    protected void click0() {
+        if (app_user_homeActModel != null) {
             Bundle b = new Bundle();
             b.putSerializable(LiveUserHomeBaseFragment.EXTRA_OBJ, app_user_homeActModel);
             getSDFragmentManager().toggle(R.id.ll_content, null, LiveUserHomeLeftFragment.class, b);
@@ -386,29 +353,32 @@ public class LiveUserHomeActivity extends BaseActivity
     /**
      * 直播
      */
-    protected void click1()
-    {
-        if (app_user_homeActModel != null)
-        {
+    protected void click1() {
+        if (app_user_homeActModel != null) {
+            Bundle b = new Bundle();
+            b.putSerializable(LiveUserHomeBaseFragment.EXTRA_OBJ, app_user_homeActModel);
+            getSDFragmentManager().toggle(R.id.ll_content, null, LiveUserHomeCenterFragment.class, b);
+        }
+    }
+    /**
+     * 直播
+     */
+    protected void click2() {
+        if (app_user_homeActModel != null) {
             Bundle b = new Bundle();
             b.putSerializable(LiveUserHomeBaseFragment.EXTRA_OBJ, app_user_homeActModel);
             getSDFragmentManager().toggle(R.id.ll_content, null, LiveUserHomeRightFragment.class, b);
         }
     }
 
-    private void requestFollow()
-    {
-        CommonInterface.requestFollow(user_id, 0, new AppRequestCallback<App_followActModel>()
-        {
+    private void requestFollow() {
+        CommonInterface.requestFollow(user_id, 0, new AppRequestCallback<App_followActModel>() {
 
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     // 已关注则刷新接口
-                    if (actModel.getHas_focus() == 1)
-                    {
+                    if (actModel.getHas_focus() == 1) {
                         requestUser_home(true);
                     }
                     setIsFollow(actModel.getHas_focus());
@@ -417,19 +387,14 @@ public class LiveUserHomeActivity extends BaseActivity
         });
     }
 
-    private void requestSet_black()
-    {
-        CommonInterface.requestSet_black(user_id, new AppRequestCallback<User_set_blackActModel>()
-        {
+    private void requestSet_black() {
+        CommonInterface.requestSet_black(user_id, new AppRequestCallback<User_set_blackActModel>() {
 
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     // 已拉黑则刷新接口
-                    if (actModel.getHas_black() == 1)
-                    {
+                    if (actModel.getHas_black() == 1) {
                         requestUser_home(true);
                     }
                     setIsSet_black(actModel.getHas_black());
@@ -439,47 +404,36 @@ public class LiveUserHomeActivity extends BaseActivity
     }
 
     // 设置个人信息关注按钮
-    private void setIsFollow(int has_focus)
-    {
-        if (has_focus == 1)
-        {
+    private void setIsFollow(int has_focus) {
+        if (has_focus == 1) {
             tv_follow.setText("已关注");
-        } else
-        {
+        } else {
             tv_follow.setText("关注");
         }
     }
 
     // 设置个人信息拉黑按钮
-    private void setIsSet_black(int has_black)
-    {
-        if (has_black == 1)
-        {
+    private void setIsSet_black(int has_black) {
+        if (has_black == 1) {
             // 拉黑则默认无法关注
             // ll_follow.setClickable(false);
             tv_set_black.setText("解除拉黑");
-        } else
-        {
+        } else {
             // ll_follow.setClickable(true);
             tv_set_black.setText("拉黑");
         }
     }
 
     // isRefresh是刷新就不切换Fragment
-    private void requestUser_home(final boolean isRefresh)
-    {
-        CommonInterface.requestUser_home(user_id, new AppRequestCallback<App_user_homeActModel>()
-        {
+    private void requestUser_home(final boolean isRefresh) {
+        CommonInterface.requestUser_home(user_id, new AppRequestCallback<App_user_homeActModel>() {
 
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     app_user_homeActModel = actModel;
 
-                    if (!isRefresh)
-                    {
+                    if (!isRefresh) {
                         mSelectManager.performClick(mSelectTabIndex);
                     }
 
@@ -491,11 +445,9 @@ public class LiveUserHomeActivity extends BaseActivity
         });
     }
 
-    private void bindData(App_user_homeActModel actModel)
-    {
+    private void bindData(App_user_homeActModel actModel) {
         UserModel user = actModel.getUser();
-        if (user != null)
-        {
+        if (user != null) {
             long use_diamonds = user.getUse_diamonds();
             String str_use_diamonds = String.valueOf(use_diamonds);
             SDViewBinder.setTextView(tv_use_diamonds, str_use_diamonds);
@@ -503,22 +455,18 @@ public class LiveUserHomeActivity extends BaseActivity
 
             Glide.with(this).load(user.getHead_image()).bitmapTransform(new BlurTransformation(this.getActivity(), 20)).into(bg_img_head_bur);
 
-            if (!TextUtils.isEmpty(user.getV_icon()))
-            {
+            if (!TextUtils.isEmpty(user.getV_icon())) {
                 GlideUtil.load(user.getV_icon()).into(iv_level);
-            } else
-            {
+            } else {
                 iv_level.setVisibility(View.GONE);
             }
 
             SDViewBinder.setTextView(tv_nick_name, user.getNick_name());
 
-            if (user.getSexResId() > 0)
-            {
+            if (user.getSexResId() > 0) {
                 SDViewUtil.setVisible(iv_global_male);
                 iv_global_male.setImageResource(user.getSexResId());
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(iv_global_male);
             }
 
@@ -534,37 +482,29 @@ public class LiveUserHomeActivity extends BaseActivity
 
             SDViewBinder.setTextView(tv_introduce, user.getSignature(), "TA好像忘记写签名了");
 
-            if (!TextUtils.isEmpty(user.getV_explain()))
-            {
+            if (!TextUtils.isEmpty(user.getV_explain())) {
                 SDViewUtil.setVisible(ll_v_explain);
                 SDViewBinder.setTextView(tv_v_explain, user.getV_explain());
-            } else
-            {
+            } else {
                 ll_v_explain.setVisibility(View.GONE);
             }
 
-            if (!isSelf)
-            {
-                if (actModel.getVideo() != null)
-                {
+            if (!isSelf) {
+                if (actModel.getVideo() != null) {
                     SDViewUtil.setVisible(ll_broadcast_entrance);
-                    if (actModel.getVideo().getLive_in() == 1)
-                    {
+                    if (actModel.getVideo().getLive_in() == 1) {
                         tv_broadcast_entrance.setText("正在直播");
-                    } else if (actModel.getVideo().getLive_in() == 3)
-                    {
+                    } else if (actModel.getVideo().getLive_in() == 3) {
                         tv_broadcast_entrance.setText("正在回播");
                     }
                 } else
                     SDViewUtil.setInvisible(ll_broadcast_entrance);
             }
 
-            if (user.getIs_vip() == 1)
-            {
+            if (user.getIs_vip() == 1) {
                 SDViewUtil.setVisible(iv_vip);
 //                GlideUtil.load(R.drawable.ic_is_vip).into(iv_vip);
-            } else
-            {
+            } else {
                 SDViewUtil.setGone(iv_vip);
 //                GlideUtil.load(R.drawable.ic_not_vip).into(iv_vip);
             }
@@ -572,8 +512,7 @@ public class LiveUserHomeActivity extends BaseActivity
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         requestUser_home(true);
     }

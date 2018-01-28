@@ -115,12 +115,12 @@
                             android:background="@color/white"
                             android:orientation="horizontal">
 
-                    <com.fanwe.library.view.SDTabText
-                        android:id="@+id/tab_left"
-                        android:layout_width="0dp"
-                        android:layout_height="50dp"
-                        android:layout_weight="1">
-                    </com.fanwe.library.view.SDTabText>
+                            <com.fanwe.library.view.SDTabText
+                                android:id="@+id/tab_left"
+                                android:layout_width="0dp"
+                                android:layout_height="50dp"
+                                android:layout_weight="1"
+                                />
 
                             <View
                                 android:layout_width="1px"
@@ -128,18 +128,28 @@
                                 android:layout_gravity="center"
                                 android:background="@color/stroke_deep" />
 
-                    <com.fanwe.library.view.SDTabText
-                        android:id="@+id/tab_right"
-                        android:layout_width="0dp"
-                        android:layout_height="50dp"
-                        android:layout_weight="1">
-                    </com.fanwe.library.view.SDTabText>
-                </LinearLayout>
+                            <com.fanwe.library.view.SDTabText
+                                android:id="@+id/tab_center"
+                                android:layout_width="0dp"
+                                android:layout_height="50dp"
+                                android:layout_weight="1"/>
+                            <View
+                                android:layout_width="1px"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:background="@color/stroke_deep" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="@color/stroke"/>
+                            <com.fanwe.library.view.SDTabText
+                                android:id="@+id/tab_right"
+                                android:layout_width="0dp"
+                                android:layout_height="50dp"
+                                android:layout_weight="1"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="@color/stroke" />
 
                         <LinearLayout
                             android:id="@+id/ll_content"

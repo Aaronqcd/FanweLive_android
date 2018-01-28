@@ -76,7 +76,7 @@
                 android:id="@+id/iv_tab_attention"
                 android:layout_width="@dimen/width_bottom_pic"
                 android:layout_height="@dimen/height_bottom_pic"
-                android:background="@drawable/bm_selector_tab_attention"
+                android:background="@drawable/bm_selector_tab_video"
                 android:stateListAnimator="@drawable/bm_selector_press_scale_out" />
 
             <TextView
