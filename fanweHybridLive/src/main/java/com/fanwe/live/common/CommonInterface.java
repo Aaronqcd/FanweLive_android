@@ -17,7 +17,6 @@ import com.fanwe.hybrid.http.AppHttpUtil;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.http.AppRequestCallbackWrapper;
 import com.fanwe.hybrid.http.AppRequestParams;
-import com.fanwe.hybrid.model.BaseActListModel;
 import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.hybrid.umeng.UmengPushManager;
@@ -121,8 +120,29 @@ import java.util.Map;
 
 import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
 
-public class CommonInterface
-{
+/**
+ * @author wxy
+ */
+public class CommonInterface {
+    /**
+     * 小视频送礼物
+     */
+    public static void requestVideoSendGift(String prop_id,int num,int is_coins,String sv_id,AppRequestCallback<ShortVideoDetailModel> listener)
+    {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("deal");
+        params.putAct("pop_prop");
+        params.put("room_id", 0);
+        params.put("from", "app");
+        params.put("is_plus", 1);
+        params.put("is_smallvideo", 1);//小视频传1
+        params.put("prop_id", prop_id);//礼物id
+        params.put("num", num);//礼物数量
+        params.put("is_coins", is_coins);//0钻石，1游戏币
+        params.put("sv_id", sv_id);//小视频ID
+        AppHttpUtil.getInstance().post(params, listener);
+    }
+
     /**
      * 小视频详情
      *
@@ -146,7 +166,7 @@ public class CommonInterface
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("svlist");
-//        params.put("page", page);
+        params.put("page", page);
         AppHttpUtil.getInstance().post(params, listener);
     }
 
