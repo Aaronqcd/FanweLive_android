@@ -122,7 +122,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     loadVideo(actModel.video.get(0).sv_url);
-                    mRoomFragment.updataData(actModel.video.get(0));
+                    mRoomFragment.updateData(actModel.video.get(0));
                 }
             }
 

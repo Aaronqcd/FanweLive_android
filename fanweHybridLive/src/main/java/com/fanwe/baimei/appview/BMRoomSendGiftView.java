@@ -27,23 +27,21 @@ import com.fanwe.live.model.App_propActModel;
 import com.fanwe.live.model.Deal_send_propActModel;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgPrivateGift;
+import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.tencent.TIMMessage;
 import com.tencent.TIMValueCallBack;
 
-public class BMRoomSendGiftView extends RoomView
-{
-    public BMRoomSendGiftView(Context context, AttributeSet attrs, int defStyle)
-    {
+public class BMRoomSendGiftView extends RoomView {
+
+    public BMRoomSendGiftView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public BMRoomSendGiftView(Context context, AttributeSet attrs)
-    {
+    public BMRoomSendGiftView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BMRoomSendGiftView(Context context)
-    {
+    public BMRoomSendGiftView(Context context) {
         super(context);
     }
 
@@ -60,15 +58,16 @@ public class BMRoomSendGiftView extends RoomView
 
     private App_propActModel mGiftActModel; //礼物接口实体
 
+    private boolean isShortVideo = false;
+    private String sv_id = "";
+
     @Override
-    protected int onCreateContentView()
-    {
+    protected int onCreateContentView() {
         return R.layout.bm_view_room_send_gift;
     }
 
     @Override
-    protected void onBaseInit()
-    {
+    protected void onBaseInit() {
         super.onBaseInit();
         svg_tabs = (SDSelectViewGroup) findViewById(R.id.svg_tabs);
         view_tab_diamond = (SDTabUnderline) findViewById(R.id.view_tab_diamond);
@@ -80,36 +79,36 @@ public class BMRoomSendGiftView extends RoomView
      *
      * @return
      */
-    private boolean isDiamond()
-    {
-        if (AppRuntimeWorker.isUseGameCurrency())
-        {
-            if (svg_tabs.getSelectViewManager().getSelectedIndex() == 0)
-            {
+    private boolean isDiamond() {
+        if (AppRuntimeWorker.isUseGameCurrency()) {
+            if (svg_tabs.getSelectViewManager().getSelectedIndex() == 0) {
                 return true;
-            } else
-            {
+            } else {
                 return false;
             }
-        } else
-        {
+        } else {
             return true;
         }
     }
 
     /**
+     * 是否是小视频中送礼物
+     * @param isShortVideo
+     */
+    public void setIsShortVideo(boolean isShortVideo,String sv_id){
+        this.isShortVideo = isShortVideo;
+        this.sv_id=sv_id;
+    }
+
+    /**
      * 绑定数据
      */
-    public void bindData()
-    {
+    public void bindData() {
         if (mGiftActModel == null) {
-            CommonInterface.requestGift(new AppRequestCallback<App_propActModel>()
-            {
+            CommonInterface.requestGift(new AppRequestCallback<App_propActModel>() {
                 @Override
-                protected void onSuccess(SDResponse sdResponse)
-                {
-                    if (actModel.isOk())
-                    {
+                protected void onSuccess(SDResponse sdResponse) {
+                    if (actModel.isOk()) {
                         mGiftActModel = actModel;
                         bindDataInternal();
                     }
@@ -124,8 +123,7 @@ public class BMRoomSendGiftView extends RoomView
         }
     }
 
-    public void bindDataInternal()
-    {
+    public void bindDataInternal() {
         if (SDCollectionUtil.isEmpty(mGiftActModel.getCoins_list())) {
             SDViewUtil.setGone(svg_tabs);
             toggleView(R.id.fl_container_send_gift, getSendGiftViewDiamond());
@@ -134,21 +132,16 @@ public class BMRoomSendGiftView extends RoomView
             view_tab_diamond.setTextTitle("秀豆礼物");
             view_tab_coin.setTextTitle("游戏币礼物");
 
-            svg_tabs.getSelectViewManager().addSelectCallback(new SDSelectManager.SelectCallback<View>()
-            {
+            svg_tabs.getSelectViewManager().addSelectCallback(new SDSelectManager.SelectCallback<View>() {
                 @Override
-                public void onNormal(int index, View item)
-                {
+                public void onNormal(int index, View item) {
                 }
 
                 @Override
-                public void onSelected(int index, View item)
-                {
-                    if (index == 0)
-                    {
+                public void onSelected(int index, View item) {
+                    if (index == 0) {
                         toggleView(R.id.fl_container_send_gift, getSendGiftViewDiamond());
-                    } else
-                    {
+                    } else {
                         toggleView(R.id.fl_container_send_gift, getSendGiftViewCoin());
                     }
                 }
@@ -162,22 +155,17 @@ public class BMRoomSendGiftView extends RoomView
      *
      * @return
      */
-    public LiveSendGiftView getSendGiftViewDiamond()
-    {
-        if (view_send_gift_diamond == null)
-        {
+    public LiveSendGiftView getSendGiftViewDiamond() {
+        if (view_send_gift_diamond == null) {
             view_send_gift_diamond = new LiveSendGiftView(getContext());
-            view_send_gift_diamond.setCallback(new LiveSendGiftView.SendGiftViewCallback()
-            {
+            view_send_gift_diamond.setCallback(new LiveSendGiftView.SendGiftViewCallback() {
                 @Override
-                public void onClickSend(LiveGiftModel model, int is_plus)
-                {
+                public void onClickSend(LiveGiftModel model, int is_plus) {
                     sendGift(model, is_plus, true);
                 }
             });
         }
-        if (mGiftActModel != null)
-        {
+        if (mGiftActModel != null) {
             view_send_gift_diamond.setDataGift(mGiftActModel.getList());
         }
         return view_send_gift_diamond;
@@ -188,63 +176,73 @@ public class BMRoomSendGiftView extends RoomView
      *
      * @return
      */
-    public BMLiveSendGiftCoinView getSendGiftViewCoin()
-    {
-        if (view_send_gift_coin == null)
-        {
+    public BMLiveSendGiftCoinView getSendGiftViewCoin() {
+        if (view_send_gift_coin == null) {
             view_send_gift_coin = new BMLiveSendGiftCoinView(getContext());
-            view_send_gift_coin.setCallback(new BMLiveSendGiftCoinView.SendGiftViewCallback()
-            {
+            view_send_gift_coin.setCallback(new BMLiveSendGiftCoinView.SendGiftViewCallback() {
                 @Override
-                public void onClickSend(LiveGiftModel model, int is_plus)
-                {
+                public void onClickSend(LiveGiftModel model, int is_plus) {
                     sendGift(model, is_plus, false);
                 }
             });
         }
-        if (mGiftActModel != null)
-        {
+        if (mGiftActModel != null) {
             view_send_gift_coin.setDataGift(mGiftActModel.getCoins_list());
         }
         return view_send_gift_coin;
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if (mAnimVisible == null)
-        {
+        if (mAnimVisible == null) {
             mAnimVisible = SDAnim.from(this);
             setVisibleAnimator(mAnimVisible.get());
         }
         mAnimVisible.translationY(h, 0);
 
-        if (mAnimInvisible == null)
-        {
+        if (mAnimInvisible == null) {
             mAnimInvisible = SDAnim.from(this);
             setInvisibleAnimator(mAnimInvisible.get());
         }
         mAnimInvisible.translationY(0, h);
     }
 
-    private void sendGift(final LiveGiftModel giftModel, int is_plus, final boolean isDiamond)
-    {
-        if (giftModel != null)
-        {
-            if (getLiveActivity().isCreater())
-            {
+    private void sendGift(final LiveGiftModel giftModel, int is_plus, final boolean isDiamond) {
+        if(isShortVideo){
+            videoSendGift(giftModel,is_plus, isDiamond);
+        }else {
+            liveSendGift(giftModel, is_plus, isDiamond);
+        }
+    }
 
-            } else
-            {
-                if (giftModel.getIs_much() != 1)
-                {
+    private void videoSendGift(final LiveGiftModel giftModel, int is_plus,final boolean isDiamond) {
+        if (giftModel != null) {
+            int is_coins =isDiamond ? 0:1;
+            CommonInterface.requestVideoSendGift(giftModel.getId(), 1,is_plus, is_coins, sv_id,new AppRequestCallback<ShortVideoDetailModel>() {
+                @Override
+                protected void onSuccess(SDResponse resp) {
+                    if (actModel.isOk()) {
+                        if (isDiamond) {
+                            getSendGiftViewDiamond().sendGiftSuccess(giftModel);
+                        } else {
+                            getSendGiftViewCoin().sendGiftSuccess(giftModel);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void liveSendGift(final LiveGiftModel giftModel, int is_plus, final boolean isDiamond) {
+        if (giftModel != null) {
+            if (!getLiveActivity().isCreater()) {
+                if (giftModel.getIs_much() != 1) {
                     SDToast.showToast("发送完成");
                 }
             }
 
-            if (getLiveActivity().getRoomInfo() == null)
-            {
+            if (getLiveActivity().getRoomInfo() == null) {
                 return;
             }
 
@@ -252,34 +250,26 @@ public class BMRoomSendGiftView extends RoomView
                 //私聊发礼物接口
                 final String createrId = getLiveActivity().getCreaterId();
                 if (createrId != null) {
-                    CommonInterface.requestSendGiftPrivate(giftModel.getId(), 1, createrId, new AppRequestCallback<Deal_send_propActModel>()
-                    {
+                    CommonInterface.requestSendGiftPrivate(giftModel.getId(), 1, createrId, new AppRequestCallback<Deal_send_propActModel>() {
                         @Override
-                        protected void onSuccess(SDResponse resp)
-                        {
-                            if (actModel.isOk())
-                            {
-                                if (isDiamond)
-                                {
+                        protected void onSuccess(SDResponse resp) {
+                            if (actModel.isOk()) {
+                                if (isDiamond) {
                                     getSendGiftViewDiamond().sendGiftSuccess(giftModel);
-                                } else
-                                {
+                                } else {
                                     getSendGiftViewCoin().sendGiftSuccess(giftModel);
                                 }
 
                                 // 发送私聊消息给主播
                                 final CustomMsgPrivateGift msg = new CustomMsgPrivateGift();
                                 msg.fillData(actModel);
-                                IMHelper.sendMsgC2C(createrId, msg, new TIMValueCallBack<TIMMessage>()
-                                {
+                                IMHelper.sendMsgC2C(createrId, msg, new TIMValueCallBack<TIMMessage>() {
                                     @Override
-                                    public void onError(int i, String s)
-                                    {
+                                    public void onError(int i, String s) {
                                     }
 
                                     @Override
-                                    public void onSuccess(TIMMessage timMessage)
-                                    {
+                                    public void onSuccess(TIMMessage timMessage) {
                                         // 如果私聊界面不是每次都加载的话要post一条来刷新界面
                                         // IMHelper.postMsgLocal(msg, createrId);
                                     }
@@ -292,27 +282,21 @@ public class BMRoomSendGiftView extends RoomView
                 int is_coins = isDiamond ? 0 : 1;
 
                 AppRequestParams params = CommonInterface.requestSendGiftParams(giftModel.getId(), 1, is_plus, is_coins, getLiveActivity().getRoomId());
-                AppHttpUtil.getInstance().post(params, new AppRequestCallback<App_pop_propActModel>()
-                {
+                AppHttpUtil.getInstance().post(params, new AppRequestCallback<App_pop_propActModel>() {
                     @Override
-                    protected void onSuccess(SDResponse resp)
-                    {
+                    protected void onSuccess(SDResponse resp) {
                         // 扣费
-                        if (actModel.isOk())
-                        {
-                            if (isDiamond)
-                            {
+                        if (actModel.isOk()) {
+                            if (isDiamond) {
                                 getSendGiftViewDiamond().sendGiftSuccess(giftModel);
-                            } else
-                            {
+                            } else {
                                 getSendGiftViewCoin().sendGiftSuccess(giftModel);
                             }
                         }
                     }
 
                     @Override
-                    protected void onError(SDResponse resp)
-                    {
+                    protected void onError(SDResponse resp) {
                         CommonInterface.requestMyUserInfo(null);
                     }
                 });
@@ -321,15 +305,13 @@ public class BMRoomSendGiftView extends RoomView
     }
 
     @Override
-    protected boolean onTouchDownOutside(MotionEvent ev)
-    {
+    protected boolean onTouchDownOutside(MotionEvent ev) {
         getVisibilityHandler().setInvisible(true);
         return true;
     }
 
     @Override
-    public boolean onBackPressed()
-    {
+    public boolean onBackPressed() {
         getVisibilityHandler().setInvisible(true);
         return true;
     }

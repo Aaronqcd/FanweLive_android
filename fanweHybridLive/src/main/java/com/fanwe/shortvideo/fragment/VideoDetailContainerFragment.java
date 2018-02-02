@@ -1,6 +1,7 @@
 package com.fanwe.shortvideo.fragment;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -149,6 +150,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                 }
             });
         }
+        mRoomSendGiftView.setIsShortVideo(true,detailModel.sv_id);
         mRoomSendGiftView.bindData();
         replaceView(R.id.fl_gift, mRoomSendGiftView);
     }
@@ -163,12 +165,20 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         }
     }
 
-    public void updataData(ShortVideoDetailModel.VideoDetail detail) {
+    public void updateData(ShortVideoDetailModel.VideoDetail detail) {
         detailModel = detail;
         GlideUtil.load(detail.head_image).into(iv_head_image);
         tv_user_name.setText(detail.nick_name);
         tv_msg.setText(detail.count_comment);
         tv_praise_num.setText(detail.count_praise);
+        Drawable drawable;
+        if (true) {
+            drawable =getResources().getDrawable(R.drawable.praise_red_heart);
+        }else{
+            drawable =getResources().getDrawable(R.drawable.praise_hollow_heart);
+        }
+        drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+        tv_praise_num.setCompoundDrawables(drawable,null,null,null);
         //TODO 礼物个数字段
         tv_gift_num.setText(detail.count_praise);
 

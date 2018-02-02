@@ -127,14 +127,14 @@ public class CommonInterface {
     /**
      * 小视频送礼物
      */
-    public static void requestVideoSendGift(String prop_id,int num,int is_coins,String sv_id,AppRequestCallback<ShortVideoDetailModel> listener)
+    public static void requestVideoSendGift(int prop_id,int num,int is_plus,int is_coins,String sv_id,AppRequestCallback<ShortVideoDetailModel> listener)
     {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("pop_prop");
         params.put("room_id", 0);
         params.put("from", "app");
-        params.put("is_plus", 1);
+        params.put("is_plus", is_plus);
         params.put("is_smallvideo", 1);//小视频传1
         params.put("prop_id", prop_id);//礼物id
         params.put("num", num);//礼物数量
@@ -166,7 +166,7 @@ public class CommonInterface {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("svlist");
-        params.put("page", page);
+//        params.put("page", page);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

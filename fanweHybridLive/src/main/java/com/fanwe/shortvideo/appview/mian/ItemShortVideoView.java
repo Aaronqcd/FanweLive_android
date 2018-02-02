@@ -1,6 +1,7 @@
 package com.fanwe.shortvideo.appview.mian;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ public class ItemShortVideoView extends BaseAppView {
 
     private ImageView iv_bg_image;
     private CircleImageView iv_head_image;
-    private ImageView iv_praise_image;
     private TextView tv_content;
     private TextView tv_praise_count;
     private ShortVideoModel model;
@@ -48,7 +48,6 @@ public class ItemShortVideoView extends BaseAppView {
         iv_bg_image = find(R.id.iv_bg_image);
         tv_content = find(R.id.tv_content);
         iv_head_image = find(R.id.iv_head_img);
-        iv_praise_image = find(R.id.iv_praise_img);
         tv_praise_count = find(R.id.tv_praise_count);
     }
 
@@ -62,7 +61,14 @@ public class ItemShortVideoView extends BaseAppView {
             SDViewUtil.setVisible(this);
             GlideUtil.load(model.getSv_img()).into(iv_bg_image);
             GlideUtil.load(model.getHead_image()).into(iv_head_image);
-//            iv_level.setImageResource(LiveUtils.getLevelImageResId(model.getUser_level()));
+            Drawable drawable;
+            if (model.getIs_praise().equals("1")) {
+                drawable =getResources().getDrawable(R.drawable.praise_red_heart);
+            }else{
+                drawable =getResources().getDrawable(R.drawable.praise_hollow_heart);
+            }
+            drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+            tv_praise_count.setCompoundDrawables(drawable,null,null,null);
             SDViewBinder.setTextView(tv_content, model.getSv_content());
             SDViewBinder.setTextView(tv_praise_count, model.getCount_praise());
 

@@ -30,19 +30,13 @@
             android:layout_height="48dp"
             android:layout_below="@id/tv_content" />
 
-        <ImageView
-            android:id="@+id/iv_praise_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="50dp"
-            android:src="@drawable/ic_sixinfollow" />
-
         <TextView
             android:id="@+id/tv_praise_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:drawableLeft="@drawable/praise_hollow_heart"
+            android:drawablePadding="5dp"
             android:layout_alignParentRight="true"
             android:layout_marginTop="50dp"
             android:text="352"
