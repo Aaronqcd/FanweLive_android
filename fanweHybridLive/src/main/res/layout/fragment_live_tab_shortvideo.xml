@@ -5,13 +5,8 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="46dip"
-        android:layout_gravity="center"
-        android:textSize="14sp"
-        android:gravity="center"/>
+    <include
+        layout="@layout/include_title_simple"/>
 
     <View
         android:layout_width="match_parent"

@@ -22,6 +22,7 @@ import com.fanwe.shortvideo.model.ShortVideoModel;
 public class ItemShortVideoView extends BaseAppView {
 
     private ImageView iv_bg_image;
+    private ImageView iv_delete;
     private CircleImageView iv_head_image;
     private TextView tv_content;
     private TextView tv_praise_count;
@@ -46,6 +47,7 @@ public class ItemShortVideoView extends BaseAppView {
         setContentView(R.layout.item_live_short_video_view);
 
         iv_bg_image = find(R.id.iv_bg_image);
+        iv_delete = find(R.id.iv_delete);
         tv_content = find(R.id.tv_content);
         iv_head_image = find(R.id.iv_head_img);
         tv_praise_count = find(R.id.tv_praise_count);
@@ -55,12 +57,17 @@ public class ItemShortVideoView extends BaseAppView {
         return model;
     }
 
-    public void setModel(ShortVideoModel model) {
+    public void setModel(ShortVideoModel model,int tag) {
         this.model = model;
         if (model != null) {
             SDViewUtil.setVisible(this);
             GlideUtil.load(model.getSv_img()).into(iv_bg_image);
             GlideUtil.load(model.getHead_image()).into(iv_head_image);
+            if(tag==0){
+                iv_delete.setVisibility(GONE);
+            }else{
+                iv_delete.setVisibility(VISIBLE);
+            }
             Drawable drawable;
             if (model.getIs_praise().equals("1")) {
                 drawable =getResources().getDrawable(R.drawable.praise_red_heart);

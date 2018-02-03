@@ -19,8 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.fanwe.auction.adapter.AuctionTabMeItemNewAdapter;
 import com.fanwe.auction.model.AuctionTabMeItemModel;
 import com.fanwe.hybrid.fragment.BaseFragment;
@@ -72,11 +70,10 @@ import com.fanwe.live.view.LiveUnReadNumTextView;
 import com.fanwe.o2o.activity.O2OShoppingMystoreActivity;
 import com.fanwe.pay.activity.PayBalanceActivity;
 import com.fanwe.shop.activity.ShopMyStoreActivity;
-import com.fanwe.shortvideo.videorecord.TCVideoSettingActivity;
+import com.fanwe.shortvideo.activity.MyVideoListActivity;
 
 import org.xutils.view.annotation.ViewInject;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -773,10 +770,10 @@ public class LiveTabMeNewFragment extends BaseFragment {
     }
 
   /**
-     * 设置
+     * 我的小视频
      */
     private void clickShortVideo() {
-        Intent intent = new Intent(getActivity(), TCVideoSettingActivity.class);
+        Intent intent = new Intent(getActivity(), MyVideoListActivity.class);
         startActivity(intent);
     }
 

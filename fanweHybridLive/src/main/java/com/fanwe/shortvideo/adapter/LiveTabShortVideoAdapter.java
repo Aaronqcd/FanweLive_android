@@ -25,6 +25,7 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
 {
 
     private Activity activity;
+    private int tag=0;
 
     public LiveTabShortVideoAdapter(ArrayList<ShortVideoModel> listModel, Activity activity)
     {
@@ -32,10 +33,15 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
         this.activity = activity;
     }
 
+    public void setTag(int tag){
+        this.tag=tag;
+        notifyDataSetChanged();
+
+    }
     @Override
     public void onBindData(SDRecyclerViewHolder<ShortVideoModel> holder, final int position, ShortVideoModel model) {
         ItemShortVideoView item0 = holder.get(R.id.item_short_video);
-        item0.setModel(model);
+        item0.setModel(model,tag);
         item0.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
