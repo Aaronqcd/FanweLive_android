@@ -1,8 +1,6 @@
 package com.fanwe.shortvideo.videorecord;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fanwe.live.R;
+import com.fanwe.shortvideo.activity.UpLoadVideoActivity;
 import com.fanwe.shortvideo.common.activity.videopreview.TCVideoPreviewActivity;
 import com.fanwe.shortvideo.common.utils.FileUtils;
 import com.fanwe.shortvideo.common.utils.TCConstants;
@@ -85,23 +84,13 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private ImageView mIvTorch;
     private ImageView mIvMusic;
     private ImageView mIvBeauty;
-    private ImageView mIvScale;
     private ComposeRecordBtn mComposeRecordBtn;
-    private RelativeLayout mRlAspect;
-    private RelativeLayout mRlAspectSelect;
-    private ImageView mIvAspectSelectFirst;
-    private ImageView mIvAspectSelectSecond;
-    private ImageView mIvScaleMask;
-    private boolean mAspectSelectShow = false;
 
     private BeautySettingPannel mBeautyPannelView;
     private AudioManager mAudioManager;
     private AudioManager.OnAudioFocusChangeListener mOnAudioFocusListener;
     private boolean mPause = false;
     private TCAudioControl mAudioCtrl;
-    private int mCurrentAspectRatio;
-    private int mFirstSelectScale;
-    private int mSecondSelectScale;
     private RelativeLayout mRecordRelativeLayout = null;
     private FrameLayout mMaskLayout;
     private RecordProgressView mRecordProgressView;
@@ -118,7 +107,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private int mRecommendQuality = TXRecordCommon.VIDEO_QUALITY_MEDIUM;
     private int mMinDuration;
     private int mMaxDuration;
-    private int mAspectRatio; // 视频比例
+    private int mCurrentAspectRatio=TXRecordCommon.VIDEO_ASPECT_RATIO_9_16; // 视频比例
     private int mRecordResolution; // 录制分辨率
     private int mHomeOrientation = TXLiveConstants.VIDEO_ANGLE_HOME_DOWN; // 录制方向
     private int mRenderRotation = TXLiveConstants.RENDER_ROTATION_PORTRAIT; // 渲染方向
@@ -128,7 +117,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private String mBGMPath;
     private String mBGMPlayingPath;
     private int mBGMDuration;
-    private ImageView mIvMusicMask;
     private RadioGroup mRadioGroup;
     private int mRecordSpeed = TXRecordCommon.RECORD_SPEED_NORMAL;
     private boolean mNeedEditer;
@@ -160,12 +148,8 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
         mMinDuration = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_MIN_DURATION, 5 * 1000);
         mMaxDuration = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_MAX_DURATION, 60 * 1000);
-        mAspectRatio = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_ASPECT_RATIO, TXRecordCommon.VIDEO_ASPECT_RATIO_9_16);
         mRecommendQuality = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_RECOMMEND_QUALITY, -1);
         mNeedEditer = intent.getBooleanExtra(TCVideoSettingActivity.RECORD_CONFIG_NEED_EDITER, true);
-
-        mCurrentAspectRatio = mAspectRatio;
-        setSelectAspect();
 
         mRecordProgressView.setMaxDuration(mMaxDuration);
         mRecordProgressView.setMinDuration(mMinDuration);
@@ -181,7 +165,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mFps = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_FPS, 20);
         mGop = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_GOP, 3);
 
-        TXCLog.d(TAG, "mMinDuration = " + mMinDuration + ", mMaxDuration = " + mMaxDuration + ", mAspectRatio = " + mAspectRatio +
+        TXCLog.d(TAG, "mMinDuration = " + mMinDuration + ", mMaxDuration = " + mMaxDuration  +
                 ", mRecommendQuality = " + mRecommendQuality + ", mRecordResolution = " + mRecordResolution + ", mBiteRate = " + mBiteRate + ", mFps = " + mFps + ", mGop = " + mGop);
     }
 
@@ -325,15 +309,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mIvDeleteLastPart = (ImageView) findViewById(R.id.btn_delete_last_part);
         mIvDeleteLastPart.setOnClickListener(this);
 
-        mIvScale = (ImageView) findViewById(R.id.iv_scale);
-        mIvScaleMask = (ImageView) findViewById(R.id.iv_scale_mask);
-        mIvAspectSelectFirst = (ImageView) findViewById(R.id.iv_scale_first);
-        mIvAspectSelectSecond = (ImageView) findViewById(R.id.iv_scale_second);
-        mRlAspect = (RelativeLayout) findViewById(R.id.layout_aspect);
-        mRlAspectSelect = (RelativeLayout) findViewById(R.id.layout_aspect_select);
-
         mIvMusic = (ImageView) findViewById(R.id.btn_music_pannel);
-        mIvMusicMask = (ImageView) findViewById(R.id.iv_music_mask);
 
         mIvBeauty = (ImageView) findViewById(R.id.btn_beauty);
 
@@ -402,7 +378,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-        setSelectAspect();
 
         onActivityRotation();
 
@@ -535,11 +510,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 }
                 break;
             case R.id.compose_record_btn:
-                if (mAspectSelectShow) {
-                    hideAspectSelectAnim();
-                    mAspectSelectShow = !mAspectSelectShow;
-                }
-
                 switchRecord();
                 break;
             case R.id.btn_music_pannel:
@@ -559,15 +529,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 mCustomProgressDialog.show();
                 stopRecord();
                 break;
-            case R.id.iv_scale:
-                scaleDisplay();
-                break;
-            case R.id.iv_scale_first:
-                selectAnotherAspect(mFirstSelectScale);
-                break;
-            case R.id.iv_scale_second:
-                selectAnotherAspect(mSecondSelectScale);
-                break;
             case R.id.btn_delete_last_part:
                 deleteLastPart();
                 break;
@@ -579,30 +540,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
     }
 
-    private void setSelectAspect() {
-        if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_9_16) {
-            mIvScale.setImageResource(R.drawable.selector_aspect169);
-            mFirstSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_1_1;
-            mIvAspectSelectFirst.setImageResource(R.drawable.selector_aspect11);
-
-            mSecondSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_3_4;
-            mIvAspectSelectSecond.setImageResource(R.drawable.selector_aspect43);
-        } else if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_1_1) {
-            mIvScale.setImageResource(R.drawable.selector_aspect11);
-            mFirstSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_3_4;
-            mIvAspectSelectFirst.setImageResource(R.drawable.selector_aspect43);
-
-            mSecondSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_9_16;
-            mIvAspectSelectSecond.setImageResource(R.drawable.selector_aspect169);
-        } else {
-            mIvScale.setImageResource(R.drawable.selector_aspect43);
-            mFirstSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_1_1;
-            mIvAspectSelectFirst.setImageResource(R.drawable.selector_aspect11);
-
-            mSecondSelectScale = TXRecordCommon.VIDEO_ASPECT_RATIO_9_16;
-            mIvAspectSelectSecond.setImageResource(R.drawable.selector_aspect169);
-        }
-    }
 
     private void toggleTorch() {
         if (mIsTorchOpen) {
@@ -636,98 +573,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 mIvConfirm.setEnabled(true);
             }
 
-            if (mTXCameraRecord.getPartsManager().getPartsPathList().size() == 0) {
-                mIvScaleMask.setVisibility(GONE);
-                mIvMusicMask.setVisibility(GONE);
-            }
         }
     }
 
-    private void scaleDisplay() {
-        if (!mAspectSelectShow) {
-            showAspectSelectAnim();
-        } else {
-            hideAspectSelectAnim();
-        }
-
-        mAspectSelectShow = !mAspectSelectShow;
-    }
-
-    private void selectAnotherAspect(int targetScale) {
-        if (mTXCameraRecord != null) {
-            scaleDisplay();
-
-            mCurrentAspectRatio = targetScale;
-
-            if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_9_16) {
-                mTXCameraRecord.setAspectRatio(TXRecordCommon.VIDEO_ASPECT_RATIO_9_16);
-
-            } else if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_3_4) {
-                mTXCameraRecord.setAspectRatio(TXRecordCommon.VIDEO_ASPECT_RATIO_3_4);
-
-            } else if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_1_1) {
-                mTXCameraRecord.setAspectRatio(TXRecordCommon.VIDEO_ASPECT_RATIO_1_1);
-            }
-
-            setSelectAspect();
-        }
-    }
-
-    private void hideAspectSelectAnim() {
-        ObjectAnimator showAnimator = ObjectAnimator.ofFloat(mRlAspectSelect, "translationX", 0f,
-                2 * (getResources().getDimension(R.dimen.ugc_aspect_divider) + getResources().getDimension(R.dimen.ugc_aspect_width)));
-        showAnimator.setDuration(80);
-        showAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                mRlAspectSelect.setVisibility(GONE);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-
-            }
-        });
-        showAnimator.start();
-    }
-
-    private void showAspectSelectAnim() {
-        ObjectAnimator showAnimator = ObjectAnimator.ofFloat(mRlAspectSelect, "translationX",
-                2 * (getResources().getDimension(R.dimen.ugc_aspect_divider) + getResources().getDimension(R.dimen.ugc_aspect_width)), 0f);
-        showAnimator.setDuration(80);
-        showAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                mRlAspectSelect.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-
-            }
-        });
-        showAnimator.start();
-    }
 
     private void switchRecord() {
         long currentClickTime = System.currentTimeMillis();
@@ -781,7 +629,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
         mIvDeleteLastPart.setImageResource(R.drawable.ugc_delete_last_part_disable);
         mIvDeleteLastPart.setEnabled(false);
-        mIvScaleMask.setVisibility(View.VISIBLE);
 
         mPause = false;
         isSelected = false;
@@ -857,7 +704,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
 
         mComposeRecordBtn.startRecord();
-        mIvScaleMask.setVisibility(View.VISIBLE);
         mIvDeleteLastPart.setImageResource(R.drawable.ugc_delete_last_part_disable);
         mIvDeleteLastPart.setEnabled(false);
 
@@ -875,7 +721,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         if (liveRecord != null) liveRecord.setBackgroundResource(R.drawable.video_stop);
         requestAudioFocus();
 
-        mIvMusicMask.setVisibility(View.VISIBLE);
         mRadioGroup.setVisibility(GONE);
     }
 
@@ -930,6 +775,18 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         intent.putExtra(TCConstants.VIDEO_EDITER_PATH, mTXRecordResult.videoPath);
         intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, mTXRecordResult.coverPath);
         intent.putExtra(TCConstants.VIDEO_RECORD_RESOLUTION, mRecordResolution);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startUploadVideo() {
+        Intent intent = new Intent(this, UpLoadVideoActivity.class);
+//        FileUtils.deleteFile(mTXRecordResult.coverPath);
+        intent.putExtra(TCConstants.VIDEO_RECORD_TYPE, TCConstants.VIDEO_RECORD_TYPE_UGC_RECORD);
+        intent.putExtra(TCConstants.VIDEO_EDITER_PATH, mTXRecordResult.videoPath);
+        intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, mTXRecordResult.coverPath);
+        intent.putExtra(TCConstants.VIDEO_RECORD_RESOLUTION, mRecordResolution);
+        intent.putExtra(TCConstants.VIDEO_RECORD_DURATION, mDuration);
         startActivity(intent);
         finish();
     }
@@ -1007,11 +864,12 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             if (mTXCameraRecord != null) {
                 mTXCameraRecord.getPartsManager().deleteAllParts();
             }
-            if (mNeedEditer) {
-                startEditVideo();
-            } else {
-                startPreview();
-            }
+//            if (mNeedEditer) {
+//                startEditVideo();
+//            } else {
+//                startPreview();
+//            }
+            startUploadVideo();
         }
     }
 

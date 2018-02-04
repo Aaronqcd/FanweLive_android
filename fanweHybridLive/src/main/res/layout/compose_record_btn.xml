@@ -4,23 +4,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <ImageView
-        android:id="@+id/iv_record_ring"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/ugc_record_ring_gray"/>
-    <ImageView
         android:id="@+id/iv_record"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/ugc_start_record"/>
+        android:background="@drawable/start_record_nomal"/>
     <ImageView
         android:id="@+id/iv_record_pause"
-        android:layout_width="15dp"
-        android:layout_height="17dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/ugc_pause_record"
+        android:background="@drawable/pause_record_new"
         android:visibility="gone"/>
 
 </RelativeLayout>

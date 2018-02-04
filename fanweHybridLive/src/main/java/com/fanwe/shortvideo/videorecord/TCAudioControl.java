@@ -29,8 +29,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.fanwe.hybrid.http.AppRequestCallback;
+import com.fanwe.library.adapter.http.model.SDResponse;
+import com.fanwe.library.common.SDSelectManager;
+import com.fanwe.library.view.SDTabText;
+import com.fanwe.library.view.select.SDSelectViewManager;
 import com.fanwe.live.R;
+import com.fanwe.live.common.CommonInterface;
 import com.fanwe.shortvideo.common.utils.TCUtils;
+import com.fanwe.shortvideo.model.MusicListModel;
 import com.tencent.ugc.TXUGCRecord;
 
 import java.io.Serializable;
@@ -80,9 +87,12 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     private boolean mBGMSwitch = false;
     private boolean mScanning = false;
     Context mContext;
-    List<MediaEntity> mMusicListData;
+    List<MediaEntity> mMusicListData = new ArrayList<>();
+    List<MediaEntity> mOnLineMusicListData = new ArrayList<>();
+    List<MediaEntity> mDownLoadMusicListData = new ArrayList<>();
     MusicListView mMusicList;
     public TCMusicSelectView mMusicSelectView;
+    private SDSelectViewManager<SDTabText> mSelectManager;
     public LinearLayout mMusicControlPart;
     private int mLastClickItemPos = -1;
     private long mLastClickItemTimeStamp = 0;
@@ -125,7 +135,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mAudioPluginLayout = plugin;
     }
 
-    public void setReturnListener(OnClickListener onClickListener){
+    public void setReturnListener(OnClickListener onClickListener) {
         mMusicSelectView.setReturnListener(onClickListener);
     }
 
@@ -137,7 +147,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         if (mLastPlayingItemPos >= 0 && mLastPlayingItemPos != pos) {
             mMusicListData.get(mLastPlayingItemPos).state = 0;
         }
-        if (mOnItemClickListener !=null){
+        if (mOnItemClickListener != null) {
             mOnItemClickListener.onBGMSelect(path);
         }
         mBGMSwitch = true;
@@ -151,12 +161,12 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mBGMSwitch = false;
         if (mRecord != null) mRecord.stopBGM();
 
-        if(mMusicListData.size() != 0 && mLastPlayingItemPos >= 0){
+        if (mMusicListData.size() != 0 && mLastPlayingItemPos >= 0) {
             mMusicListData.get(mLastPlayingItemPos).state = 0;
             mMusicList.getAdapter().notifyDataSetChanged();
         }
 
-        if (mOnItemClickListener !=null){
+        if (mOnItemClickListener != null) {
             mOnItemClickListener.onBGMSelect(null);
         }
     }
@@ -243,6 +253,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     }
 
     public void init() {
+        requestData();
         mMainThread = new Handler(mContext.getMainLooper());
         mMicVolumeSeekBar = (SeekBar) findViewById(R.id.seekBar_voice_volume);
         mMicVolumeSeekBar.setOnSeekBarChangeListener(this);
@@ -270,11 +281,27 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mBtnSelectActivity = (Button) findViewById(R.id.btn_select_bgm);
         mMusicSelectView = (TCMusicSelectView) findViewById(R.id.xml_music_select_view);
         mMusicControlPart = (LinearLayout) findViewById(R.id.xml_music_control_part);
-        mMusicListData = new ArrayList<MediaEntity>();
-        mMusicSelectView.init(this, mMusicListData);
+
+        mMusicSelectView.init(this);
         mMusicList = mMusicSelectView.mMusicList;
+        mMusicList.setupList(LayoutInflater.from(mContext));
+        mSelectManager = mMusicSelectView.mSelectManager;
         mPathSet = new HashMap<String, String>();
-        mBtnAutoSearch = mMusicSelectView.mBtnAutoSearch;
+        if (mScanning) {
+            mScanning = false;
+            fPause = true;
+        } else {
+            mScanning = true;
+            getMusicList(mContext, mMusicListData);
+            mScanning = false;
+            //mMusicScanner.startScanner(mContext,mCurScanPath,mMusicListData);
+            if (mMusicListData.size() > 0) {
+                mMusicList.getAdapter().setData(mMusicListData);
+                mSelectItemPos = 0;
+                mMusicList.requestFocus();
+                mMusicList.setItemChecked(0, true);
+            }
+        }
         mMusicSelectView.setBackgroundColor(0xffffffff);
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
@@ -292,36 +319,73 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mMusicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                playBGM(mMusicListData.get(position).title, mMusicListData.get(position).path, position);
+                switch (mSelectManager.getSelectedIndex()) {
+                    case 0:
+                    playBGM(mMusicListData.get(position).title, mMusicListData.get(position).path, position);
+                    break;
+                    case 1:
+                    playBGM(mOnLineMusicListData.get(position).title, mOnLineMusicListData.get(position).path, position);
+                        break;
+                    case 2:
+                    playBGM(mDownLoadMusicListData.get(position).title, mDownLoadMusicListData.get(position).path, position);
+                        break;
+                }
                 mLastClickItemPos = position;
                 mSelectItemPos = position;
                 mLastClickItemTimeStamp = System.currentTimeMillis();
             }
         });
+        mSelectManager.addSelectCallback(new SDSelectManager.SelectCallback<SDTabText>() {
 
-
-        mBtnAutoSearch.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (mScanning) {
-                    mScanning = false;
-                    fPause = true;
-                } else {
-                    mScanning = true;
-                    getMusicList(mContext, mMusicListData);
-                    mScanning = false;
-                    //mMusicScanner.startScanner(mContext,mCurScanPath,mMusicListData);
-                    if (mMusicListData.size() > 0) {
-                        mMusicList.setupList(LayoutInflater.from(mContext), mMusicListData);
-                        mSelectItemPos = 0;
-                        mMusicList.requestFocus();
-                        mMusicList.setItemChecked(0, true);
-                    }
+            public void onNormal(int index, SDTabText item) {
+            }
+
+            @Override
+            public void onSelected(int index, SDTabText item) {
+                switch (index) {
+                    case 0:
+                        mMusicList.getAdapter().setData(mMusicListData);
+                        break;
+                    case 1:
+                        mMusicList.getAdapter().setData(mOnLineMusicListData);
+                        break;
+                    case 2:
+                        mMusicList.getAdapter().setData(mDownLoadMusicListData);
+                        break;
+                    default:
+                        break;
                 }
             }
+
         });
 
 //        mTCBgmRecordView = (TCBGMRecordView) findViewById(R.id.layout_record_select_bgm);
+    }
+
+
+    protected void requestData() {
+
+        CommonInterface.requestMusicList(new AppRequestCallback<MusicListModel>() {
+            @Override
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel!=null && actModel.song_list!=null) {
+                    for (MusicListModel.MusicItemModel model : actModel.song_list) {
+                        MediaEntity entity = new MediaEntity();
+                        entity.id = Integer.valueOf(model.song_id);
+                        entity.title = model.title;
+                        entity.singer = model.author;
+                        mOnLineMusicListData.add(entity);
+                    }
+                }
+            }
+
+            @Override
+            protected void onFinish(SDResponse resp) {
+                super.onFinish(resp);
+            }
+        });
+
     }
 
     public void unInit() {
@@ -391,7 +455,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mediaEntity.durationStr = longToStrTime(mediaEntity.duration);
         mMusicListData.add(mediaEntity);
         mSelectItemPos = mMusicListData.size() - 1;
-        mMusicList.setupList(LayoutInflater.from(mContext), mMusicListData);
+        mMusicList.getAdapter().setData(mMusicListData);
         mMusicList.requestFocus();
         mMusicList.setItemChecked(mSelectItemPos, true);
     }
@@ -528,6 +592,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     class MediaEntity implements Serializable {
         private static final long serialVersionUID = 1L;
         public int id; //id标识
+
         public String title; // 显示名称
         public String display_name; // 文件名称
         public String path; // 音乐文件的路径
@@ -544,5 +609,6 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         }
 
     }
+
 }
 

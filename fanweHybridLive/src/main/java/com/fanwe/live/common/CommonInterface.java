@@ -111,6 +111,7 @@ import com.fanwe.live.model.User_set_blackActModel;
 import com.fanwe.live.model.Video_add_videoActModel;
 import com.fanwe.live.model.Video_check_statusActModel;
 import com.fanwe.live.model.Video_private_room_friendsActModel;
+import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.sunday.eventbus.SDEventManager;
@@ -125,10 +126,34 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
  */
 public class CommonInterface {
     /**
+     * 上传视频
+     */
+    public static void requestUpLoadVideo(String sv_url,String sv_img,String sv_content,AppRequestCallback<BaseActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("addvideo");
+        params.put("sv_url",sv_url);//链接
+        params.put("sv_img",sv_img);//封面
+        params.put("sv_content",sv_content);//描述
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
+     * 小视频在线音乐列表
+     */
+    public static void requestMusicList(AppRequestCallback<MusicListModel> listener) {
+        String reqUrl = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.billboard.billList&type=2&offset=0&qq-pf-to=pcqq.discussion";
+        AppRequestParams params = new AppRequestParams();
+        params.setUrl(reqUrl);
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
      * 小视频送礼物
      */
-    public static void requestVideoSendGift(int prop_id,int num,int is_plus,int is_coins,String sv_id,AppRequestCallback<ShortVideoDetailModel> listener)
-    {
+    public static void requestVideoSendGift(int prop_id, int num, int is_plus, int is_coins, String sv_id, AppRequestCallback<ShortVideoDetailModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("pop_prop");
@@ -148,21 +173,20 @@ public class CommonInterface {
      *
      * @param videoId
      */
-    public static void requestShortVideoDetails(String videoId, AppRequestCallback<ShortVideoDetailModel> listener)
-    {
+    public static void requestShortVideoDetails(String videoId, AppRequestCallback<ShortVideoDetailModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("videodetail");
         params.put("sv_id", videoId);
         AppHttpUtil.getInstance().post(params, listener);
     }
+
     /**
      * 小视频tab 请求小视频列表
      *
      * @param page
      */
-    public static void requestShortVideoList(int page, AppRequestCallback<ShortVideoListModel> listener)
-    {
+    public static void requestShortVideoList(int page, AppRequestCallback<ShortVideoListModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("svlist");
@@ -175,11 +199,9 @@ public class CommonInterface {
      *
      * @param room_id
      */
-    public static void requestTestSendGift(int room_id)
-    {
+    public static void requestTestSendGift(int room_id) {
         UserModel user = UserModelDao.query();
-        if (user == null)
-        {
+        if (user == null) {
             return;
         }
         AppRequestParams params = new AppRequestParams();
@@ -187,13 +209,10 @@ public class CommonInterface {
         params.putAct("test_pop_prop");
         params.put("room_id", room_id);
         params.put("cstype", user.getUser_id());
-        AppHttpUtil.getInstance().post(params, new AppRequestCallback<BaseActModel>()
-        {
+        AppHttpUtil.getInstance().post(params, new AppRequestCallback<BaseActModel>() {
             @Override
-            protected void onSuccess(SDResponse sdResponse)
-            {
-                if (actModel.isOk())
-                {
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
                     LogUtil.i("requestTestSendGift success");
                 }
             }
@@ -203,16 +222,13 @@ public class CommonInterface {
     /**
      * 服务端退出登录接口
      */
-    public static void requestLogout(AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestLogout(AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("loginout");
-        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<BaseActModel>(listener)
-        {
+        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<BaseActModel>(listener) {
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
+            protected void onSuccess(SDResponse resp) {
                 LogUtil.i("logout success");
             }
         });
@@ -223,39 +239,31 @@ public class CommonInterface {
      *
      * @param callback
      */
-    public static void requestInit(AppRequestCallback<InitActModel> callback)
-    {
+    public static void requestInit(AppRequestCallback<InitActModel> callback) {
         //初始化回调
-        AppRequestCallbackWrapper<InitActModel> callbackWrapper = new AppRequestCallbackWrapper<InitActModel>(callback)
-        {
+        AppRequestCallbackWrapper<InitActModel> callbackWrapper = new AppRequestCallbackWrapper<InitActModel>(callback) {
             @Override
-            protected void onSuccess(SDResponse sdResponse)
-            {
-                if (actModel.isOk())
-                {
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
                     InitActModelDao.insertOrUpdate(actModel);
                     LogUtil.i("requestInit success save InitActModel");
-                } else
-                {
+                } else {
                     LogUtil.i("requestInit fail InitActModel is not ok");
                 }
             }
 
             @Override
-            protected void onError(SDResponse resp)
-            {
+            protected void onError(SDResponse resp) {
                 super.onError(resp);
                 LogUtil.i("requestInit error");
             }
         };
 
         AppRequestParams params = new AppRequestParams();
-        if (AppRuntimeWorker.getIsOpenWebviewMain())
-        {
+        if (AppRuntimeWorker.getIsOpenWebviewMain()) {
             params.setUrl(ApkConstant.SERVER_URL_INIT_URL);
             AppHttpUtil.getInstance().get(params, callbackWrapper);
-        } else
-        {
+        } else {
             params.putCtl("app");
             params.putAct("init");
             AppHttpUtil.getInstance().post(params, callbackWrapper);
@@ -265,19 +273,15 @@ public class CommonInterface {
     /**
      * 请求当前用户的usersig
      */
-    public static void requestUsersig(AppRequestCallback<App_usersigActModel> listener)
-    {
+    public static void requestUsersig(AppRequestCallback<App_usersigActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("usersig");
-        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<App_usersigActModel>(listener)
-        {
+        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<App_usersigActModel>(listener) {
 
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     String usersig = actModel.getUsersig();
                     AppRuntimeWorker.setUsersig(usersig);
                     AppRuntimeWorker.startContext();
@@ -291,8 +295,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestGift(AppRequestCallback<App_propActModel> listener)
-    {
+    public static void requestGift(AppRequestCallback<App_propActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("prop");
@@ -305,21 +308,16 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestMyUserInfo(AppRequestCallback<App_userinfoActModel> listener)
-    {
+    public static void requestMyUserInfo(AppRequestCallback<App_userinfoActModel> listener) {
         UserModel user = UserModelDao.query();
-        if (user == null)
-        {
+        if (user == null) {
             return;
         }
 
-        requestUserInfo(null, null, new AppRequestCallbackWrapper<App_userinfoActModel>(listener)
-        {
+        requestUserInfo(null, null, new AppRequestCallbackWrapper<App_userinfoActModel>(listener) {
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.getStatus() == 1)
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.getStatus() == 1) {
                     UserModel user = actModel.getUser();
                     UserModelDao.insertOrUpdate(user);
 
@@ -335,8 +333,7 @@ public class CommonInterface {
      * @param to_user_id 操作对象id
      * @param listener
      */
-    public static SDRequestHandler requestUserInfo(String podcast_id, String to_user_id, AppRequestCallback<App_userinfoActModel> listener)
-    {
+    public static SDRequestHandler requestUserInfo(String podcast_id, String to_user_id, AppRequestCallback<App_userinfoActModel> listener) {
         return requestUserInfo(podcast_id, to_user_id, 0, listener);
     }
 
@@ -348,8 +345,7 @@ public class CommonInterface {
      * @param room_id    大于0情况下,代表房间ID(查询用户在房间内对应主播的关系)
      * @param listener
      */
-    public static SDRequestHandler requestUserInfo(String podcast_id, String to_user_id, int room_id, AppRequestCallback<App_userinfoActModel> listener)
-    {
+    public static SDRequestHandler requestUserInfo(String podcast_id, String to_user_id, int room_id, AppRequestCallback<App_userinfoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("userinfo");
@@ -366,8 +362,7 @@ public class CommonInterface {
      * @param msg     消息内容
      * @return
      */
-    public static AppRequestParams requestPopMsgParams(int room_id, String msg)
-    {
+    public static AppRequestParams requestPopMsgParams(int room_id, String msg) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("pop_msg");
@@ -386,8 +381,7 @@ public class CommonInterface {
      * @param room_id  直播间id
      * @return
      */
-    public static AppRequestParams requestSendGiftParams(int prop_id, int num, int is_plus, int is_coins, int room_id)
-    {
+    public static AppRequestParams requestSendGiftParams(int prop_id, int num, int is_plus, int is_coins, int room_id) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("pop_prop");
@@ -406,8 +400,7 @@ public class CommonInterface {
      * @param page     当前分页
      * @param listener
      */
-    public static SDRequestHandler requestViewerList(String group_id, int page, AppRequestCallback<App_viewerActModel> listener)
-    {
+    public static SDRequestHandler requestViewerList(String group_id, int page, AppRequestCallback<App_viewerActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("viewer");
@@ -424,8 +417,7 @@ public class CommonInterface {
      * @param second     禁言时间，单位为秒; 为0时表示取消禁言
      * @param listener
      */
-    public static void requestForbidSendMsg(String group_id, String to_user_id, int second, AppRequestCallback<App_forbid_send_msgActModel> listener)
-    {
+    public static void requestForbidSendMsg(String group_id, String to_user_id, int second, AppRequestCallback<App_forbid_send_msgActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("forbid_send_msg");
@@ -442,21 +434,17 @@ public class CommonInterface {
      * @param room_id    直播间id
      * @param listener
      */
-    public static void requestFollow(final String to_user_id, int room_id, AppRequestCallback<App_followActModel> listener)
-    {
+    public static void requestFollow(final String to_user_id, int room_id, AppRequestCallback<App_followActModel> listener) {
 
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("follow");
         params.put("to_user_id", to_user_id);
         params.put("room_id", room_id);
-        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<App_followActModel>(listener)
-        {
+        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<App_followActModel>(listener) {
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.isOk())
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.isOk()) {
                     ERequestFollowSuccess event = new ERequestFollowSuccess();
                     event.userId = to_user_id;
                     event.actModel = actModel;
@@ -474,10 +462,8 @@ public class CommonInterface {
      * @param listener
      * @return
      */
-    public static void requestMonitor(LiveCreaterBusiness.CreaterMonitorData data, AppRequestCallback<App_monitorActModel> listener)
-    {
-        if (data == null)
-        {
+    public static void requestMonitor(LiveCreaterBusiness.CreaterMonitorData data, AppRequestCallback<App_monitorActModel> listener) {
+        if (data == null) {
             return;
         }
         AppRequestParams params = new AppRequestParams();
@@ -487,8 +473,7 @@ public class CommonInterface {
         params.put("watch_number", data.viewerNumber);
         params.put("vote_number", data.ticketNumber);
         params.put("lianmai_num", data.linkMicNumber);
-        if (data.liveQualityData != null)
-        {
+        if (data.liveQualityData != null) {
             params.put("live_quality", SDJsonUtil.object2Json(data.liveQualityData));
         }
         AppHttpUtil.getInstance().post(params, listener);
@@ -501,8 +486,7 @@ public class CommonInterface {
      * @param listener
      * @return
      */
-    public static SDRequestHandler requestEndVideo(int room_id, AppRequestCallback<App_end_videoActModel> listener)
-    {
+    public static SDRequestHandler requestEndVideo(int room_id, AppRequestCallback<App_end_videoActModel> listener) {
         return requestEndVideo(0, room_id, listener);
     }
 
@@ -514,8 +498,7 @@ public class CommonInterface {
      * @param listener
      * @return
      */
-    public static SDRequestHandler requestEndVideo(int is_out, int room_id, AppRequestCallback<App_end_videoActModel> listener)
-    {
+    public static SDRequestHandler requestEndVideo(int is_out, int room_id, AppRequestCallback<App_end_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("end_video");
@@ -531,8 +514,7 @@ public class CommonInterface {
      * @param room_id
      * @param listener
      */
-    public static void requestDeleteVideo(int room_id, AppRequestCallback<App_del_videoActModel> listener)
-    {
+    public static void requestDeleteVideo(int room_id, AppRequestCallback<App_del_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("del_video");
@@ -548,8 +530,7 @@ public class CommonInterface {
      * @param private_key 私密直播的时候的口令
      * @param listener
      */
-    public static SDRequestHandler requestRoomInfo(int room_id, int is_vod, String private_key, AppRequestCallback<App_get_videoActModel> listener)
-    {
+    public static SDRequestHandler requestRoomInfo(int room_id, int is_vod, String private_key, AppRequestCallback<App_get_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("get_video2");
@@ -571,8 +552,7 @@ public class CommonInterface {
      * @param status   1-成功，0-失败，2-主播离开， 3:主播回来
      * @param callback
      */
-    public static void requestUpdateLiveState(int room_id, String group_id, int status, AppRequestCallback<App_video_cstatusActModel> callback)
-    {
+    public static void requestUpdateLiveState(int room_id, String group_id, int status, AppRequestCallback<App_video_cstatusActModel> callback) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("video_cstatus");
@@ -582,8 +562,7 @@ public class CommonInterface {
         AppHttpUtil.getInstance().post(params, callback);
     }
 
-    public static void requestShareComplete(String type, String room_id, AppRequestCallback<App_shareActModel> listener)
-    {
+    public static void requestShareComplete(String type, String room_id, AppRequestCallback<App_shareActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("share");
@@ -599,8 +578,7 @@ public class CommonInterface {
      * @param listener
      * @return
      */
-    public static SDRequestHandler requestCheckLianmai(int room_id, AppRequestCallback<App_check_lianmaiActModel> listener)
-    {
+    public static SDRequestHandler requestCheckLianmai(int room_id, AppRequestCallback<App_check_lianmaiActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("check_lianmai");
@@ -616,8 +594,7 @@ public class CommonInterface {
      * @param listener
      * @return
      */
-    public static SDRequestHandler requestStartLianmai(int room_id, String to_user_id, AppRequestCallback<App_start_lianmaiActModel> listener)
-    {
+    public static SDRequestHandler requestStartLianmai(int room_id, String to_user_id, AppRequestCallback<App_start_lianmaiActModel> listener) {
         LogUtil.i("start_lianmai:" + to_user_id);
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
@@ -634,8 +611,7 @@ public class CommonInterface {
      * @param to_user_id 小主播id
      * @param listener
      */
-    public static void requestStopLianmai(int room_id, String to_user_id, AppRequestCallback<App_stop_lianmaiActModel> listener)
-    {
+    public static void requestStopLianmai(int room_id, String to_user_id, AppRequestCallback<App_stop_lianmaiActModel> listener) {
         LogUtil.i("stop_lianmai:" + to_user_id);
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
@@ -651,8 +627,7 @@ public class CommonInterface {
      * @param to_user_id 被查看的用户id
      * @param listener
      */
-    public static void requestUser_home(String to_user_id, AppRequestCallback<App_user_homeActModel> listener)
-    {
+    public static void requestUser_home(String to_user_id, AppRequestCallback<App_user_homeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("user_home");
@@ -666,8 +641,7 @@ public class CommonInterface {
      * @param to_user_id 被拉黑的用户id
      * @param listener
      */
-    public static void requestSet_black(String to_user_id, AppRequestCallback<User_set_blackActModel> listener)
-    {
+    public static void requestSet_black(String to_user_id, AppRequestCallback<User_set_blackActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("set_black");
@@ -680,8 +654,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestBlackList(int page, AppRequestCallback<Settings_black_listActModel> listener)
-    {
+    public static void requestBlackList(int page, AppRequestCallback<Settings_black_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("settings");
         params.putAct("black_list");
@@ -690,8 +663,7 @@ public class CommonInterface {
         AppHttpUtil.getInstance().post(params, listener);
     }
 
-    public static void requestAccountAndSafe(AppRequestCallback<SettingsSecurityActModel> listener)
-    {
+    public static void requestAccountAndSafe(AppRequestCallback<SettingsSecurityActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("settings");
         params.putAct("security");
@@ -706,15 +678,13 @@ public class CommonInterface {
      * @param to_user_id 被查看的用户id(该ID不传则查看自己)
      * @param listener
      */
-    public static void requestMy_focus(int page, String to_user_id, AppRequestCallback<App_focus_follow_ActModel> listener)
-    {
+    public static void requestMy_focus(int page, String to_user_id, AppRequestCallback<App_focus_follow_ActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("user_focus");
         params.put("p", page);
 
-        if (!TextUtils.isEmpty(to_user_id))
-        {
+        if (!TextUtils.isEmpty(to_user_id)) {
             params.put("to_user_id", to_user_id);
         }
         AppHttpUtil.getInstance().post(params, listener);
@@ -728,14 +698,12 @@ public class CommonInterface {
      * @param to_user_id (查看自己则不传) 被查看的用户id
      * @param listener
      */
-    public static void requestUser_review(int page, int sort, String to_user_id, AppRequestCallback<App_user_reviewActModel> listener)
-    {
+    public static void requestUser_review(int page, int sort, String to_user_id, AppRequestCallback<App_user_reviewActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("user_review");
         params.put("sort", sort);
-        if (!TextUtils.isEmpty(to_user_id))
-        {
+        if (!TextUtils.isEmpty(to_user_id)) {
             params.put("to_user_id", to_user_id);
         }
         params.put("p", page);
@@ -747,8 +715,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestUser_admin(AppRequestCallback<App_user_adminActModel> listener)
-    {
+    public static void requestUser_admin(AppRequestCallback<App_user_adminActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("user_admin");
@@ -761,8 +728,7 @@ public class CommonInterface {
      * @param to_user_id 被设置的用户id
      * @param listener
      */
-    public static void requestSet_admin(String to_user_id, AppRequestCallback<App_set_adminActModel> listener)
-    {
+    public static void requestSet_admin(String to_user_id, AppRequestCallback<App_set_adminActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("set_admin");
@@ -775,8 +741,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static SDRequestHandler requestRecharge(AppRequestCallback<App_rechargeActModel> listener)
-    {
+    public static SDRequestHandler requestRecharge(AppRequestCallback<App_rechargeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("pay");
         params.putAct("recharge");
@@ -791,18 +756,15 @@ public class CommonInterface {
      * @param money    充值金额
      * @param listener 注：money跟rule_id 2个必须有一个值
      */
-    public static void requestPay(int pay_id, int rule_id, double money, AppRequestCallback<App_payActModel> listener)
-    {
+    public static void requestPay(int pay_id, int rule_id, double money, AppRequestCallback<App_payActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("pay");
         params.putAct("pay");
         params.put("pay_id", pay_id);// 支付id，不能为空
 
-        if (rule_id > 0)
-        {
+        if (rule_id > 0) {
             params.put("rule_id", rule_id);// 支付项目id
-        } else if (money > 0)
-        {
+        } else if (money > 0) {
             params.put("money", money);// 充值金额；
         }
         // 注：money跟rule_id 2个必须有一个值
@@ -815,8 +777,7 @@ public class CommonInterface {
      * @param user_prop_id 红包id
      * @param listener
      */
-    public static void requestRed_envelope(int user_prop_id, AppRequestCallback<App_red_envelopeActModel> listener)
-    {
+    public static void requestRed_envelope(int user_prop_id, AppRequestCallback<App_red_envelopeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("red_envelope");
@@ -830,8 +791,7 @@ public class CommonInterface {
      * @param user_prop_id 红包id
      * @param listener
      */
-    public static void requestUser_red_envelope(int user_prop_id, AppRequestCallback<App_user_red_envelopeActModel> listener)
-    {
+    public static void requestUser_red_envelope(int user_prop_id, AppRequestCallback<App_user_red_envelopeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("user_red_envelope");
@@ -844,8 +804,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestTipoff_type(AppRequestCallback<App_tipoff_typeActModel> listener)
-    {
+    public static void requestTipoff_type(AppRequestCallback<App_tipoff_typeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("tipoff_type");
@@ -859,8 +818,7 @@ public class CommonInterface {
      * @param type       类型
      * @param listener
      */
-    public static void requestTipoff(int room_id, String to_user_id, long type, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestTipoff(int room_id, String to_user_id, long type, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("tipoff");
@@ -878,16 +836,13 @@ public class CommonInterface {
      * @param p        取第几页数据;从1开始， 不传或传0;则取前50位排行
      * @param listener
      */
-    public static void requestCont(int room_id, String user_id, int p, AppRequestCallback<App_ContActModel> listener)
-    {
+    public static void requestCont(int room_id, String user_id, int p, AppRequestCallback<App_ContActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("cont");
-        if (room_id > 0)
-        {
+        if (room_id > 0) {
             params.put("room_id", room_id);
-        } else if (!TextUtils.isEmpty(user_id))
-        {
+        } else if (!TextUtils.isEmpty(user_id)) {
             params.put("user_id", user_id);
         }
         params.put("p", p);
@@ -901,8 +856,7 @@ public class CommonInterface {
      * @param keyword
      * @param listener
      */
-    public static void requestMusic_search(int page, String keyword, AppRequestCallback<Music_searchActModel> listener)
-    {
+    public static void requestMusic_search(int page, String keyword, AppRequestCallback<Music_searchActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("music");
         params.putAct("search");
@@ -917,8 +871,7 @@ public class CommonInterface {
      * @param page     第几页
      * @param listener
      */
-    public static void requestMusic_user_music(int page, AppRequestCallback<Music_user_musicActModel> listener)
-    {
+    public static void requestMusic_user_music(int page, AppRequestCallback<Music_user_musicActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("music");
         params.putAct("user_music");
@@ -937,8 +890,7 @@ public class CommonInterface {
      */
     public static void requestMusic_add_music(String audio_id, String audio_name, String audio_link, String lrc_link, String lrc_content, String artist_name, long time_len,
                                               AppRequestCallback<BaseActModel> listener
-    )
-    {
+    ) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("music");
         params.putAct("add_music");
@@ -959,8 +911,7 @@ public class CommonInterface {
      * @param audio_id 音乐ID
      * @param listener
      */
-    public static void requestMusic_del_music(String audio_id, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestMusic_del_music(String audio_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("music");
         params.putAct("del_music");
@@ -974,8 +925,7 @@ public class CommonInterface {
      * @param audio_id 音乐ID
      * @param listener
      */
-    public static void requestMusic_downurl(String audio_id, AppRequestCallback<Music_downurlActModel> listener)
-    {
+    public static void requestMusic_downurl(String audio_id, AppRequestCallback<Music_downurlActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("music");
         params.putAct("downurl");
@@ -988,11 +938,9 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestUser_apns(AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestUser_apns(AppRequestCallback<BaseActModel> listener) {
         String regId = UmengPushManager.getPushAgent().getRegistrationId();
-        if (!TextUtils.isEmpty(regId))
-        {
+        if (!TextUtils.isEmpty(regId)) {
             LogUtil.i("regId:" + regId);
             AppRequestParams params = new AppRequestParams();
             params.putCtl("user");
@@ -1009,15 +957,13 @@ public class CommonInterface {
      * @param to_user_id 被查看的用户id(该ID不传则查看自己)
      * @param listener
      */
-    public static void requestUser_follow(int page, String to_user_id, AppRequestCallback<App_focus_follow_ActModel> listener)
-    {
+    public static void requestUser_follow(int page, String to_user_id, AppRequestCallback<App_focus_follow_ActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("user_follow");
         params.put("p", page);
 
-        if (!TextUtils.isEmpty(to_user_id))
-        {
+        if (!TextUtils.isEmpty(to_user_id)) {
             params.put("to_user_id", to_user_id);
         }
         AppHttpUtil.getInstance().post(params, listener);
@@ -1035,8 +981,7 @@ public class CommonInterface {
      * @param listener
      */
 
-    public static void requestAddVideo(String live_image, String title, int cate_id, String city, String province, String share_type, int location_switch, int is_private, AppRequestCallback<Video_add_videoActModel> listener)
-    {
+    public static void requestAddVideo(String live_image, String title, int cate_id, String city, String province, String share_type, int location_switch, int is_private, AppRequestCallback<Video_add_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("add_video");
@@ -1058,8 +1003,7 @@ public class CommonInterface {
      * @param page     当前页数
      * @param listener
      */
-    public static SDRequestHandler requestSearchUser(int page, String keyword, AppRequestCallback<App_focus_follow_ActModel> listener)
-    {
+    public static SDRequestHandler requestSearchUser(int page, String keyword, AppRequestCallback<App_focus_follow_ActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("search");
@@ -1074,8 +1018,7 @@ public class CommonInterface {
      * @param room_id  房间id
      * @param listener
      */
-    public static void requestDelVideo(int room_id, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestDelVideo(int room_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("del_video_history");
@@ -1090,21 +1033,17 @@ public class CommonInterface {
      * @param private_key 私密直播的口令
      * @param listener
      */
-    public static void requestCheckVideoStatus(int room_id, String private_key, AppRequestCallback<Video_check_statusActModel> listener)
-    {
-        if (room_id == 0 && TextUtils.isEmpty(private_key))
-        {
+    public static void requestCheckVideoStatus(int room_id, String private_key, AppRequestCallback<Video_check_statusActModel> listener) {
+        if (room_id == 0 && TextUtils.isEmpty(private_key)) {
             return;
         }
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("check_status");
-        if (room_id != 0)
-        {
+        if (room_id != 0) {
             params.put("room_id", room_id);
         }
-        if (private_key != null)
-        {
+        if (private_key != null) {
             params.put("private_key", private_key);
         }
         AppHttpUtil.getInstance().post(params, listener);
@@ -1115,8 +1054,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestMyFollow(AppRequestCallback<App_my_follow_ActModel> listener)
-    {
+    public static void requestMyFollow(AppRequestCallback<App_my_follow_ActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("my_follow");
@@ -1130,8 +1068,7 @@ public class CommonInterface {
      * @param p        分页
      * @param listener
      */
-    public static void requestFriends(int room_id, int p, AppRequestCallback<User_friendsActModel> listener)
-    {
+    public static void requestFriends(int room_id, int p, AppRequestCallback<User_friendsActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("friends");
@@ -1147,8 +1084,7 @@ public class CommonInterface {
      * @param p        分页
      * @param listener
      */
-    public static void requestPrivateRoomFriends(int room_id, int p, AppRequestCallback<Video_private_room_friendsActModel> listener)
-    {
+    public static void requestPrivateRoomFriends(int room_id, int p, AppRequestCallback<Video_private_room_friendsActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("private_room_friends");
@@ -1164,8 +1100,7 @@ public class CommonInterface {
      * @param user_ids
      * @param listener
      */
-    public static void requestPrivatePushUser(int room_id, String user_ids, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestPrivatePushUser(int room_id, String user_ids, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("private_push_user");
@@ -1181,8 +1116,7 @@ public class CommonInterface {
      * @param user_ids
      * @param listener
      */
-    public static void requestPrivateDropUser(int room_id, String user_ids, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestPrivateDropUser(int room_id, String user_ids, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("private_drop_user");
@@ -1196,8 +1130,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestNewVideo(int p, AppRequestCallback<Index_new_videoActModel> listener)
-    {
+    public static void requestNewVideo(int p, AppRequestCallback<Index_new_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("new_video");
@@ -1210,8 +1143,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestFocusVideo(AppRequestCallback<Index_focus_videoActModel> listener)
-    {
+    public static void requestFocusVideo(AppRequestCallback<Index_focus_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("focus_video");
@@ -1227,16 +1159,14 @@ public class CommonInterface {
      * @param city     城市(空为:热门)
      * @param listener
      */
-    public static void requestIndex(int p, int sex, int cate_id, String city, AppRequestCallback<Index_indexActModel> listener)
-    {
+    public static void requestIndex(int p, int sex, int cate_id, String city, AppRequestCallback<Index_indexActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("index");
         params.put("p", p);
         params.put("sex", sex);
         params.put("cate_id", cate_id);
-        if (!TextUtils.isEmpty(city))
-        {
+        if (!TextUtils.isEmpty(city)) {
             params.put("city", city);
         }
         setAppRequestParams(params);
@@ -1249,8 +1179,7 @@ public class CommonInterface {
      * @param sex
      * @param listener
      */
-    public static void requestIndexSearch_area(int sex, AppRequestCallback<IndexSearch_areaActModel> listener)
-    {
+    public static void requestIndexSearch_area(int sex, AppRequestCallback<IndexSearch_areaActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("search_area");
@@ -1265,13 +1194,11 @@ public class CommonInterface {
      * @param p        分页
      * @param listener
      */
-    public static SDRequestHandler requestToptic(String title, int p, AppRequestCallback<Index_topicActModel> listener)
-    {
+    public static SDRequestHandler requestToptic(String title, int p, AppRequestCallback<Index_topicActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("search_video_cate");
-        if (title != null)
-        {
+        if (title != null) {
             params.put("title", title);
         }
         params.put("p", p);
@@ -1286,18 +1213,15 @@ public class CommonInterface {
      * @param type       是否是绑定手机发送的验证码
      * @param listener
      */
-    public static void requestSendMobileVerify(int type, String mobile, String image_code, AppRequestCallback<App_send_mobile_verifyActModel> listener)
-    {
+    public static void requestSendMobileVerify(int type, String mobile, String image_code, AppRequestCallback<App_send_mobile_verifyActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("send_mobile_verify");
         params.put("mobile", mobile);
-        if (!TextUtils.isEmpty(image_code))
-        {
+        if (!TextUtils.isEmpty(image_code)) {
             params.put("image_code", image_code);
         }
-        if (type == 1)
-        {
+        if (type == 1) {
             params.put("wx_binding", type);
         }
         AppHttpUtil.getInstance().post(params, listener);
@@ -1310,8 +1234,7 @@ public class CommonInterface {
      * @param verify_code
      * @param listener
      */
-    public static void requestMobileBind(String mobile, String verify_code, AppRequestCallback<App_ProfitBindingActModel> listener)
-    {
+    public static void requestMobileBind(String mobile, String verify_code, AppRequestCallback<App_ProfitBindingActModel> listener) {
         requestMobileBind(mobile, verify_code, null, null, null, listener);
     }
 
@@ -1323,15 +1246,13 @@ public class CommonInterface {
      * @param access_token 第三方登录Token
      * @param listener
      */
-    public static void requestMobileBind(String mobile, String verify_code, String login_type, String openid, String access_token, AppRequestCallback<App_ProfitBindingActModel> listener)
-    {
+    public static void requestMobileBind(String mobile, String verify_code, String login_type, String openid, String access_token, AppRequestCallback<App_ProfitBindingActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("settings");
         params.putAct("mobile_binding");
         params.put("mobile", mobile);
         params.put("verify_code", verify_code);
-        if (!TextUtils.isEmpty(login_type) && !TextUtils.isEmpty(openid) && !TextUtils.isEmpty(access_token))
-        {
+        if (!TextUtils.isEmpty(login_type) && !TextUtils.isEmpty(openid) && !TextUtils.isEmpty(access_token)) {
             params.put("login_type", login_type);
             params.put("openid", openid);
             params.put("access_token", access_token);
@@ -1344,8 +1265,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestIsUserVerify(AppRequestCallback<App_is_user_verifyActModel> listener)
-    {
+    public static void requestIsUserVerify(AppRequestCallback<App_is_user_verifyActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("is_user_verify");
@@ -1357,8 +1277,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestAgree(AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestAgree(AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("agree");
@@ -1370,8 +1289,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestDoLogin(String mobile, String verify_coder, AppRequestCallback<App_do_loginActModel> listener)
-    {
+    public static void requestDoLogin(String mobile, String verify_coder, AppRequestCallback<App_do_loginActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("do_login");
@@ -1380,8 +1298,7 @@ public class CommonInterface {
         AppHttpUtil.getInstance().post(params, listener);
     }
 
-    public static AppRequestParams getDoUpdateAppRequestParams()
-    {
+    public static AppRequestParams getDoUpdateAppRequestParams() {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("do_update");
@@ -1393,18 +1310,15 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestDoUpdate(String user_id, String nick_name, String sex, String image_path, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestDoUpdate(String user_id, String nick_name, String sex, String image_path, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = getDoUpdateAppRequestParams();
         params.put("type", 0);//0 补充信息 1 更新头像
         params.put("id", user_id);
         params.put("nick_name", nick_name);
         params.put("sex", sex);
-        if (AppRuntimeWorker.getOpen_sts() == 1)
-        {
+        if (AppRuntimeWorker.getOpen_sts() == 1) {
             params.put("oss_path", image_path);
-        } else
-        {
+        } else {
             //head_image上传时候更新登录信息
             params.put("head_image", image_path);
         }
@@ -1418,8 +1332,7 @@ public class CommonInterface {
      * @param oss_path
      * @param listener
      */
-    public static void requestDoUpdate(String user_id, String oss_path, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestDoUpdate(String user_id, String oss_path, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = getDoUpdateAppRequestParams();
         params.put("id", user_id);
         params.put("oss_path", oss_path);
@@ -1432,8 +1345,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestDoUpdateNormal(String user_id, String normal_head_path, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestDoUpdateNormal(String user_id, String normal_head_path, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = getDoUpdateAppRequestParams();
         params.put("id", user_id);
         params.put("normal_head_path", normal_head_path);
@@ -1446,8 +1358,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestWxLogin(String openid, String access_token, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestWxLogin(String openid, String access_token, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("wx_login");
@@ -1461,8 +1372,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestQqLogin(String openid, String access_token, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestQqLogin(String openid, String access_token, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("qq_login");
@@ -1476,8 +1386,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestSinaLogin(String access_token, String uid, AppRequestCallback<App_do_updateActModel> listener)
-    {
+    public static void requestSinaLogin(String access_token, String uid, AppRequestCallback<App_do_updateActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("login");
         params.putAct("sina_login");
@@ -1491,8 +1400,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestUserEditInfo(AppRequestCallback<App_userEditActModel> listener)
-    {
+    public static void requestUserEditInfo(AppRequestCallback<App_userEditActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("user_edit");
@@ -1505,15 +1413,12 @@ public class CommonInterface {
      * @param map
      * @param listener
      */
-    public static void requestCommitUserInfo(Map<String, String> map, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestCommitUserInfo(Map<String, String> map, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("user_save");
-        for (String key : map.keySet())
-        {
-            if (!TextUtils.isEmpty(key))
-            {
+        for (String key : map.keySet()) {
+            if (!TextUtils.isEmpty(key)) {
                 params.put(key, map.get(key));
             }
         }
@@ -1523,8 +1428,7 @@ public class CommonInterface {
     /**
      * 编辑-获取地区
      */
-    public static void requestRegionList(AppRequestCallback<App_RegionListActModel> listener)
-    {
+    public static void requestRegionList(AppRequestCallback<App_RegionListActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("region_list");
@@ -1537,21 +1441,17 @@ public class CommonInterface {
      * @param is_remind 接收推送消息 0-不接收，1-接收
      * @param listener
      */
-    public static void requestSet_push(final int is_remind, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestSet_push(final int is_remind, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("settings");
         params.putAct("set_push");
         params.setNeedShowActInfo(false);
         params.put("type", 1);
         params.put("is_remind", is_remind);
-        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<BaseActModel>(listener)
-        {
+        AppHttpUtil.getInstance().post(params, new AppRequestCallbackWrapper<BaseActModel>(listener) {
             @Override
-            protected void onSuccess(SDResponse resp)
-            {
-                if (actModel.isOk())
-                {
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.isOk()) {
                     UserModel user = UserModelDao.query();
                     user.setIs_remind(is_remind);
                     UserModelDao.insertOrUpdate(user);
@@ -1565,8 +1465,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestProfit(AppRequestCallback<App_profitActModel> listener)
-    {
+    public static void requestProfit(AppRequestCallback<App_profitActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("profit");
@@ -1578,8 +1477,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestExchangeRule(AppRequestCallback<App_ExchangeRuleActModel> listener)
-    {
+    public static void requestExchangeRule(AppRequestCallback<App_ExchangeRuleActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("exchange");
@@ -1591,8 +1489,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestGainRecord(AppRequestCallback<App_GainRecordActModel> listener)
-    {
+    public static void requestGainRecord(AppRequestCallback<App_GainRecordActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("extract_record");
@@ -1606,8 +1503,7 @@ public class CommonInterface {
      * @param ticket   兑现的钱票
      * @param listener
      */
-    public static void requestDoExchange(int rule_id, int ticket, AppRequestCallback<App_doExchangeActModel> listener)
-    {
+    public static void requestDoExchange(int rule_id, int ticket, AppRequestCallback<App_doExchangeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("do_exchange");
@@ -1623,8 +1519,7 @@ public class CommonInterface {
      * @param access_token 微信授权回调字段
      * @param listener
      */
-    public static void requestBindingWz(String openid, String access_token, AppRequestCallback<App_ProfitBindingActModel> listener)
-    {
+    public static void requestBindingWz(String openid, String access_token, AppRequestCallback<App_ProfitBindingActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("update_wxopenid");
@@ -1641,8 +1536,7 @@ public class CommonInterface {
      * @param to_user_id 对方id
      * @param listener
      */
-    public static SDRequestHandler requestSendGiftPrivate(int prop_id, int num, String to_user_id, AppRequestCallback<Deal_send_propActModel> listener)
-    {
+    public static SDRequestHandler requestSendGiftPrivate(int prop_id, int num, String to_user_id, AppRequestCallback<Deal_send_propActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("send_prop");
@@ -1664,8 +1558,7 @@ public class CommonInterface {
      * @param identify_nagative_image 身份证反面
      * @param listener
      */
-    public static void requestAttestation(String authentication_type, String authentication_name, String mobile, String identify_number, String identify_hold_image, String identify_positive_image, String identify_nagative_image, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestAttestation(String authentication_type, String authentication_name, String mobile, String identify_number, String identify_hold_image, String identify_positive_image, String identify_nagative_image, AppRequestCallback<BaseActModel> listener) {
         requestAttestation(authentication_type, authentication_name, mobile, identify_number, identify_hold_image, identify_positive_image, identify_nagative_image, 0, null, listener);
     }
 
@@ -1688,8 +1581,7 @@ public class CommonInterface {
                                           String mobile, String identify_number, String identify_hold_image,
                                           String identify_positive_image, String identify_nagative_image,
                                           int invite_type, String invite_input,
-                                          AppRequestCallback<BaseActModel> listener)
-    {
+                                          AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("attestation");
@@ -1710,8 +1602,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestAuthent(AppRequestCallback<App_AuthentActModel> listener)
-    {
+    public static void requestAuthent(AppRequestCallback<App_AuthentActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("authent");
@@ -1724,8 +1615,7 @@ public class CommonInterface {
      * @param file     图片
      * @param listener
      */
-    public static void requestUploadImage(File file, AppRequestCallback<App_uploadImageActModel> listener)
-    {
+    public static void requestUploadImage(File file, AppRequestCallback<App_uploadImageActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("avatar");
         params.putAct("uploadImage");
@@ -1739,8 +1629,7 @@ public class CommonInterface {
      * @param user_ids
      * @param listener
      */
-    public static void requestBaseInfo(String user_ids, AppRequestCallback<App_BaseInfoActModel> listener)
-    {
+    public static void requestBaseInfo(String user_ids, AppRequestCallback<App_BaseInfoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user");
         params.putAct("baseinfo");
@@ -1754,8 +1643,7 @@ public class CommonInterface {
      * @param room_id
      * @param listener
      */
-    public static void requestLike(int room_id, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestLike(int room_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
         params.putAct("like");
@@ -1768,10 +1656,8 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestStateChangeLogin(AppRequestCallback<BaseActModel> listener)
-    {
-        if (AppRuntimeWorker.isLogin(null))
-        {
+    public static void requestStateChangeLogin(AppRequestCallback<BaseActModel> listener) {
+        if (AppRuntimeWorker.isLogin(null)) {
             requestStateChange("Login", listener);
             IMHelper.joinOnlineGroup();
         }
@@ -1782,10 +1668,8 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestStateChangeLogout(AppRequestCallback<BaseActModel> listener)
-    {
-        if (AppRuntimeWorker.isLogin(null))
-        {
+    public static void requestStateChangeLogout(AppRequestCallback<BaseActModel> listener) {
+        if (AppRuntimeWorker.isLogin(null)) {
             requestStateChange("Logout", listener);
             IMHelper.quitOnlineGroup(null);
         }
@@ -1797,10 +1681,8 @@ public class CommonInterface {
      * @param action
      * @param listener
      */
-    private static void requestStateChange(String action, AppRequestCallback<BaseActModel> listener)
-    {
-        if (AppRuntimeWorker.isLogin(null))
-        {
+    private static void requestStateChange(String action, AppRequestCallback<BaseActModel> listener) {
+        if (AppRuntimeWorker.isLogin(null)) {
             AppRequestParams params = new AppRequestParams();
             params.putCtl("user");
             params.putAct("state_change");
@@ -1815,8 +1697,7 @@ public class CommonInterface {
      * @param family_id 家族ID
      * @param listener
      */
-    public static void requestFamilyIndex(int family_id, AppRequestCallback<App_family_indexActModel> listener)
-    {
+    public static void requestFamilyIndex(int family_id, AppRequestCallback<App_family_indexActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family");
         params.putAct("index");
@@ -1833,8 +1714,7 @@ public class CommonInterface {
      * @param family_notice    家族公告
      * @param listener
      */
-    public static void requestFamilyCreate(String family_logo, String family_name, String family_manifesto, String family_notice, AppRequestCallback<App_family_createActModel> listener)
-    {
+    public static void requestFamilyCreate(String family_logo, String family_name, String family_manifesto, String family_notice, AppRequestCallback<App_family_createActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family");
         params.putAct("create");
@@ -1854,8 +1734,7 @@ public class CommonInterface {
      * @param family_notice    家族公告
      * @param listener
      */
-    public static void requestFamilyUpdate(int family_id, String family_logo, String family_manifesto, String family_notice, String family_name, AppRequestCallback<App_family_createActModel> listener)
-    {
+    public static void requestFamilyUpdate(int family_id, String family_logo, String family_manifesto, String family_notice, String family_name, AppRequestCallback<App_family_createActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family");
         params.putAct("save");
@@ -1874,8 +1753,7 @@ public class CommonInterface {
      * @param page
      * @param listener
      */
-    public static void requestFamilyMembersList(int family_id, int page, AppRequestCallback<App_family_user_user_listActModel> listener)
-    {
+    public static void requestFamilyMembersList(int family_id, int page, AppRequestCallback<App_family_user_user_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("user_list");
@@ -1891,8 +1769,7 @@ public class CommonInterface {
      * @param page
      * @param listener
      */
-    public static void requestFamilyMembersApplyList(int family_id, int page, AppRequestCallback<App_family_user_r_user_listActModel> listener)
-    {
+    public static void requestFamilyMembersApplyList(int family_id, int page, AppRequestCallback<App_family_user_r_user_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("r_user_list");
@@ -1909,8 +1786,7 @@ public class CommonInterface {
      * @param page
      * @param listener
      */
-    public static SDRequestHandler requestApplyJoinFamilyList(int family_id, String family_name, int page, AppRequestCallback<App_family_listActModel> listener)
-    {
+    public static SDRequestHandler requestApplyJoinFamilyList(int family_id, String family_name, int page, AppRequestCallback<App_family_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family");
         params.putAct("family_list");
@@ -1926,8 +1802,7 @@ public class CommonInterface {
      * @param family_id
      * @param listener
      */
-    public static void requestApplyJoinFamily(int family_id, AppRequestCallback<App_family_createActModel> listener)
-    {
+    public static void requestApplyJoinFamily(int family_id, AppRequestCallback<App_family_createActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("user_join");
@@ -1941,8 +1816,7 @@ public class CommonInterface {
      * @param r_user_id
      * @param listener
      */
-    public static void requestDelFamilyMember(int r_user_id, AppRequestCallback<App_family_createActModel> listener)
-    {
+    public static void requestDelFamilyMember(int r_user_id, AppRequestCallback<App_family_createActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("user_del");
@@ -1957,8 +1831,7 @@ public class CommonInterface {
      * @param is_agree  是否同意 （1：同意，2：拒绝）
      * @param listener
      */
-    public static void requestFamilyMemberConfirm(int r_user_id, int is_agree, AppRequestCallback<App_family_user_confirmActModel> listener)
-    {
+    public static void requestFamilyMemberConfirm(int r_user_id, int is_agree, AppRequestCallback<App_family_user_confirmActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("confirm");
@@ -1972,8 +1845,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestFamilyLogout(AppRequestCallback<App_family_user_logoutActModel> listener)
-    {
+    public static void requestFamilyLogout(AppRequestCallback<App_family_user_logoutActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("family_user");
         params.putAct("logout");
@@ -1985,8 +1857,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestAliyunSts(AppRequestCallback<App_aliyun_stsActModel> listener)
-    {
+    public static void requestAliyunSts(AppRequestCallback<App_aliyun_stsActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("aliyun_sts");
@@ -1999,8 +1870,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestRankContribution(int p, String rank_name, AppRequestCallback<App_RankContributionModel> listener)
-    {
+    public static void requestRankContribution(int p, String rank_name, AppRequestCallback<App_RankContributionModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("rank");
         params.putAct("contribution");
@@ -2014,8 +1884,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestRankConsumption(int p, String rank_name, AppRequestCallback<App_RankConsumptionModel> listener)
-    {
+    public static void requestRankConsumption(int p, String rank_name, AppRequestCallback<App_RankConsumptionModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("rank");
         params.putAct("consumption");
@@ -2029,8 +1898,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestLiveLivePay(int live_fee, int live_pay_type, int room_id, AppRequestCallback<App_live_live_payActModel> listener)
-    {
+    public static void requestLiveLivePay(int live_fee, int live_pay_type, int room_id, AppRequestCallback<App_live_live_payActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("live");
         params.putAct("live_pay");
@@ -2045,8 +1913,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestLiveLivePayAgree(int room_id, AppRequestCallback<App_live_live_pay_agreeActModel> listener)
-    {
+    public static void requestLiveLivePayAgree(int room_id, AppRequestCallback<App_live_live_pay_agreeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("live");
         params.putAct("live_pay_agree");
@@ -2060,8 +1927,7 @@ public class CommonInterface {
      * @param roomId   游戏轮数
      * @param listener
      */
-    public static SDRequestHandler requestGamesInfo(int roomId, AppRequestCallback<App_getGamesActModel> listener)
-    {
+    public static SDRequestHandler requestGamesInfo(int roomId, AppRequestCallback<App_getGamesActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("get_video");
@@ -2074,8 +1940,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestInitPlugin(AppRequestCallback<App_plugin_initActModel> listener)
-    {
+    public static void requestInitPlugin(AppRequestCallback<App_plugin_initActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("plugin_init");
@@ -2089,8 +1954,7 @@ public class CommonInterface {
      * @param pluginId 插件id
      * @param listener
      */
-    public static SDRequestHandler requestStartPlugin(int pluginId, AppRequestCallback<App_startGameActModel> listener)
-    {
+    public static SDRequestHandler requestStartPlugin(int pluginId, AppRequestCallback<App_startGameActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("start");
@@ -2106,8 +1970,7 @@ public class CommonInterface {
      * @param betCoin     投注金额
      * @param listener
      */
-    public static void requestDoBet(int gameId, int betPosition, long betCoin, AppRequestCallback<Games_betActModel> listener)
-    {
+    public static void requestDoBet(int gameId, int betPosition, long betCoin, AppRequestCallback<Games_betActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("bet");
@@ -2123,8 +1986,7 @@ public class CommonInterface {
      * @param game_log_id 游戏轮数
      * @param listener
      */
-    public static SDRequestHandler requestGameIncome(int game_log_id, AppRequestCallback<App_requestGameIncomeActModel> listener)
-    {
+    public static SDRequestHandler requestGameIncome(int game_log_id, AppRequestCallback<App_requestGameIncomeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("userDiamonds");
@@ -2138,8 +2000,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static SDRequestHandler requestStopGame(AppRequestCallback<BaseActModel> listener)
-    {
+    public static SDRequestHandler requestStopGame(AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("stop");
@@ -2154,8 +2015,7 @@ public class CommonInterface {
      * @param podcast_id 主播id
      * @param listener
      */
-    public static void requestGamesLog(int game_id, String podcast_id, AppRequestCallback<Games_logActModel> listener)
-    {
+    public static void requestGamesLog(int game_id, String podcast_id, AppRequestCallback<Games_logActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("log");
@@ -2171,8 +2031,7 @@ public class CommonInterface {
      * @param alipayName    支付宝账号名称
      * @param listener
      */
-    public static void requestBandingAlipay(String alipayAccount, String alipayName, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestBandingAlipay(String alipayAccount, String alipayName, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("binding_alipay");
@@ -2187,8 +2046,7 @@ public class CommonInterface {
      * @param ticket   秀豆数
      * @param listener
      */
-    public static void requestSubmitRefundAlipay(String ticket, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestSubmitRefundAlipay(String ticket, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("submit_refund_alipay");
@@ -2202,8 +2060,7 @@ public class CommonInterface {
      * @param p        分页
      * @param listener
      */
-    public static void requestDistribution(int p, AppRequestCallback<App_distribution_indexActModel> listener)
-    {
+    public static void requestDistribution(int p, AppRequestCallback<App_distribution_indexActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("distribution");
         params.putAct("index");
@@ -2217,8 +2074,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestPlugin_status(int id, AppRequestCallback<App_plugin_statusActModel> listener)
-    {
+    public static void requestPlugin_status(int id, AppRequestCallback<App_plugin_statusActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("plugin_status");
@@ -2232,8 +2088,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestGet_p_user_id(AppRequestCallback<App_get_p_user_idActModel> listener)
-    {
+    public static void requestGet_p_user_id(AppRequestCallback<App_get_p_user_idActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("get_p_user_id");
@@ -2246,8 +2101,7 @@ public class CommonInterface {
      * @param p_user_id
      * @param listener
      */
-    public static void requestUpdata_p_user_id(String p_user_id, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestUpdata_p_user_id(String p_user_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("update_p_user_id");
@@ -2261,8 +2115,7 @@ public class CommonInterface {
      * @param p        页数
      * @param listener
      */
-    public static void requestPcLive(int p, AppRequestCallback<Index_new_videoActModel> listener)
-    {
+    public static void requestPcLive(int p, AppRequestCallback<Index_new_videoActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("index");
         params.putAct("new_pc_video");
@@ -2273,16 +2126,14 @@ public class CommonInterface {
     /**
      * 购买VIP页面初始化接口
      */
-    public static void requestVipPurchase(AppRequestCallback<App_UserVipPurchaseActModel> listener)
-    {
+    public static void requestVipPurchase(AppRequestCallback<App_UserVipPurchaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("vip_pay");
         params.putAct("purchase");
         AppHttpUtil.getInstance().post(params, listener);
     }
 
-    public static void requestPayVip(int pay_id, int rule_id, AppRequestCallback<App_payActModel> listener)
-    {
+    public static void requestPayVip(int pay_id, int rule_id, AppRequestCallback<App_payActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("vip_pay");
         params.putAct("pay");
@@ -2299,8 +2150,7 @@ public class CommonInterface {
      * @param page
      * @param listener
      */
-    public static SDRequestHandler requestApplyJoinSociatyList(int society_id, String society_name, int page, AppRequestCallback<App_sociaty_listActModel> listener)
-    {
+    public static SDRequestHandler requestApplyJoinSociatyList(int society_id, String society_name, int page, AppRequestCallback<App_sociaty_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("society_list");
@@ -2316,8 +2166,7 @@ public class CommonInterface {
      * @param society_id 公会ID
      * @param listener
      */
-    public static void requestSociatyIndex(int society_id, AppRequestCallback<App_sociaty_indexActModel> listener)
-    {
+    public static void requestSociatyIndex(int society_id, AppRequestCallback<App_sociaty_indexActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("index");
@@ -2331,8 +2180,7 @@ public class CommonInterface {
      * @param society_id
      * @param listener
      */
-    public static void requestApplyJoinSociaty(int society_id, AppRequestCallback<App_sociaty_joinActModel> listener)
-    {
+    public static void requestApplyJoinSociaty(int society_id, AppRequestCallback<App_sociaty_joinActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society_user");
         params.putAct("join");
@@ -2349,8 +2197,7 @@ public class CommonInterface {
      * @param notice    公会公告
      * @param listener
      */
-    public static void requestSociatyCreate(String logo, String name, String manifesto, String notice, AppRequestCallback<App_sociaty_joinActModel> listener)
-    {
+    public static void requestSociatyCreate(String logo, String name, String manifesto, String notice, AppRequestCallback<App_sociaty_joinActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("create");
@@ -2370,8 +2217,7 @@ public class CommonInterface {
      * @param notice    公会公告
      * @param listener
      */
-    public static void requestSociatyUpdate(int id, String logo, String manifesto, String notice, String name, AppRequestCallback<App_sociaty_joinActModel> listener)
-    {
+    public static void requestSociatyUpdate(int id, String logo, String manifesto, String notice, String name, AppRequestCallback<App_sociaty_joinActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("save");
@@ -2388,8 +2234,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestSociatyLogout(AppRequestCallback<App_sociaty_user_logoutActModel> listener)
-    {
+    public static void requestSociatyLogout(AppRequestCallback<App_sociaty_user_logoutActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society_user");
         params.putAct("logout");
@@ -2404,8 +2249,7 @@ public class CommonInterface {
      * @param page
      * @param listener
      */
-    public static void requestSociatyMembersList(int society_id, int status, int page, AppRequestCallback<App_sociaty_user_listActModel> listener)
-    {
+    public static void requestSociatyMembersList(int society_id, int status, int page, AppRequestCallback<App_sociaty_user_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society_user");
         params.putAct("user_list");
@@ -2423,8 +2267,7 @@ public class CommonInterface {
      * @param r_user_id
      * @param listener
      */
-    public static void requestDelSociatyMember(int r_user_id, AppRequestCallback<App_sociaty_joinActModel> listener)
-    {
+    public static void requestDelSociatyMember(int r_user_id, AppRequestCallback<App_sociaty_joinActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("user_del");
@@ -2439,8 +2282,7 @@ public class CommonInterface {
      * @param is_agree  是否同意 （1：同意，2：拒绝）
      * @param listener
      */
-    public static void requestSociatyMemberConfirm(int r_user_id, int is_agree, AppRequestCallback<App_sociaty_user_confirmActModel> listener)
-    {
+    public static void requestSociatyMemberConfirm(int r_user_id, int is_agree, AppRequestCallback<App_sociaty_user_confirmActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("confirm");
@@ -2456,8 +2298,7 @@ public class CommonInterface {
      * @param is_agree  是否同意 （1：同意，2：拒绝）
      * @param listener
      */
-    public static void requestSociatyMemberLogout(int r_user_id, int is_agree, AppRequestCallback<App_sociaty_user_confirmActModel> listener)
-    {
+    public static void requestSociatyMemberLogout(int r_user_id, int is_agree, AppRequestCallback<App_sociaty_user_confirmActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("society");
         params.putAct("logout_confirm");
@@ -2471,8 +2312,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static SDRequestHandler requestGamesExchangeRate(AppRequestCallback<App_gameExchangeRateActModel> listener)
-    {
+    public static SDRequestHandler requestGamesExchangeRate(AppRequestCallback<App_gameExchangeRateActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("exchangeRate");
@@ -2485,8 +2325,7 @@ public class CommonInterface {
      * @param diamonds
      * @param listener
      */
-    public static void requestCoinExchange(long diamonds, AppRequestCallback<App_gameCoinsExchangeActModel> listener)
-    {
+    public static void requestCoinExchange(long diamonds, AppRequestCallback<App_gameCoinsExchangeActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("exchangeCoin");
@@ -2501,8 +2340,7 @@ public class CommonInterface {
      * @param coins    游戏币数额
      * @param listener
      */
-    public static void requestSendGameCoins(String toUserId, long coins, AppRequestCallback<Deal_send_propActModel> listener)
-    {
+    public static void requestSendGameCoins(String toUserId, long coins, AppRequestCallback<Deal_send_propActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("sendCoin");
@@ -2518,8 +2356,7 @@ public class CommonInterface {
      * @param diamonds 秀豆数额
      * @param listener
      */
-    public static void requestSendDiamonds(String toUserId, long diamonds, AppRequestCallback<Deal_send_propActModel> listener)
-    {
+    public static void requestSendDiamonds(String toUserId, long diamonds, AppRequestCallback<Deal_send_propActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("sendDiamonds");
@@ -2533,8 +2370,7 @@ public class CommonInterface {
      *
      * @param desc 错误信息
      */
-    public static void reportErrorLog(String desc)
-    {
+    public static void reportErrorLog(String desc) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("log_err");
@@ -2549,8 +2385,7 @@ public class CommonInterface {
      * @param coins    上庄金额
      * @param listener
      */
-    public static void requestApplyBanker(int roomId, long coins, AppRequestCallback<App_banker_applyActModel> listener)
-    {
+    public static void requestApplyBanker(int roomId, long coins, AppRequestCallback<App_banker_applyActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("applyBanker");
@@ -2564,8 +2399,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestBankerList(AppRequestCallback<App_banker_listActModel> listener)
-    {
+    public static void requestBankerList(AppRequestCallback<App_banker_listActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("getBankerList");
@@ -2577,8 +2411,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestOpenGameBanker(AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestOpenGameBanker(AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("openBanker");
@@ -2590,8 +2423,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestStopBanker(AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestStopBanker(AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("stopBanker");
@@ -2604,8 +2436,7 @@ public class CommonInterface {
      * @param banker_log_id 上庄id
      * @param listener
      */
-    public static void requestChooseBanker(String banker_log_id, AppRequestCallback<BaseActModel> listener)
-    {
+    public static void requestChooseBanker(String banker_log_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("chooseBanker");
@@ -2620,8 +2451,7 @@ public class CommonInterface {
      * @param to_user_id 要混合的小主播id
      * @param callback
      */
-    public static void requestMixStream(int room_id, String to_user_id, AppRequestCallback<BaseActModel> callback)
-    {
+    public static void requestMixStream(int room_id, String to_user_id, AppRequestCallback<BaseActModel> callback) {
         LogUtil.i("mix_stream:" + to_user_id);
         AppRequestParams params = new AppRequestParams();
         params.putCtl("video");
@@ -2637,13 +2467,10 @@ public class CommonInterface {
      * @param callback
      * @return
      */
-    public static SDRequestHandler requestLoginVisitorsLogin(AppRequestCallback<App_do_updateActModel> callback)
-    {
+    public static SDRequestHandler requestLoginVisitorsLogin(AppRequestCallback<App_do_updateActModel> callback) {
         String um_reg_id = UmengPushManager.getPushAgent().getRegistrationId();
-        if (TextUtils.isEmpty(um_reg_id))
-        {
-            if (callback != null)
-            {
+        if (TextUtils.isEmpty(um_reg_id)) {
+            if (callback != null) {
                 SDResponse response = new SDResponse().setThrowable(new IllegalArgumentException("RegistrationId is empty when LoginVisitors"));
                 callback.notifyError(response);
             }

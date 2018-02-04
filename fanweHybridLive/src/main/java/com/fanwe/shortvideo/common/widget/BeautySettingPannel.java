@@ -1,7 +1,6 @@
 package com.fanwe.shortvideo.common.widget;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 import com.fanwe.hybrid.app.App;
 import com.fanwe.live.R;
 import com.fanwe.shortvideo.common.widget.utils.VideoMaterialDownloadProgress;
-import com.fanwe.shortvideo.common.widget.utils.VideoUtil;
 import com.tencent.liteav.basic.log.TXCLog;
 
 import java.util.ArrayList;
@@ -88,10 +86,10 @@ public class BeautySettingPannel extends FrameLayout implements SeekBar.OnSeekBa
     private String[] mFirstGradleString = {
             "风格",
             "美颜",
-            "滤镜",
-            "动效",
-            "抠背",
-            "绿幕",
+            "滤镜"
+//            "动效",
+//            "抠背",
+//            "绿幕",
 //            "采集"
     };
 
@@ -269,7 +267,6 @@ public class BeautySettingPannel extends FrameLayout implements SeekBar.OnSeekBa
 
         setFirstPickerType(view);
 
-        initMotionData();
     }
 
     private void setFirstPickerType(View view){

@@ -22,6 +22,7 @@ import com.fanwe.live.activity.LiveCreateRoomActivity;
 import com.fanwe.live.activity.LiveCreaterAgreementActivity;
 import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.model.UserModel;
+import com.fanwe.shortvideo.videorecord.TCVideoRecordActivity;
 import com.fanwe.shortvideo.videorecord.TCVideoSettingActivity;
 
 
@@ -64,7 +65,7 @@ public class SelectLiveVideoPopupView extends BasePopupBottomView implements Vie
                         Intent intent = new Intent(activity, LiveCreateRoomActivity.class);
                         activity.startActivity(intent);
                     }else {
-                        Intent intent = new Intent(activity, TCVideoSettingActivity.class);
+                        Intent intent = new Intent(activity, TCVideoRecordActivity.class);
                         activity.startActivity(intent);
                     }
                 } else {

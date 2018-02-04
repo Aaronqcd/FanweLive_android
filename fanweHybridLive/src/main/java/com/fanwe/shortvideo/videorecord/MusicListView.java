@@ -13,18 +13,16 @@ import android.widget.TextView;
 
 import com.fanwe.live.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Link on 2016/9/12.
  */
 public class MusicListView extends ListView {
-    List<TCAudioControl.MediaEntity> mData = null;
-    public void setData(List<TCAudioControl.MediaEntity> data){
-        mData = data;
-    }
-    private BaseAdapter adapter;
-    public BaseAdapter getAdapter(){
+
+    private MusicListAdapter adapter;
+    public MusicListAdapter getAdapter(){
         return adapter;
     }
     public MusicListView(Context context){
@@ -39,18 +37,14 @@ public class MusicListView extends ListView {
         this.setChoiceMode(CHOICE_MODE_SINGLE);
 
     }
-    public void setupList(LayoutInflater inflater, List<TCAudioControl.MediaEntity> data){
-        mData = data;
+    public void setupList(LayoutInflater inflater){
 //        SimpleAdapter adapter = new SimpleAdapter(mContext,getData(),R.layout.audio_ctrl_music_item,
 //                new String[]{"name","duration"},
 //                new int[]{R.id.xml_music_item_name,R.id.xml_music_item_duration});
-        adapter = new MusicListAdapter(inflater, data);
+        adapter = new MusicListAdapter(inflater, new ArrayList<TCAudioControl.MediaEntity>());
         setAdapter(adapter);
     }
-    @Override
-    public int getCount() {
-        return mData.size();
-    }
+
     static public class ViewHolder{
         ImageView selected;
         TextView name;
@@ -64,10 +58,17 @@ class MusicListAdapter extends BaseAdapter{
     private Context mContext;
     List<TCAudioControl.MediaEntity> mData = null;
     private LayoutInflater mInflater;
+
     MusicListAdapter(LayoutInflater inflater, List<TCAudioControl.MediaEntity> list){
         mInflater = inflater;
         mData = list;
     }
+
+    public void setData(List<TCAudioControl.MediaEntity> data){
+        mData = data;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return mData.size();
@@ -91,15 +92,15 @@ class MusicListAdapter extends BaseAdapter{
             holder = new MusicListView.ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.xml_music_item_name);
             holder.duration = (TextView) convertView.findViewById(R.id.xml_music_item_duration);
-            holder.selected = (ImageView) convertView.findViewById(R.id.music_item_selected);
+//            holder.selected = (ImageView) convertView.findViewById(R.id.music_item_selected);
             convertView.setTag(holder);
         }
         else{
             holder = (MusicListView.ViewHolder)convertView.getTag();
         }
         holder.name.setText(mData.get(position).title);
-        holder.duration.setText(mData.get(position).durationStr);
-        holder.selected.setVisibility(mData.get(position).state == 1 ? View.VISIBLE : View.GONE);
+        holder.duration.setText(mData.get(position).singer);
+//        holder.selected.setVisibility(mData.get(position).state == 1 ? View.VISIBLE : View.GONE);
         return convertView;
     }
 }
