@@ -114,6 +114,7 @@ import com.fanwe.live.model.Video_private_room_friendsActModel;
 import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
+import com.fanwe.shortvideo.model.VideoCommentListModel;
 import com.sunday.eventbus.SDEventManager;
 
 import java.io.File;
@@ -125,6 +126,19 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
  * @author wxy
  */
 public class CommonInterface {
+    /**
+     * 小视频评论列表
+     */
+    public static void requestCommentList(int page,String sv_id,AppRequestCallback<VideoCommentListModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("commentlist");
+//        params.put("page",page);
+        params.put("sv_id",sv_id);//视频id
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
     /**
      * 上传视频
      */

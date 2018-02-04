@@ -1,5 +1,6 @@
 package com.fanwe.shortvideo.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,11 +23,12 @@ import com.fanwe.live.R;
 import com.fanwe.live.activity.LiveUserHomeActivity;
 import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.utils.GlideUtil;
+import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 
 /**
  * @author wxy
- * Created by wxy on 2018/1/20.
+ *         Created by wxy on 2018/1/20.
  */
 
 public class VideoDetailContainerFragment extends BaseFragment implements View.OnClickListener {
@@ -72,10 +74,27 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
             case R.id.img_close:
                 getActivity().finish();
                 break;
+            case R.id.tv_msg:
+                clickComment();
+                break;
             default:
                 break;
         }
 
+    }
+
+    private void clickComment() {
+        ShortVideoCommentDialog dialog = new ShortVideoCommentDialog(getActivity(),detailModel);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener()
+        {
+
+            @Override
+            public void onDismiss(DialogInterface dialog)
+            {
+
+            }
+        });
+        dialog.showBottom();
     }
 
     private void openShare() {
@@ -114,6 +133,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 
     private void initListener() {
         iv_head_image.setOnClickListener(this);
+        tv_msg.setOnClickListener(this);
         tv_follow.setOnClickListener(this);
         tv_praise_num.setOnClickListener(this);
         tv_gift_num.setOnClickListener(this);
@@ -131,6 +151,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 //            SDViewUtil.replaceView(R.id.fl_msg, child);
 //        }
     }
+
     /**
      * 送礼物
      */
@@ -144,13 +165,13 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                     if (View.VISIBLE != visibility) {
                         SDViewUtil.removeView(mRoomSendGiftView);
                         rel_bottom_view.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         rel_bottom_view.setVisibility(View.GONE);
                     }
                 }
             });
         }
-        mRoomSendGiftView.setIsShortVideo(true,detailModel.sv_id);
+        mRoomSendGiftView.setIsShortVideo(true, detailModel.sv_id);
         mRoomSendGiftView.bindData();
         replaceView(R.id.fl_gift, mRoomSendGiftView);
     }
@@ -161,7 +182,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     protected void addRoomGiftGifView() {
         if (mRoomGiftGifView == null) {
             mRoomGiftGifView = new RoomGiftGifView(getActivity());
-            replaceView(R.id.fl_gift,mRoomGiftGifView);
+            replaceView(R.id.fl_gift, mRoomGiftGifView);
         }
     }
 
@@ -173,18 +194,18 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         tv_praise_num.setText(detail.count_praise);
         Drawable drawable;
         if (true) {
-            drawable =getResources().getDrawable(R.drawable.praise_red_heart);
-        }else{
-            drawable =getResources().getDrawable(R.drawable.praise_hollow_heart);
+            drawable = getResources().getDrawable(R.drawable.praise_red_heart);
+        } else {
+            drawable = getResources().getDrawable(R.drawable.praise_hollow_heart);
         }
-        drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
-        tv_praise_num.setCompoundDrawables(drawable,null,null,null);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        tv_praise_num.setCompoundDrawables(drawable, null, null, null);
         //TODO 礼物个数字段
         tv_gift_num.setText(detail.count_praise);
 
     }
 
-    private void replaceView(int parentId, View child){
+    private void replaceView(int parentId, View child) {
         SDViewUtil.replaceView((ViewGroup) findViewById(parentId), child);
     }
 
