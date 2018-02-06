@@ -14,6 +14,9 @@ public class ShortVideoListModel extends BaseActListModel
 
 	private List<ShortVideoModel> list;
 
+	public String share_title;
+	public String share_content;
+
 	public List<ShortVideoModel> getList()
 	{
 		return list;

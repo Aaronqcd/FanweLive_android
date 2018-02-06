@@ -7,10 +7,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import com.fanwe.hybrid.http.AppRequestCallback;
+import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.library.adapter.SDSimpleRecyclerAdapter;
+import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.adapter.viewholder.SDRecyclerViewHolder;
 import com.fanwe.library.utils.SDToast;
 import com.fanwe.live.R;
+import com.fanwe.live.common.CommonInterface;
 import com.fanwe.shortvideo.activity.ShortVideoDetailActivity;
 import com.fanwe.shortvideo.appview.mian.ItemShortVideoView;
 import com.fanwe.shortvideo.model.ShortVideoModel;
@@ -39,7 +43,7 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
 
     }
     @Override
-    public void onBindData(SDRecyclerViewHolder<ShortVideoModel> holder, final int position, ShortVideoModel model) {
+    public void onBindData(SDRecyclerViewHolder<ShortVideoModel> holder, final int position, final ShortVideoModel model) {
         ItemShortVideoView item0 = holder.get(R.id.item_short_video);
         item0.setModel(model,tag);
         item0.setOnClickListener(new OnClickListener() {
@@ -67,6 +71,14 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
                 }
             }
         });
+        item0.setDeleteItemListener(new ItemShortVideoView.OnDeleteListener() {
+            @Override
+            public void onDelete() {
+                getData().remove(position);
+                notifyDataSetChanged();
+                requestData(model.getSv_id());
+            }
+        });
     }
 
 
@@ -75,6 +87,21 @@ public class LiveTabShortVideoAdapter extends SDSimpleRecyclerAdapter<ShortVideo
     {
         return R.layout.item_live_tab_shortvideo;
     }
+    protected void requestData(String sv_id) {
+        CommonInterface.requestDelVideo(sv_id, new AppRequestCallback<BaseActModel>() {
+            @Override
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
+                    SDToast.showToast("删除成功");
+                }
+            }
 
+            @Override
+            protected void onFinish(SDResponse resp) {
+                super.onFinish(resp);
+            }
+        });
+
+    }
 
 }

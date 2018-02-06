@@ -3,6 +3,7 @@ package com.fanwe.shortvideo.appview.mian;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class ItemShortVideoView extends BaseAppView {
     private TextView tv_content;
     private TextView tv_praise_count;
     private ShortVideoModel model;
+    private OnDeleteListener onDeleteListener;
 
     public ItemShortVideoView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -78,8 +80,19 @@ public class ItemShortVideoView extends BaseAppView {
             tv_praise_count.setCompoundDrawables(drawable,null,null,null);
             SDViewBinder.setTextView(tv_content, model.getSv_content());
             SDViewBinder.setTextView(tv_praise_count, model.getCount_praise());
+            iv_delete.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeleteListener.onDelete();
+                }
+            });
 
         }
     }
-
+public void setDeleteItemListener(OnDeleteListener onDeleteListener){
+        this.onDeleteListener=onDeleteListener;
+}
+public interface OnDeleteListener{
+    void onDelete();
+}
 }

@@ -127,14 +127,26 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
  */
 public class CommonInterface {
     /**
+     * 删除小视频
+     */
+    public static void requestDelVideo(String sv_id, AppRequestCallback<BaseActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("delvideo");
+        params.put("sv_id", sv_id);//视频id
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
      * 小视频评论列表
      */
-    public static void requestCommentList(int page,String sv_id,AppRequestCallback<VideoCommentListModel> listener) {
+    public static void requestCommentList(int page, String sv_id, AppRequestCallback<VideoCommentListModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("commentlist");
 //        params.put("page",page);
-        params.put("sv_id",sv_id);//视频id
+        params.put("sv_id", sv_id);//视频id
         AppHttpUtil.getInstance().get(params, listener);
 
     }
@@ -142,13 +154,13 @@ public class CommonInterface {
     /**
      * 上传视频
      */
-    public static void requestUpLoadVideo(String sv_url,String sv_img,String sv_content,AppRequestCallback<BaseActModel> listener) {
+    public static void requestUpLoadVideo(String sv_url, String sv_img, String sv_content, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("addvideo");
-        params.put("sv_url",sv_url);//链接
-        params.put("sv_img",sv_img);//封面
-        params.put("sv_content",sv_content);//描述
+        params.put("sv_url", sv_url);//链接
+        params.put("sv_img", sv_img);//封面
+        params.put("sv_content", sv_content);//描述
         AppHttpUtil.getInstance().get(params, listener);
 
     }
@@ -200,11 +212,12 @@ public class CommonInterface {
      *
      * @param page
      */
-    public static void requestShortVideoList(int page, AppRequestCallback<ShortVideoListModel> listener) {
+    public static void requestShortVideoList(int page, String user_id, AppRequestCallback<ShortVideoListModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("svlist");
-//        params.put("page", page);
+        params.put("user_id", user_id);
+        params.put("page", page);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

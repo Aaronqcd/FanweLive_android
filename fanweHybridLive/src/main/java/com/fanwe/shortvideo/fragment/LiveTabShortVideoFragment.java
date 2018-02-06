@@ -1,15 +1,18 @@
 package com.fanwe.shortvideo.fragment;
 
-import android.os.Bundle;
-
 import com.fanwe.hybrid.fragment.BaseFragment;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.title.SDTitleItem;
 import com.fanwe.library.title.SDTitleSimple;
+import com.fanwe.library.utils.SDToast;
+import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.library.view.SDRecyclerView;
 import com.fanwe.live.R;
 import com.fanwe.live.common.CommonInterface;
+import com.fanwe.live.dao.UserModelDao;
+import com.fanwe.live.model.PageModel;
+import com.fanwe.live.model.UserModel;
 import com.fanwe.live.view.SDProgressPullToRefreshRecyclerView;
 import com.fanwe.shortvideo.activity.MyVideoListActivity;
 import com.fanwe.shortvideo.adapter.LiveTabShortVideoAdapter;
@@ -32,6 +35,9 @@ public class LiveTabShortVideoFragment extends BaseFragment {
     private LiveTabShortVideoAdapter adapter;
     private List<ShortVideoModel> listModel = new ArrayList<>();
     private int tag = 0;
+    private boolean isComeFromUser = false;
+    private int page = 0;
+    private boolean has_next = true;
 
     @Override
     protected int onCreateContentView() {
@@ -48,8 +54,10 @@ public class LiveTabShortVideoFragment extends BaseFragment {
             tv_title.initRightItem(1);
             tv_title.setMiddleTextBot("我的小视频");
             tv_title.getItemRight(0).setTextBot("编辑");
+            isComeFromUser = true;
         } else {
             tv_title.setMiddleTextBot("小视频");
+            isComeFromUser = false;
         }
 
         tv_title.setmListener(new SDTitleSimple.SDTitleSimpleListener() {
@@ -65,14 +73,14 @@ public class LiveTabShortVideoFragment extends BaseFragment {
 
             @Override
             public void onCLickRight_SDTitleSimple(SDTitleItem v, int index) {
-                if(tag==0) {
+                if (tag == 0) {
                     tv_title.getItemRight(0).setTextBot("完成");
-                    tag=1;
-                }else {
+                    tag = 1;
+                } else {
                     tv_title.getItemRight(0).setTextBot("编辑");
-                    tag=0;
+                    tag = 0;
                 }
-                    adapter.setTag(tag);
+                adapter.setTag(tag);
 
             }
         });
@@ -81,13 +89,7 @@ public class LiveTabShortVideoFragment extends BaseFragment {
         lv_content.getRefreshableView().setGridVertical(2);
         setAdapter();
         initPullToRefresh();
-
-    }
-
-    @Override
-    public void onResume() {
         requestData();
-        super.onResume();
     }
 
     private void setAdapter() {
@@ -96,30 +98,49 @@ public class LiveTabShortVideoFragment extends BaseFragment {
     }
 
     private void initPullToRefresh() {
-        lv_content.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        lv_content.setMode(PullToRefreshBase.Mode.BOTH);
         lv_content.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<SDRecyclerView>() {
 
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<SDRecyclerView> refreshView) {
+                page = 0;
                 requestData();
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<SDRecyclerView> refreshView) {
+                if (has_next) {
+                    page++;
+                    requestData();
+                } else {
+                    SDToast.showToast("没有更多数据了");
+                    lv_content.onRefreshComplete();
+                }
             }
         });
-        requestData();
     }
 
 
     protected void requestData() {
-
-        CommonInterface.requestShortVideoList(1, new AppRequestCallback<ShortVideoListModel>() {
+        String user_id = "";
+        if (isComeFromUser) {
+            UserModel user = UserModelDao.query();
+            if (user == null) {
+                return;
+            }
+            user_id = user.getUser_id();
+        }
+        CommonInterface.requestShortVideoList(page, user_id, new AppRequestCallback<ShortVideoListModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     listModel = actModel.getList();
-                    adapter.updateData(listModel);
+                    if (page == 0) {
+                        adapter.updateData(listModel);
+                    } else {
+                        adapter.appendData(listModel);
+                    }
+                    has_next = listModel.size() < 20 ? false : true;
                 }
             }
 
