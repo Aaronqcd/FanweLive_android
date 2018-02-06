@@ -14,11 +14,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.fanwe.hybrid.activity.BaseActivity;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.model.BaseActModel;
@@ -29,8 +27,6 @@ import com.fanwe.live.utils.GlideUtil;
 import com.fanwe.shortvideo.common.utils.FileUtils;
 import com.fanwe.shortvideo.common.utils.TCConstants;
 import com.fanwe.shortvideo.editor.TCVideoPreprocessActivity;
-import com.fanwe.shortvideo.model.MusicListModel;
-import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwei.jubaosdk.common.util.ToastUtil;
 
 import org.xutils.view.annotation.ViewInject;

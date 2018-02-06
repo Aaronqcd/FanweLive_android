@@ -115,6 +115,7 @@ import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.fanwe.shortvideo.model.VideoCommentListModel;
+import com.sina.weibo.sdk.api.share.Base;
 import com.sunday.eventbus.SDEventManager;
 
 import java.io.File;
@@ -126,6 +127,19 @@ import static com.fanwe.baimei.common.BMCommonInterface.setAppRequestParams;
  * @author wxy
  */
 public class CommonInterface {
+
+    /**
+     * 点赞与取消点赞
+     */
+    public static void requestSetPraise(String sv_id, AppRequestCallback<BaseActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("setpraise");
+        params.put("sv_id", sv_id);//视频id
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
     /**
      * 删除小视频
      */
@@ -179,7 +193,7 @@ public class CommonInterface {
     /**
      * 小视频送礼物
      */
-    public static void requestVideoSendGift(int prop_id, int num, int is_plus, int is_coins, String sv_id, AppRequestCallback<ShortVideoDetailModel> listener) {
+    public static void requestVideoSendGift(int prop_id, int num, int is_plus, int is_coins, String sv_id, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("deal");
         params.putAct("pop_prop");

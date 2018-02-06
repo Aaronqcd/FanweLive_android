@@ -13,20 +13,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.fanwe.hybrid.activity.BaseActivity;
-import com.fanwe.hybrid.http.AppRequestCallback;
-import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.live.R;
-import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.utils.GlideUtil;
 import com.fanwe.shortvideo.fragment.VideoDetailContainerFragment;
-import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoModel;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 
 import org.xutils.view.annotation.ViewInject;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
@@ -44,8 +40,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
     private boolean mInit = false;
     private FrameLayout mFragmentContainer;
     private FragmentManager mFragmentManager;
-    private ArrayList<String> mVideoIdList;
-    private ArrayList<String> mVideoImgList;
+    private List<ShortVideoModel> mVideoList;
     private VideoDetailContainerFragment mRoomFragment=VideoDetailContainerFragment.newInstance();
 
     @Override
@@ -56,7 +51,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
         initView();
         initListener();
         mViewPager.setCurrentItem(mCurrentItem);
-        requestData(mVideoIdList.get(mCurrentItem));
+        loadVideo(mVideoList.get(mCurrentItem).getSv_url());
+        mRoomFragment.updateData(mVideoList.get(mCurrentItem));
 
     }
 
@@ -86,7 +82,8 @@ public class ShortVideoDetailActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                requestData(mVideoIdList.get(position));
+                loadVideo(mVideoList.get(position).getSv_url());
+                mRoomFragment.updateData(mVideoList.get(position));
 
             }
         });
@@ -115,24 +112,6 @@ public class ShortVideoDetailActivity extends BaseActivity {
         });
     }
 
-
-    protected void requestData(String svId) {
-        CommonInterface.requestShortVideoDetails(svId, new AppRequestCallback<ShortVideoDetailModel>() {
-            @Override
-            protected void onSuccess(SDResponse sdResponse) {
-                if (actModel.isOk()) {
-                    loadVideo(actModel.video.get(0).sv_url);
-                    mRoomFragment.updateData(actModel.video.get(0));
-                }
-            }
-
-            @Override
-            protected void onFinish(SDResponse resp) {
-                super.onFinish(resp);
-            }
-        });
-
-    }
 
     /**
      * @param viewGroup
@@ -178,8 +157,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     public void getIntentData() {
         mCurrentItem=getIntent().getIntExtra("position",0);
-        mVideoIdList= getIntent().getStringArrayListExtra("video_id_list");
-        mVideoImgList= getIntent().getStringArrayListExtra("video_img_list");
+        mVideoList = (List<ShortVideoModel>) getIntent().getSerializableExtra("video_list");
 
     }
 
@@ -188,7 +166,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return mVideoIdList.size();
+            return mVideoList.size();
         }
 
         @Override
@@ -200,7 +178,7 @@ public class ShortVideoDetailActivity extends BaseActivity {
         public Object instantiateItem(ViewGroup container, int position) {
             View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_room_item, null);
             ImageView anchor_img = (ImageView) view.findViewById(R.id.anchor_img);
-            GlideUtil.load(mVideoImgList.get(position)).into(anchor_img);
+            GlideUtil.load(mVideoList.get(position).getSv_img()).into(anchor_img);
             view.setId(position);
             container.addView(view);
             return view;

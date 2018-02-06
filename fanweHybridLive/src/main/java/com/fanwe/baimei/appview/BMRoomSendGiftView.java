@@ -8,6 +8,7 @@ import android.view.View;
 import com.fanwe.hybrid.http.AppHttpUtil;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.http.AppRequestParams;
+import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.animator.SDAnim;
 import com.fanwe.library.common.SDSelectManager;
@@ -27,7 +28,6 @@ import com.fanwe.live.model.App_propActModel;
 import com.fanwe.live.model.Deal_send_propActModel;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgPrivateGift;
-import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.tencent.TIMMessage;
 import com.tencent.TIMValueCallBack;
 
@@ -219,7 +219,7 @@ public class BMRoomSendGiftView extends RoomView {
     private void videoSendGift(final LiveGiftModel giftModel, int is_plus,final boolean isDiamond) {
         if (giftModel != null) {
             int is_coins =isDiamond ? 0:1;
-            CommonInterface.requestVideoSendGift(giftModel.getId(), 1,is_plus, is_coins, sv_id,new AppRequestCallback<ShortVideoDetailModel>() {
+            CommonInterface.requestVideoSendGift(giftModel.getId(), 1,is_plus, is_coins, sv_id,new AppRequestCallback<BaseActModel>() {
                 @Override
                 protected void onSuccess(SDResponse resp) {
                     if (actModel.isOk()) {
