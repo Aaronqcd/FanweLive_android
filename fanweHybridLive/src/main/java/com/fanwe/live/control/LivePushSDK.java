@@ -143,25 +143,25 @@ public class LivePushSDK implements
         switch (resolutionType)
         {
             case LiveConstant.VideoQualityType.VIDEO_QUALITY_STANDARD:
-                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION);
+                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION,true,true);
                 mConfig.setVideoBitrate(700); //初始码率
                 mConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_SOFTWARE); //软硬件加速
                 mConfig.setAutoAdjustBitrate(false); //码率自适应
                 break;
             case LiveConstant.VideoQualityType.VIDEO_QUALITY_HIGH:
-                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_HIGH_DEFINITION);
+                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_HIGH_DEFINITION,true,true);
                 mConfig.setVideoBitrate(1000);
                 mConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_SOFTWARE);
                 mConfig.setAutoAdjustBitrate(false);
                 break;
             case LiveConstant.VideoQualityType.VIDEO_QUALITY_SUPER:
-                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_SUPER_DEFINITION);
+                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_SUPER_DEFINITION,true,true);
                 mConfig.setVideoBitrate(1500);
                 mConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_AUTO);
                 mConfig.setAutoAdjustBitrate(false);
                 break;
             default:
-                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION);
+                mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION,true,true);
                 mConfig.setVideoBitrate(700);
                 mConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_SOFTWARE);
                 mConfig.setAutoAdjustBitrate(false);
@@ -179,7 +179,7 @@ public class LivePushSDK implements
         {
             return;
         }
-        mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_LINKMIC_MAIN_PUBLISHER);
+        mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_LINKMIC_MAIN_PUBLISHER,true,true);
         LogUtil.i("setConfigLinkMicMain");
     }
 
@@ -190,7 +190,7 @@ public class LivePushSDK implements
         {
             return;
         }
-        mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_LINKMIC_SUB_PUBLISHER);
+        mPusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_LINKMIC_SUB_PUBLISHER,true,true);
         mConfig.setVideoBitrate(200);
         updatePusherConfig();
         LogUtil.i("setConfigLinkMicSub");
@@ -350,7 +350,7 @@ public class LivePushSDK implements
             return;
         }
         this.mBeautyValue = getRealValue(progress);
-        mPusher.setBeautyFilter(mBeautyValue, mWhitenValue);
+        mPusher.setBeautyFilter(TXLiveConstants.BEAUTY_STYLE_SMOOTH,mBeautyValue, mWhitenValue,mWhitenValue);
     }
 
     @Override
@@ -398,7 +398,7 @@ public class LivePushSDK implements
             return;
         }
         this.mWhitenValue = getRealValue(progress);
-        mPusher.setBeautyFilter(mBeautyValue, mWhitenValue);
+        mPusher.setBeautyFilter(TXLiveConstants.BEAUTY_STYLE_SMOOTH,mBeautyValue, mWhitenValue,mWhitenValue);
     }
 
     @Override

@@ -130,7 +130,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile fileTree(dir: 'libs/upload', include: ['*.jar'])
-    compile fileTree(dir: 'src/main/jniLibs', includes: ['*.jar'])
+//    compile fileTree(dir: 'src/main/jniLibs', includes: ['*.jar'])
     compile(name: 'libraryAdapterHttp-release', ext: 'aar')
     compile(name: 'libraryAndroidPercentSupportExtend-release', ext: 'aar')
     compile(name: 'libraryAndroidPullToRefresh-release', ext: 'aar')
@@ -151,8 +151,8 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.github.ctiao:DanmakuFlameMaster:0.5.3'//bilibili弹幕
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+//    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+//    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.google.android:flexbox:0.2.6'
     compile 'com.yalantis:ucrop:2.2.0'
@@ -166,7 +166,7 @@ dependencies {
     compile 'com.scottsu:stateslayout:1.0.8'
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
     // 导入短视频SDK aar
-    compile(name: 'LiteAVSDK_UGC_3.9.2754', ext: 'aar')
+    compile(name: 'LiteAVSDK_Professional_4.2.3425', ext: 'aar')
     compile 'com.android.support:multidex:1.0.1'
     compile(name: 'zxing-1.8.4', ext: 'aar')
     compile(name: 'barcodescanner-core-1.8.4', ext: 'aar')
