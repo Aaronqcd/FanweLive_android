@@ -28,6 +28,7 @@ import com.fanwe.live.model.App_propActModel;
 import com.fanwe.live.model.Deal_send_propActModel;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgPrivateGift;
+import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.tencent.TIMMessage;
 import com.tencent.TIMValueCallBack;
 

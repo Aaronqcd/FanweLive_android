@@ -26,9 +26,11 @@ import com.fanwe.live.R;
 import com.fanwe.live.activity.LiveUserHomeActivity;
 import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.common.CommonInterface;
+import com.fanwe.live.model.App_followActModel;
 import com.fanwe.live.utils.GlideUtil;
 import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
-import com.fanwe.shortvideo.model.ShortVideoModel;
+import com.fanwe.shortvideo.model.ShortVideoDetailModel;
+import com.fanwe.shortvideo.model.VideoPraiseModel;
 
 /**
  * @author wxy
@@ -51,22 +53,22 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     private RoomGiftGifView mRoomGiftGifView;
     private BMRoomSendGiftView mRoomSendGiftView;
 
-    private ShortVideoModel videoModel;
+    private ShortVideoDetailModel.VideoDetail detailModel;
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_head_image:
                 Intent intent = new Intent(getActivity(), LiveUserHomeActivity.class);
-                intent.putExtra(LiveUserHomeActivity.EXTRA_USER_ID, videoModel.getUser_id());
+                intent.putExtra(LiveUserHomeActivity.EXTRA_USER_ID, detailModel.user_id);
                 getActivity().startActivity(intent);
                 getActivity().finish();
                 break;
             case R.id.tv_follow:
-                openShare();
+                requestFollow();
                 break;
             case R.id.tv_praise_num:
-                requestPraiseData();
+                clickPraise();
                 break;
             case R.id.tv_gift_num:
                 addRoomSendGiftView();
@@ -87,33 +89,50 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 
     }
 
-    private void requestPraiseData() {
-        CommonInterface.requestSetPraise(videoModel.getSv_id(), new AppRequestCallback<BaseActModel>() {
+    private void requestFollow() {
+        CommonInterface.requestFollow(detailModel.user_id, 0, new AppRequestCallback<App_followActModel>() {
+
             @Override
-            protected void onSuccess(SDResponse sdResponse) {
+            protected void onSuccess(SDResponse resp) {
                 if (actModel.isOk()) {
-                    Drawable drawable;
-                    if (videoModel.getIs_praise().equals("1")) {
-                        tv_praise_num.setText(Integer.valueOf(videoModel.getCount_praise()) - 1);
-                        drawable = getResources().getDrawable(R.drawable.praise_hollow_heart);
-                    } else {
-                        tv_praise_num.setText(Integer.valueOf(videoModel.getCount_praise()) + 1);
-                        drawable = getResources().getDrawable(R.drawable.praise_red_heart);
-                    }
-                    drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-                    tv_praise_num.setCompoundDrawables(drawable, null, null, null);
+                    tv_follow.setVisibility(View.GONE);
                 }
             }
 
             @Override
             protected void onFinish(SDResponse resp) {
                 super.onFinish(resp);
+                dismissProgressDialog();
+            }
+        });
+    }
+
+    private void clickPraise() {
+        CommonInterface.requestSetPraise(detailModel.sv_id, new AppRequestCallback<VideoPraiseModel>() {
+            @Override
+            protected void onSuccess(SDResponse resp) {
+                if (actModel.isOk()) {
+                    Drawable drawable;
+                    if (actModel.pra_now == 1) {
+                        drawable = getResources().getDrawable(R.drawable.praise_red_heart);
+                        tv_praise_num.setText(String.valueOf(Integer.valueOf(detailModel.count_praise) + 1));
+                    } else {
+                        drawable = getResources().getDrawable(R.drawable.praise_hollow_heart);
+                        if (detailModel.count_praise.equals("0")) {
+                            tv_praise_num.setText(detailModel.count_praise);
+                        } else {
+                            tv_praise_num.setText(String.valueOf(Integer.valueOf(detailModel.count_praise) - 1));
+                        }
+                    }
+                    drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                    tv_praise_num.setCompoundDrawables(drawable, null, null, null);
+                }
             }
         });
     }
 
     private void clickComment() {
-        ShortVideoCommentDialog dialog = new ShortVideoCommentDialog(getActivity(), videoModel);
+        ShortVideoCommentDialog dialog = new ShortVideoCommentDialog(getActivity(), detailModel);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
             @Override
@@ -125,8 +144,8 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     }
 
     private void openShare() {
-        UmengSocialManager.openShare("车到山前必有路，来到映秀刹不住", videoModel.getSv_content(), videoModel.getSv_img(),
-                videoModel.getSv_url(), getActivity(), null);
+        UmengSocialManager.openShare("车到山前必有路，来到映秀刹不住", "车到山前必有路，来到映秀刹不住小视频,快来一起看~", detailModel.sv_img,
+                detailModel.sv_url, getActivity(), null);
     }
 
 
@@ -198,7 +217,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                 }
             });
         }
-        mRoomSendGiftView.setIsShortVideo(true, videoModel.getSv_id());
+        mRoomSendGiftView.setIsShortVideo(true, detailModel.sv_id);
         mRoomSendGiftView.bindData();
         replaceView(R.id.fl_gift, mRoomSendGiftView);
     }
@@ -213,21 +232,22 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         }
     }
 
-    public void updateData(ShortVideoModel model) {
-        videoModel = model;
-        GlideUtil.load(model.getHead_image()).into(iv_head_image);
-        tv_user_name.setText(model.getNick_name());
-        tv_msg.setText(model.getCount_comment());
-        tv_praise_num.setText(model.getCount_praise());
+    public void updateData(ShortVideoDetailModel.VideoDetail detail) {
+        detailModel = detail;
+        GlideUtil.load(detail.head_image).into(iv_head_image);
+        tv_user_name.setText(detail.nick_name);
+        tv_msg.setText(detail.count_comment);
+        tv_praise_num.setText(detail.count_praise);
+        tv_follow.setVisibility(detail.is_attention == 0 ? View.VISIBLE : View.GONE);
         Drawable drawable;
-        if (model.getIs_praise().equals("1")) {
+        if (detail.is_praise.equals("1")) {
             drawable = getResources().getDrawable(R.drawable.praise_red_heart);
         } else {
             drawable = getResources().getDrawable(R.drawable.praise_hollow_heart);
         }
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         tv_praise_num.setCompoundDrawables(drawable, null, null, null);
-        tv_gift_num.setText(model.getCount_gift());
+        tv_gift_num.setText(detail.count_gift);
 
     }
 

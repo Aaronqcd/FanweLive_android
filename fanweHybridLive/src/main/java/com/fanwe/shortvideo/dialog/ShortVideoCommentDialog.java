@@ -6,14 +6,14 @@ import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.dialog.LiveBaseDialog;
 import com.fanwe.live.event.ELivePrivateChatDialogDissmis;
 import com.fanwe.shortvideo.appview.mian.VideoCommentView;
-import com.fanwe.shortvideo.model.ShortVideoModel;
+import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 
 /**
  * Created by wxy on 2018/2/4.
  */
 public class ShortVideoCommentDialog extends LiveBaseDialog {
-    private ShortVideoModel detailModel;
-    public ShortVideoCommentDialog(Activity activity, ShortVideoModel detailModel) {
+    private ShortVideoDetailModel.VideoDetail detailModel;
+    public ShortVideoCommentDialog(Activity activity, ShortVideoDetailModel.VideoDetail detailModel) {
         super(activity);
         this.detailModel=detailModel;
         init();
@@ -21,7 +21,7 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
 
     private void init() {
         VideoCommentView videoCommentView = new VideoCommentView(getOwnerActivity());
-        videoCommentView.setTextData(detailModel.getCount_comment(),detailModel.getSv_time(),detailModel.getClick());
+        videoCommentView.setTextData(detailModel.count_comment,detailModel.sv_time,detailModel.click);
         videoCommentView.setClickListener(new VideoCommentView.ClickListener() {
             @Override
             public void onClickBack() {
@@ -29,7 +29,7 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
             }
         });
         setContentView(videoCommentView);
-        videoCommentView.requestData(detailModel.getSv_id());
+        videoCommentView.requestData(detailModel.sv_id);
         SDViewUtil.setHeight(videoCommentView, SDViewUtil.getScreenHeight() / 2);
 
         setCanceledOnTouchOutside(true);
