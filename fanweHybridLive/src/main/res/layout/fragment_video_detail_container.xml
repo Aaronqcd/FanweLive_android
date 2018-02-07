@@ -93,7 +93,6 @@
             android:drawableLeft="@drawable/short_video_btn_comment"
             android:drawablePadding="5dp"
             android:textSize="14sp"
-            android:text="12"
             android:textColor="@color/white" />
 
         <LinearLayout
@@ -110,7 +109,6 @@
                 android:gravity="center"
                 android:drawableLeft="@drawable/praise_hollow_heart"
                 android:drawablePadding="5dp"
-                android:text="12"
                 android:textColor="@color/white" />
 
             <TextView
@@ -121,7 +119,6 @@
                 android:gravity="center"
                 android:drawableLeft="@drawable/chat_recommend_gift_icon"
                 android:drawablePadding="5dp"
-                android:text="12"
                 android:textColor="@color/white" />
 
             <ImageView

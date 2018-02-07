@@ -25,8 +25,11 @@ public class ShortVideoDetailModel extends BaseActModel {
         public String nick_name;//映秀官方巡查,
         public String head_image;//http;////wx.qlogo.cn/mmopen/vi_32/KbC410CniaDHPZN5NZ8JMpXia3RdicbxPxdwCpFQYtmxvkSe6dUbEQXRXzaicnde5GAIoiaXKoctEj85o5cHANyAeYw/96,
         public String thumb_head_image;//,
-        public String count_praise;//2,
+        public String count_praise="0";//2,
         public String count_comment;//10
+        public String count_gift;
+        public String is_praise;
+        public int is_attention;
 
     }
 }

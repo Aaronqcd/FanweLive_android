@@ -67,7 +67,7 @@ public class VideoCommentItemView extends BaseAppView {
             } else {
                 SDViewBinder.setTextView(tv_content, model.com_content);
             }
-            Date date=new Date(new Long(model.com_time));
+            Date date=new Date(new Long(model.com_time)*1000);
             SDViewBinder.setTextView(tv_date, new SimpleDateFormat("yyyy-MM-dd").format(date));
 
         }

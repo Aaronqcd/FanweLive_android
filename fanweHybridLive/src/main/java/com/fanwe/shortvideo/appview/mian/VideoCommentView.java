@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
+import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.view.SDRecyclerView;
 import com.fanwe.live.R;
 import com.fanwe.live.appview.BaseAppView;
@@ -40,7 +41,8 @@ public class VideoCommentView extends BaseAppView {
     private TextView tv_data;
     @ViewInject(R.id.lv_comment)
     private SDProgressPullToRefreshRecyclerView lv_comment;
-
+    private int page = 0;
+    private boolean has_next = true;
     private String sv_id;
     private ShortVideoCommentAdapter adapter;
     private List<VideoCommentListModel.CommentItemModel> listModel = new ArrayList<>();
@@ -70,7 +72,7 @@ public class VideoCommentView extends BaseAppView {
     }
     public void setTextData(String commentNum,String data,String playNum){
         tv_comment_num.setText(commentNum);
-        Date date=new Date(new Long(data));
+        Date date=new Date(new Long(data)*1000);
         tv_data.setText(playNum+"播放"+new SimpleDateFormat("yyyy.MM.dd").format(date));
 
     }
@@ -100,29 +102,41 @@ public class VideoCommentView extends BaseAppView {
     }
 
     private void initPullToRefresh() {
-        lv_comment.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        lv_comment.setMode(PullToRefreshBase.Mode.BOTH);
         lv_comment.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<SDRecyclerView>() {
 
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<SDRecyclerView> refreshView) {
+                page=0;
                 requestData(sv_id);
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<SDRecyclerView> refreshView) {
+                if (has_next) {
+                    page++;
+                    requestData(sv_id);
+                } else {
+                    SDToast.showToast("没有更多数据了");
+                    lv_comment.onRefreshComplete();
+                }
             }
         });
-        requestData(sv_id);
     }
 
     public void requestData(String sv_id) {
         this.sv_id=sv_id;
-        CommonInterface.requestCommentList(1, sv_id, new AppRequestCallback<VideoCommentListModel>() {
+        CommonInterface.requestCommentList(page, sv_id, new AppRequestCallback<VideoCommentListModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     listModel = actModel.getList();
-                    adapter.updateData(listModel);
+                    if (page == 0) {
+                        adapter.updateData(listModel);
+                    } else {
+                        adapter.appendData(listModel);
+                    }
+                    has_next = listModel.size() < 20 ? false : true;
                 }
             }
 

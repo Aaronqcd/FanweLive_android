@@ -115,7 +115,7 @@ import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.fanwe.shortvideo.model.VideoCommentListModel;
-import com.sina.weibo.sdk.api.share.Base;
+import com.fanwe.shortvideo.model.VideoPraiseModel;
 import com.sunday.eventbus.SDEventManager;
 
 import java.io.File;
@@ -131,7 +131,7 @@ public class CommonInterface {
     /**
      * 点赞与取消点赞
      */
-    public static void requestSetPraise(String sv_id, AppRequestCallback<BaseActModel> listener) {
+    public static void requestSetPraise(String sv_id, AppRequestCallback<VideoPraiseModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("setpraise");
@@ -159,7 +159,7 @@ public class CommonInterface {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("commentlist");
-//        params.put("page",page);
+        params.put("page",page);
         params.put("sv_id", sv_id);//视频id
         AppHttpUtil.getInstance().get(params, listener);
 
