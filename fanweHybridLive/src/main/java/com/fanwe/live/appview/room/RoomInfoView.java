@@ -1,7 +1,12 @@
 package com.fanwe.live.appview.room;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -34,6 +39,8 @@ import com.fanwe.live.model.UserModel;
 import com.fanwe.live.utils.GlideUtil;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 直播间顶部view
@@ -83,7 +90,31 @@ public class RoomInfoView extends RoomView
     private int hasFollow;
     private SDRunnableBlocker mRunnableBlocker;
     private ClickListener clickListener;
+    private static Timer mTimer;
+    private int mCountNumber = 0;
 
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if(msg.what==1){
+                new AlertDialog.Builder(getContext()).setMessage("要关注主播吗？")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+                            }
+                        }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clickFollow();
+                    }
+                }).show();
+            }
+            return false;
+        }
+    });
 
     public void setClickListener(ClickListener clickListener)
     {
@@ -130,8 +161,22 @@ public class RoomInfoView extends RoomView
         hlv_viewer.setLinearHorizontal();
         adapter = new LiveViewerListRecyclerAdapter(getActivity());
         hlv_viewer.setAdapter(adapter);
-    }
 
+    }
+    private void startTimer(int seconds){
+        mCountNumber=seconds;
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (mCountNumber < 0) {
+                    mHandler.sendEmptyMessage(1);
+                }
+                mCountNumber--;
+            }
+        };
+        mTimer = new Timer();
+        mTimer.schedule(timerTask, 0, 1000);
+    }
     public void setTextVideoTitle(String text)
     {
         tv_video_title.setText(text);
@@ -416,6 +461,9 @@ public class RoomInfoView extends RoomView
             {
                 SDViewUtil.setVisible(ll_follow);
             }
+        }
+        if(ll_follow.getVisibility() == VISIBLE){
+            startTimer(15);
         }
     }
 

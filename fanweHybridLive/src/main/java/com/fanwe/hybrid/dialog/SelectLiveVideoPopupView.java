@@ -23,7 +23,6 @@ import com.fanwe.live.activity.LiveCreaterAgreementActivity;
 import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.model.UserModel;
 import com.fanwe.shortvideo.videorecord.TCVideoRecordActivity;
-import com.fanwe.shortvideo.videorecord.TCVideoSettingActivity;
 
 
 /**

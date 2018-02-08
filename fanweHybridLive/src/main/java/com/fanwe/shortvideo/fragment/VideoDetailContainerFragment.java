@@ -28,6 +28,7 @@ import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.model.App_followActModel;
 import com.fanwe.live.utils.GlideUtil;
+import com.fanwe.shortvideo.appview.mian.VideoSendMsgView;
 import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.VideoPraiseModel;
@@ -52,6 +53,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     private FrameLayout fl_gift;
     private RoomGiftGifView mRoomGiftGifView;
     private BMRoomSendGiftView mRoomSendGiftView;
+    private VideoSendMsgView videoSendMsgView;
 
     private ShortVideoDetailModel.VideoDetail detailModel;
 
@@ -133,11 +135,10 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 
     private void clickComment() {
         ShortVideoCommentDialog dialog = new ShortVideoCommentDialog(getActivity(), detailModel);
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
+        dialog.setSendMsgListener(new ShortVideoCommentDialog.SendMsgListener() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
-
+            public void onSendMsgClick() {
+                addSendMsgView();
             }
         });
         dialog.showBottom();
@@ -189,13 +190,15 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     }
 
     /**
-     * 进入提示
+     * 写评论
      */
-    protected void addMsgView() {
-//        if (mRoomViewerJoinRoomView == null) {
-//            mRoomViewerJoinRoomView = new RoomViewerJoinRoomView(this);
-//            SDViewUtil.replaceView(R.id.fl_msg, child);
-//        }
+    protected void addSendMsgView() {
+        if (videoSendMsgView == null) {
+            videoSendMsgView = new VideoSendMsgView(getActivity());
+            SDViewUtil.setVisible(videoSendMsgView);
+            videoSendMsgView.setSvId(detailModel.sv_id);
+            replaceView(R.id.fl_send_msg, videoSendMsgView);
+        }
     }
 
     /**

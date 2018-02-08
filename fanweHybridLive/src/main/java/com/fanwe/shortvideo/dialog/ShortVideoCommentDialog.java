@@ -9,10 +9,12 @@ import com.fanwe.shortvideo.appview.mian.VideoCommentView;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 
 /**
+ * @author wxy
  * Created by wxy on 2018/2/4.
  */
 public class ShortVideoCommentDialog extends LiveBaseDialog {
     private ShortVideoDetailModel.VideoDetail detailModel;
+    private SendMsgListener msgListener;
     public ShortVideoCommentDialog(Activity activity, ShortVideoDetailModel.VideoDetail detailModel) {
         super(activity);
         this.detailModel=detailModel;
@@ -27,11 +29,16 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
             public void onClickBack() {
                 dismiss();
             }
+
+            @Override
+            public void onClickSendMsg() {
+                msgListener.onSendMsgClick();
+                dismiss();
+            }
         });
         setContentView(videoCommentView);
         videoCommentView.requestData(detailModel.sv_id);
         SDViewUtil.setHeight(videoCommentView, SDViewUtil.getScreenHeight() / 2);
-
         setCanceledOnTouchOutside(true);
         paddingLeft(0);
         paddingRight(0);
@@ -44,5 +51,13 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
         if (event.dialog_close_type == 0) {
             dismiss();
         }
+    }
+
+    public void setSendMsgListener(SendMsgListener listener){
+        msgListener=listener;
+    }
+
+    public interface SendMsgListener{
+        void onSendMsgClick();
     }
 }

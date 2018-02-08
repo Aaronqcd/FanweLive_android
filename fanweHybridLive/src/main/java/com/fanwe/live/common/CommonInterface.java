@@ -153,6 +153,19 @@ public class CommonInterface {
     }
 
     /**
+     * 小视频添加评论
+     */
+    public static void requestAddComment(String sv_id,String com_content, AppRequestCallback<BaseActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("addcomment");
+        params.put("sv_id", sv_id);//视频id
+        params.put("com_content", com_content);
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
      * 小视频评论列表
      */
     public static void requestCommentList(int page, String sv_id, AppRequestCallback<VideoCommentListModel> listener) {

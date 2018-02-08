@@ -90,7 +90,9 @@ public class VideoCommentView extends BaseAppView {
         edit_comment.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (clickListener != null) {
+                    clickListener.onClickSendMsg();
+                }
             }
         });
 
@@ -152,6 +154,7 @@ public class VideoCommentView extends BaseAppView {
 
     public interface ClickListener {
         void onClickBack();
+        void onClickSendMsg();
     }
 
     public void setClickListener(VideoCommentView.ClickListener clickListener) {

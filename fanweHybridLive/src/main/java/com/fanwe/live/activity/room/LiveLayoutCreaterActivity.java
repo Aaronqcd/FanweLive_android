@@ -154,7 +154,7 @@ public class LiveLayoutCreaterActivity extends LiveLayoutExtendActivity implemen
             {
                 mRoomCountDownView = new RoomCountDownView(this);
                 addView(mRoomCountDownView);
-                mRoomCountDownView.startCountDown(3);
+                mRoomCountDownView.startCountDown(15);
             }
         }
     }
