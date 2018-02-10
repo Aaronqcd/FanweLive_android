@@ -32,6 +32,7 @@ import android.widget.ToggleButton;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.common.SDSelectManager;
+import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.view.SDTabText;
 import com.fanwe.library.view.select.SDSelectViewManager;
 import com.fanwe.live.R;
@@ -40,6 +41,11 @@ import com.fanwe.shortvideo.common.utils.TCUtils;
 import com.fanwe.shortvideo.model.MusicListModel;
 import com.tencent.ugc.TXUGCRecord;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +56,7 @@ import java.util.Map;
  * Created by Link on 2016/9/8.
  */
 
-public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarChangeListener, Button.OnClickListener {
+public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarChangeListener, Button.OnClickListener{
     public static final int NEXTBGM = 1;
     public static final int PREVIOUSBGM = 2;
     public static final int RANDOMBGM = 3;
@@ -144,6 +150,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     }
 
     private synchronized void playBGM(String name, String path, int pos) {
+        if(pos >= mMusicListData.size()) return;
         if (mLastPlayingItemPos >= 0 && mLastPlayingItemPos != pos) {
             mMusicListData.get(mLastPlayingItemPos).state = 0;
         }
@@ -156,6 +163,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         mTogCheck = true;
         mMusicList.getAdapter().notifyDataSetChanged();
     }
+
 
     public synchronized void stopBGM() {
         mBGMSwitch = false;
