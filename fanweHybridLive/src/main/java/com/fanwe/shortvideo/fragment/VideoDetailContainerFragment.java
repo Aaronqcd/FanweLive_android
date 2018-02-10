@@ -28,6 +28,7 @@ import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.model.App_followActModel;
 import com.fanwe.live.utils.GlideUtil;
+import com.fanwe.shortvideo.activity.ShortVideoDetailActivity;
 import com.fanwe.shortvideo.appview.mian.VideoSendMsgView;
 import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
@@ -43,6 +44,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     private TextView tv_user_name;
     private TextView tv_follow;
     private RelativeLayout rel_bottom_view;
+    private RelativeLayout rootView;
     private TextView tv_msg;
     private TextView tv_praise_num;
     private TextView tv_gift_num;
@@ -57,9 +59,17 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 
     private ShortVideoDetailModel.VideoDetail detailModel;
 
+    private CallBackValue callBackValue;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.rootView:
+                if(callBackValue == null){
+                    callBackValue =(CallBackValue) getActivity();
+                }
+                callBackValue.SendMessageValue();
+                break;
             case R.id.iv_head_image:
                 Intent intent = new Intent(getActivity(), LiveUserHomeActivity.class);
                 intent.putExtra(LiveUserHomeActivity.EXTRA_USER_ID, detailModel.user_id);
@@ -163,6 +173,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        rootView = (RelativeLayout) view.findViewById(R.id.rootView);
         iv_head_image = (CircleImageView) view.findViewById(R.id.iv_head_image);
         tv_user_name = (TextView) view.findViewById(R.id.tv_user_name);
         tv_follow = (TextView) view.findViewById(R.id.tv_follow);
@@ -179,6 +190,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     }
 
     private void initListener() {
+        rootView.setOnClickListener(this);
         iv_head_image.setOnClickListener(this);
         tv_msg.setOnClickListener(this);
         tv_follow.setOnClickListener(this);
@@ -258,4 +270,8 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         SDViewUtil.replaceView((ViewGroup) findViewById(parentId), child);
     }
 
+    //定义一个回调接口
+    public interface CallBackValue{
+         void SendMessageValue();
+    }
 }

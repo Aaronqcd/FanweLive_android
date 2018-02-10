@@ -1,10 +1,10 @@
 package com.fanwe.live.appview.room;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -38,6 +38,8 @@ import com.fanwe.live.model.RoomUserModel;
 import com.fanwe.live.model.UserModel;
 import com.fanwe.live.utils.GlideUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,21 +50,25 @@ import java.util.TimerTask;
 public class RoomInfoView extends RoomView
 {
 
+    private Activity mContext;
     public RoomInfoView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
+        this.mContext= (Activity) context;
         init();
     }
 
     public RoomInfoView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
+        this.mContext= (Activity) context;
         init();
     }
 
     public RoomInfoView(Context context)
     {
         super(context);
+        this.mContext= (Activity) context;
         init();
     }
 
@@ -90,28 +96,13 @@ public class RoomInfoView extends RoomView
     private int hasFollow;
     private SDRunnableBlocker mRunnableBlocker;
     private ClickListener clickListener;
-    private static Timer mTimer;
+    private Timer mTimer;
+    private TimerTask mTimerTask;
     private int mCountNumber = 0;
 
-    private Handler mHandler = new Handler(new Handler.Callback() {
+   private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            if(msg.what==1){
-                new AlertDialog.Builder(getContext()).setMessage("要关注主播吗？")
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-
-                            }
-                        }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        clickFollow();
-                    }
-                }).show();
-            }
             return false;
         }
     });
@@ -163,19 +154,38 @@ public class RoomInfoView extends RoomView
         hlv_viewer.setAdapter(adapter);
 
     }
+    private AlertDialog.Builder alertDialog;
     private void startTimer(int seconds){
-        mCountNumber=seconds;
-        TimerTask timerTask = new TimerTask() {
+        if(alertDialog == null){
+            alertDialog = new AlertDialog.Builder(getContext());
+            alertDialog.setMessage("要关注主播吗？");
+            alertDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                }
+            });
+            alertDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    clickFollow();
+                    dialog.dismiss();
+                }
+            });
+        }
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mCountNumber < 0) {
-                    mHandler.sendEmptyMessage(1);
+                if(mContext != null && !mContext.isFinishing()){
+                    if(alertDialog != null){
+                        alertDialog.show();
+                    }
                 }
-                mCountNumber--;
+
             }
-        };
-        mTimer = new Timer();
-        mTimer.schedule(timerTask, 0, 1000);
+        },15*1000);
     }
     public void setTextVideoTitle(String text)
     {
@@ -277,6 +287,12 @@ public class RoomInfoView extends RoomView
             showLlUserNumber(true);
             showLlRoomCoomand(false);
         }
+
+        // 更新主播播放时长
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        long time=new Long(actModel.begin_time)/1000;
+        SDViewBinder.setTextView(tv_viewer_number, formatter.format(new Date(time)));
+
     }
 
     protected void clickFollow()
@@ -388,11 +404,12 @@ public class RoomInfoView extends RoomView
      */
     public void updateViewerNumber(int viewerNumber)
     {
-        if (viewerNumber < 0)
-        {
-            viewerNumber = 0;
-        }
-        SDViewBinder.setTextView(tv_viewer_number, String.valueOf(viewerNumber));
+//        if (viewerNumber < 0)
+//        {
+//            viewerNumber = 0;
+//        }
+//        SDViewBinder.setTextView(tv_viewer_number, String.valueOf(viewerNumber));
+
     }
 
     protected void clickHeadImage(String to_userid)

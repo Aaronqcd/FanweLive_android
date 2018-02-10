@@ -27,6 +27,9 @@ import com.fanwe.live.utils.GlideUtil;
 import com.fanwe.shortvideo.common.utils.FileUtils;
 import com.fanwe.shortvideo.common.utils.TCConstants;
 import com.fanwe.shortvideo.editor.TCVideoPreprocessActivity;
+import com.fanwe.shortvideo.model.SignModel;
+import com.fanwe.shortvideo.videoupload.TXUGCPublish;
+import com.fanwe.shortvideo.videoupload.TXUGCPublishTypeDef;
 import com.fanwei.jubaosdk.common.util.ToastUtil;
 
 import org.xutils.view.annotation.ViewInject;
@@ -71,7 +74,7 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
                 downloadRecord();
                 break;
             case R.id.tv_upload_video:
-                requestData();
+                requestSignData();
                 break;
         }
     }
@@ -225,7 +228,47 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
         return values;
     }
 
-    protected void requestData() {
+    private void publish(String sign) {
+        TXUGCPublish txugcPublish = new TXUGCPublish(this.getApplicationContext(), "customID");
+        txugcPublish.setListener(new TXUGCPublishTypeDef.ITXVideoPublishListener() {
+            @Override
+            public void onPublishProgress(long uploadBytes, long totalBytes) {
+
+            }
+
+            @Override
+            public void onPublishComplete(TXUGCPublishTypeDef.TXPublishResult result) {
+                requestData(result.videoURL,result.coverURL);
+
+            }
+        });
+
+        TXUGCPublishTypeDef.TXPublishParam param = new TXUGCPublishTypeDef.TXPublishParam();
+        // signature计算规则可参考 https://www.qcloud.com/document/product/266/9221
+        param.signature = sign;
+        param.videoPath = videoPath;
+        param.coverPath = coverPath;
+        txugcPublish.publishVideo(param);
+    }
+
+    protected void requestSignData() {
+        CommonInterface.requestUpLoadSign(new AppRequestCallback<SignModel>() {
+            @Override
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
+                    publish(actModel.sign);
+                }
+            }
+
+            @Override
+            protected void onFinish(SDResponse resp) {
+                super.onFinish(resp);
+            }
+        });
+
+    }
+
+    protected void requestData(String videoPath,String coverPath) {
         CommonInterface.requestUpLoadVideo(videoPath, coverPath, edit_video_comment.getText().toString(), new AppRequestCallback<BaseActModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {

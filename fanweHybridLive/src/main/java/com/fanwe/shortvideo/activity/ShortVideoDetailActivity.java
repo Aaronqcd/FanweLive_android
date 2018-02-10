@@ -2,6 +2,7 @@ package com.fanwe.shortvideo.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.UiThread;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -30,15 +31,16 @@ import java.util.ArrayList;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 
-public class ShortVideoDetailActivity extends BaseActivity {
+public class ShortVideoDetailActivity extends BaseActivity implements VideoDetailContainerFragment.CallBackValue {
     private static String TAG = "ShortVideoDetailActivity";
 
     @ViewInject(R.id.vertical_viewpager)
     private VerticalViewPager mViewPager;
     private int mCurrentItem;
-    private TXVodPlayer mVodPlayer;
+    public TXVodPlayer mVodPlayer;
     private TXCloudVideoView mVideoView;
     private RelativeLayout mRoomContainer;
+    private ImageView mStartPreview;
     private PagerAdapter mPagerAdapter;
     private boolean mInit = false;
     private FrameLayout mFragmentContainer;
@@ -61,6 +63,14 @@ public class ShortVideoDetailActivity extends BaseActivity {
 
     private void initView() {
         mRoomContainer = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.view_room_container, null);
+        mStartPreview = (ImageView) mRoomContainer.findViewById(R.id.record_preview);
+        mStartPreview.setBackgroundResource(R.drawable.icon_record_pause);
+        mStartPreview.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mStartPreview.setVisibility(View.GONE);
+            }
+        },500);
         mVideoView = (TXCloudVideoView) mRoomContainer.findViewById(R.id.texture_view);
         mFragmentContainer = (FrameLayout) mRoomContainer.findViewById(R.id.fragment_container);
         mFragmentManager = getSupportFragmentManager();
@@ -85,6 +95,14 @@ public class ShortVideoDetailActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                mStartPreview.setBackgroundResource(R.drawable.icon_record_pause);
+                mStartPreview.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStartPreview.setVisibility(View.GONE);
+                    }
+                },500);
+
                 requestData(mVideoIdList.get(position));
 
             }
@@ -179,6 +197,26 @@ public class ShortVideoDetailActivity extends BaseActivity {
         mCurrentItem=getIntent().getIntExtra("position",0);
         mVideoIdList= getIntent().getStringArrayListExtra("video_id_list");
         mVideoImgList= getIntent().getStringArrayListExtra("video_img_list");
+
+    }
+
+    @Override
+    public void SendMessageValue() {
+        if(mVodPlayer != null && mVodPlayer.isPlaying()){
+            mVodPlayer.stopPlay(true); // true代表清除最后一帧画面
+            mStartPreview.setBackgroundResource(R.drawable.icon_record_start);
+            mStartPreview.setVisibility(View.VISIBLE);
+        }else{
+            requestData(mVideoIdList.get(mCurrentItem));
+            mStartPreview.setBackgroundResource(R.drawable.icon_record_pause);
+            mStartPreview.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mStartPreview.setVisibility(View.GONE);
+                }
+            },500);
+
+        }
 
     }
 

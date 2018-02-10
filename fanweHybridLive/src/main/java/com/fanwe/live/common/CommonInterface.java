@@ -114,6 +114,7 @@ import com.fanwe.live.model.Video_private_room_friendsActModel;
 import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
+import com.fanwe.shortvideo.model.SignModel;
 import com.fanwe.shortvideo.model.VideoCommentListModel;
 import com.fanwe.shortvideo.model.VideoPraiseModel;
 import com.sunday.eventbus.SDEventManager;
@@ -175,6 +176,17 @@ public class CommonInterface {
         params.put("page",page);
         params.put("sv_id", sv_id);//视频id
         AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
+     * 获取上传签名
+     */
+    public static void requestUpLoadSign(AppRequestCallback<SignModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("videosmall");
+        params.putAct("getsign");
+        AppHttpUtil.getInstance().post(params, listener);
 
     }
 
