@@ -8,7 +8,7 @@ public class App_get_videoActModel extends BaseActModel {
      *
      */
     private static final long serialVersionUID = 1L;
-    public String begin_time="";
+    public String begin_time2="0";
 
     private int room_id; // 直播间id
     private String user_id; // 主播id

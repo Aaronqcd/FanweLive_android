@@ -7,12 +7,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.UiThread;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TimeUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
@@ -38,11 +41,14 @@ import com.fanwe.live.model.RoomUserModel;
 import com.fanwe.live.model.UserModel;
 import com.fanwe.live.utils.GlideUtil;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 直播间顶部view
@@ -155,6 +161,7 @@ public class RoomInfoView extends RoomView
 
     }
     private AlertDialog.Builder alertDialog;
+
     private void startTimer(int seconds){
         if(alertDialog == null){
             alertDialog = new AlertDialog.Builder(getContext());
@@ -179,7 +186,7 @@ public class RoomInfoView extends RoomView
             @Override
             public void run() {
                 if(mContext != null && !mContext.isFinishing()){
-                    if(alertDialog != null){
+                    if(alertDialog != null && ll_follow.getVisibility() == View.VISIBLE){
                         alertDialog.show();
                     }
                 }
@@ -288,11 +295,67 @@ public class RoomInfoView extends RoomView
             showLlRoomCoomand(false);
         }
 
-        // 更新主播播放时长
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-        long time=new Long(actModel.begin_time)/1000;
-        SDViewBinder.setTextView(tv_viewer_number, formatter.format(new Date(time)));
+        long currentTime = System.currentTimeMillis();
+        final Long time=Long.parseLong(actModel.begin_time2);
+        String  text = getTimeExpend(time*1000,currentTime);
+        SDViewBinder.setTextView(tv_viewer_number, text);
 
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                long currentTime1 = System.currentTimeMillis();
+                final String  text1= getTimeExpend(time*1000,currentTime1);
+                tv_viewer_number.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SDViewBinder.setTextView(tv_viewer_number, text1);
+                    }
+                });
+
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task,0, 1000);
+
+    }
+
+    private String getTimeExpend(long startTime, long endTime){
+        //传入字串类型 2016/06/28 08:30
+        long longStart = startTime; //获取开始时间毫秒数
+        long longEnd = endTime;  //获取结束时间毫秒数
+        long longExpend = longEnd - longStart;  //获取时间差
+
+        long longHours = longExpend / (60 * 60 * 1000); //根据时间差来计算小时数
+        long longMinutes = (longExpend - longHours * (60 * 60 * 1000)) / (60 * 1000);   //根据时间差来计算分钟数
+        long longSconds = (longExpend - longHours * (60 * 60 * 1000)- longMinutes * (60 * 1000)) / (1000);   //根据时间差来计算分钟数
+
+        String hours =longHours +"";
+        if(longHours <10){
+            hours = "0"+ hours;
+        }
+        String minutes =longMinutes +"";
+        if(longMinutes <10){
+            minutes = "0"+ longMinutes;
+        }
+        String scound =longSconds +"";
+        if(longSconds <10){
+            scound = "0"+ longSconds;
+        }
+
+        return hours + ":" + minutes+":"+scound;
+    }
+
+    private long getTimeMillis(String strTime) {
+        long returnMillis = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        Date d = null;
+        try {
+            d = sdf.parse(strTime);
+            returnMillis = d.getTime();
+        } catch (ParseException e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
+        return returnMillis;
     }
 
     protected void clickFollow()
