@@ -22,20 +22,20 @@ import java.util.List;
 /**
  * Created by Link on 2016/9/14.
  */
-public class TCMusicSelectView extends LinearLayout{
+public class TCMusicSelectView extends LinearLayout {
 
-    static private final  String TAG = TCMusicSelectView.class.getSimpleName();
+    static private final String TAG = TCMusicSelectView.class.getSimpleName();
     private TCAudioControl mAudioCtrl;
     private SDTitleSimple title;
-    private Context         mContext;
-    public MusicListView    mMusicList;
+    private Context mContext;
+    public MusicListView mMusicList;
     private SDTabText tab_left;
     private SDTabText tab_center;
     private SDTabText tab_right;
     public SDSelectViewManager<SDTabText> mSelectManager = new SDSelectViewManager<SDTabText>();
 
-    public TCMusicSelectView (Context context, AttributeSet attrs){
-        super(context,attrs);
+    public TCMusicSelectView(Context context, AttributeSet attrs) {
+        super(context, attrs);
         mContext = context;
     }
 
@@ -49,24 +49,23 @@ public class TCMusicSelectView extends LinearLayout{
         mContext = context;
     }
 
-    public void init(TCAudioControl audioControl){
+    public void init(TCAudioControl audioControl) {
         mAudioCtrl = audioControl;
-        LayoutInflater.from(mContext).inflate(R.layout.audio_ctrl_music_list,this);
-        mMusicList = (MusicListView)findViewById(R.id.xml_music_list_view);
-        tab_left = (SDTabText)findViewById(R.id.tab_left);
-        tab_center = (SDTabText)findViewById(R.id.tab_center);
-        tab_right = (SDTabText)findViewById(R.id.tab_right);
+        LayoutInflater.from(mContext).inflate(R.layout.audio_ctrl_music_list, this);
+        mMusicList = (MusicListView) findViewById(R.id.xml_music_list_view);
+        tab_left = (SDTabText) findViewById(R.id.tab_left);
+        tab_center = (SDTabText) findViewById(R.id.tab_center);
+        tab_right = (SDTabText) findViewById(R.id.tab_right);
         title = (SDTitleSimple) findViewById(R.id.title);
         title.setLeftImageLeft(R.drawable.ic_arrow_left_white);
-        title.initRightItem(1);
+//        title.initRightItem(1);
         title.setMiddleTextBot("音乐列表");
-        title.setCustomViewRight(R.layout.music_list_title_right);
+//        title.setCustomViewRight(R.layout.music_list_title_right);
         title.setmListener(new SDTitleSimple.SDTitleSimpleListener() {
             @Override
-            public void onCLickLeft_SDTitleSimple(SDTitleItem v)
-            {
-
-//                setReturnListener();
+            public void onCLickLeft_SDTitleSimple(SDTitleItem v) {
+                mAudioCtrl.mMusicSelectView.setVisibility(GONE);
+                mAudioCtrl.mMusicControlPart.setVisibility(VISIBLE);
             }
 
             @Override
@@ -81,24 +80,6 @@ public class TCMusicSelectView extends LinearLayout{
         });
         addTab();
 
-//        atTitle.setReturnListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mAudioCtrl.mMusicSelectView.setVisibility(GONE);
-//                mAudioCtrl.mMusicControlPart.setVisibility(VISIBLE);
-//            }
-//        });
-//        mBtnMenuSelect = (Button)findViewById(R.id.btn_menu_select);
-//        mBtnMenuSelect.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.setType("audio/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
-//                intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                Intent wrapIntent = Intent.createChooser(intent,null);
-//                ((Activity)mContext).startActivityForResult(wrapIntent,mAudioCtrl.REQUESTCODE);
-//            }
-//        });
     }
 
     private void addTab() {
@@ -115,7 +96,9 @@ public class TCMusicSelectView extends LinearLayout{
                 {tab_left, tab_center, tab_right});
         mSelectManager.performClick(0);
     }
-    public void setReturnListener(OnClickListener onClickListener){
-//        atTitle.setReturnListener(onClickListener);
+
+    public void setReturnListener(OnClickListener onClickListener) {
+        mAudioCtrl.mMusicSelectView.setVisibility(GONE);
+        mAudioCtrl.mMusicControlPart.setVisibility(VISIBLE);
     }
 }

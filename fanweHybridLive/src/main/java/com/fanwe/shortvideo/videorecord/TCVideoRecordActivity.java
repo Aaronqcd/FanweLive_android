@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -34,7 +37,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
+import com.fanwe.live.appview.room.RoomCountDownView;
 import com.fanwe.shortvideo.activity.UpLoadVideoActivity;
 import com.fanwe.shortvideo.common.activity.videopreview.TCVideoPreviewActivity;
 import com.fanwe.shortvideo.common.utils.FileUtils;
@@ -73,6 +78,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private TXUGCRecord mTXCameraRecord;
     private TXRecordCommon.TXRecordResult mTXRecordResult;
     private long mDuration; // 视频总时长
+    private RoomCountDownView mRoomCountDownView;
 
     private BeautySettingPannel.BeautyParams mBeautyParams = new BeautySettingPannel.BeautyParams();
     private TXCloudVideoView mVideoView;
@@ -107,7 +113,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private int mRecommendQuality = TXRecordCommon.VIDEO_QUALITY_MEDIUM;
     private int mMinDuration;
     private int mMaxDuration;
-    private int mCurrentAspectRatio=TXRecordCommon.VIDEO_ASPECT_RATIO_9_16; // 视频比例
+    private int mCurrentAspectRatio = TXRecordCommon.VIDEO_ASPECT_RATIO_9_16; // 视频比例
     private int mRecordResolution; // 录制分辨率
     private int mHomeOrientation = TXLiveConstants.VIDEO_ANGLE_HOME_DOWN; // 录制方向
     private int mRenderRotation = TXLiveConstants.RENDER_ROTATION_PORTRAIT; // 渲染方向
@@ -121,6 +127,12 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private int mRecordSpeed = TXRecordCommon.RECORD_SPEED_NORMAL;
     private boolean mNeedEditer;
     private boolean mPortrait = true;
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            return false;
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +177,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mFps = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_FPS, 20);
         mGop = intent.getIntExtra(TCVideoSettingActivity.RECORD_CONFIG_GOP, 3);
 
-        TXCLog.d(TAG, "mMinDuration = " + mMinDuration + ", mMaxDuration = " + mMaxDuration  +
+        TXCLog.d(TAG, "mMinDuration = " + mMinDuration + ", mMaxDuration = " + mMaxDuration +
                 ", mRecommendQuality = " + mRecommendQuality + ", mRecordResolution = " + mRecordResolution + ", mBiteRate = " + mBiteRate + ", mFps = " + mFps + ", mGop = " + mGop);
     }
 
@@ -242,11 +254,11 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 mTXCameraRecord.stopCameraPreview();
                 mStartPreview = false;
                 mPortrait = !mPortrait;
-                if(mPortrait){
+                if (mPortrait) {
                     Toast.makeText(TCVideoRecordActivity.this, "竖屏录制", Toast.LENGTH_SHORT).show();
                     mHomeOrientation = TXLiveConstants.VIDEO_ANGLE_HOME_DOWN;
                     mRenderRotation = TXLiveConstants.RENDER_ROTATION_PORTRAIT;
-                }else{
+                } else {
                     Toast.makeText(TCVideoRecordActivity.this, "横屏录制", Toast.LENGTH_SHORT).show();
                     mHomeOrientation = TXLiveConstants.VIDEO_ANGLE_HOME_RIGHT;
                     mRenderRotation = TXLiveConstants.RENDER_ROTATION_LANDSCAPE;
@@ -439,7 +451,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         super.onConfigurationChanged(newConfig);
 
         onActivityRotation();
-        if(mTXCameraRecord != null){
+        if (mTXCameraRecord != null) {
             mTXCameraRecord.stopCameraPreview();
         }
 
@@ -512,6 +524,16 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             case R.id.compose_record_btn:
                 switchRecord();
                 break;
+            case R.id.btn_count_down:
+                addRoomCountDownView();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                }, 3 * 1000);
+                mCustomProgressDialog.show();
+                stopRecord();
+                break;
             case R.id.btn_music_pannel:
                 mAudioCtrl.setPusher(mTXCameraRecord);
 
@@ -550,6 +572,17 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             mIvTorch.setImageResource(R.drawable.selector_torch_open);
         }
         mIsTorchOpen = !mIsTorchOpen;
+    }
+
+    /**
+     * 添加倒计时开播view
+     */
+    protected void addRoomCountDownView() {
+        if (mRoomCountDownView == null) {
+            mRoomCountDownView = new RoomCountDownView(this);
+            SDViewUtil.addView((ViewGroup) findViewById(android.R.id.content), mRoomCountDownView);
+            mRoomCountDownView.startCountDown(3);
+        }
     }
 
     private void deleteLastPart() {
@@ -664,7 +697,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             mTXCameraRecord.stopRecord();
         }
         ImageView liveRecord = (ImageView) findViewById(R.id.record);
-        if (liveRecord != null) liveRecord.setBackgroundResource(R.drawable.start_record);
+        if (liveRecord != null) {
+            liveRecord.setBackgroundResource(R.drawable.start_record);
+        }
         mRecording = false;
         mPause = false;
         abandonAudioFocus();

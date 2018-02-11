@@ -111,6 +111,7 @@ import com.fanwe.live.model.User_set_blackActModel;
 import com.fanwe.live.model.Video_add_videoActModel;
 import com.fanwe.live.model.Video_check_statusActModel;
 import com.fanwe.live.model.Video_private_room_friendsActModel;
+import com.fanwe.shortvideo.model.MusicDownloadModel;
 import com.fanwe.shortvideo.model.MusicListModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
@@ -200,6 +201,17 @@ public class CommonInterface {
         params.put("sv_url", sv_url);//链接
         params.put("sv_img", sv_img);//封面
         params.put("sv_content", sv_content);//描述
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
+     * 小视频在线音乐列表获取音乐下载地址
+     */
+    public static void requestDownLoadMusicPath(long songIds,AppRequestCallback<MusicDownloadModel> listener) {
+        String reqUrl = "http://music.baidu.com/data/music/links?songIds="+songIds;
+        AppRequestParams params = new AppRequestParams();
+        params.setUrl(reqUrl);
         AppHttpUtil.getInstance().get(params, listener);
 
     }

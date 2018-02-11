@@ -56,7 +56,7 @@ import java.util.Map;
  * Created by Link on 2016/9/8.
  */
 
-public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarChangeListener, Button.OnClickListener{
+public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarChangeListener, Button.OnClickListener {
     public static final int NEXTBGM = 1;
     public static final int PREVIOUSBGM = 2;
     public static final int RANDOMBGM = 3;
@@ -95,7 +95,6 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     Context mContext;
     List<MediaEntity> mMusicListData = new ArrayList<>();
     List<MediaEntity> mOnLineMusicListData = new ArrayList<>();
-    List<MediaEntity> mDownLoadMusicListData = new ArrayList<>();
     MusicListView mMusicList;
     public TCMusicSelectView mMusicSelectView;
     private SDSelectViewManager<SDTabText> mSelectManager;
@@ -150,7 +149,9 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     }
 
     private synchronized void playBGM(String name, String path, int pos) {
-        if(pos >= mMusicListData.size()) return;
+        if (pos >= mMusicListData.size()) {
+            return;
+        }
         if (mLastPlayingItemPos >= 0 && mLastPlayingItemPos != pos) {
             mMusicListData.get(mLastPlayingItemPos).state = 0;
         }
@@ -167,7 +168,9 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
 
     public synchronized void stopBGM() {
         mBGMSwitch = false;
-        if (mRecord != null) mRecord.stopBGM();
+        if (mRecord != null) {
+            mRecord.stopBGM();
+        }
 
         if (mMusicListData.size() != 0 && mLastPlayingItemPos >= 0) {
             mMusicListData.get(mLastPlayingItemPos).state = 0;
@@ -261,7 +264,6 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     }
 
     public void init() {
-        requestData();
         mMainThread = new Handler(mContext.getMainLooper());
         mMicVolumeSeekBar = (SeekBar) findViewById(R.id.seekBar_voice_volume);
         mMicVolumeSeekBar.setOnSeekBarChangeListener(this);
@@ -323,24 +325,19 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
 //                mTCBgmRecordView.setVisibility(mTCBgmRecordView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             }
         });
-
-        mMusicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMusicList.getAdapter().setOnItemSelecetListener(new MusicListAdapter.ItemSelectListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (mSelectManager.getSelectedIndex()) {
-                    case 0:
-                    playBGM(mMusicListData.get(position).title, mMusicListData.get(position).path, position);
-                    break;
-                    case 1:
-                    playBGM(mOnLineMusicListData.get(position).title, mOnLineMusicListData.get(position).path, position);
-                        break;
-                    case 2:
-                    playBGM(mDownLoadMusicListData.get(position).title, mDownLoadMusicListData.get(position).path, position);
-                        break;
-                }
+            public void OnItemSelected(int position, String title, String path) {
+                playBGM(title, path, position);
                 mLastClickItemPos = position;
                 mSelectItemPos = position;
                 mLastClickItemTimeStamp = System.currentTimeMillis();
+            }
+        });
+        mMusicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
             }
         });
         mSelectManager.addSelectCallback(new SDSelectManager.SelectCallback<SDTabText>() {
@@ -359,7 +356,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
                         mMusicList.getAdapter().setData(mOnLineMusicListData);
                         break;
                     case 2:
-                        mMusicList.getAdapter().setData(mDownLoadMusicListData);
+                        mMusicList.getAdapter().setData(mMusicListData);
                         break;
                     default:
                         break;
@@ -367,7 +364,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
             }
 
         });
-
+        requestData();
 //        mTCBgmRecordView = (TCBGMRecordView) findViewById(R.id.layout_record_select_bgm);
     }
 
@@ -377,12 +374,17 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         CommonInterface.requestMusicList(new AppRequestCallback<MusicListModel>() {
             @Override
             protected void onSuccess(SDResponse sdResponse) {
-                if (actModel!=null && actModel.song_list!=null) {
+                if (actModel != null && actModel.song_list != null) {
                     for (MusicListModel.MusicItemModel model : actModel.song_list) {
                         MediaEntity entity = new MediaEntity();
                         entity.id = Integer.valueOf(model.song_id);
                         entity.title = model.title;
                         entity.singer = model.author;
+                        for (MediaEntity mediaEntity : mMusicListData) {
+                            if (mediaEntity.title.equals(model.title)) {
+                                entity.isDownLoad = 1;
+                            }
+                        }
                         mOnLineMusicListData.add(entity);
                     }
                 }
@@ -457,8 +459,9 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         }
         mPathSet.put(mediaEntity.path, mediaEntity.display_name);
         if (mediaEntity.duration == 0) {
-            if (mRecord != null)
+            if (mRecord != null) {
                 mediaEntity.duration = mRecord.getMusicDuration(mediaEntity.path);
+            }
         }
         mediaEntity.durationStr = longToStrTime(mediaEntity.duration);
         mMusicListData.add(mediaEntity);
@@ -472,10 +475,14 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (seekBar.getId() == R.id.seekBar_voice_volume) {
             mMicVolume = progress;
-            if (mRecord != null) mRecord.setMicVolume(mMicVolume / (float) 100);
+            if (mRecord != null) {
+                mRecord.setMicVolume(mMicVolume / (float) 100);
+            }
         } else if (seekBar.getId() == R.id.seekBar_bgm_volume) {
             mBGMVolume = progress;
-            if (mRecord != null) mRecord.setBGMVolume(mBGMVolume / (float) 100);
+            if (mRecord != null) {
+                mRecord.setBGMVolume(mBGMVolume / (float) 100);
+            }
         }
     }
 
@@ -566,6 +573,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
                 mediaEntity.size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
                 mediaEntity.artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                 mediaEntity.path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                mediaEntity.isDownLoad = 1;
                 if (mediaEntity.path == null) {
                     fPause = false;
                     Toast.makeText(mContext, "Get Music Path Error", Toast.LENGTH_SHORT);
@@ -580,8 +588,9 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
                 mPathSet.put(mediaEntity.path, mediaEntity.display_name);
                 mediaEntity.duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                 if (mediaEntity.duration == 0) {
-                    if (mRecord != null)
+                    if (mRecord != null) {
                         mediaEntity.duration = mRecord.getMusicDuration(mediaEntity.path);
+                    }
                 }
                 mediaEntity.durationStr = longToStrTime(mediaEntity.duration);
                 mediaList.add(mediaEntity);
@@ -610,6 +619,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         public String singer; //歌手
         public String durationStr;
         public long size;
+        public int isDownLoad = 0;//0为下载已下载
         public char state = 0;//0:idle 1:playing
 
         MediaEntity() {
