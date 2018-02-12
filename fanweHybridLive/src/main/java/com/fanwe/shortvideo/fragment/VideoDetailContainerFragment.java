@@ -1,6 +1,5 @@
 package com.fanwe.shortvideo.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.fanwe.baimei.appview.BMRoomSendGiftView;
 import com.fanwe.hybrid.fragment.BaseFragment;
 import com.fanwe.hybrid.http.AppRequestCallback;
-import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.hybrid.umeng.UmengSocialManager;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.listener.SDViewVisibilityCallback;
@@ -27,8 +25,9 @@ import com.fanwe.live.activity.LiveUserHomeActivity;
 import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.model.App_followActModel;
+import com.fanwe.live.model.LiveGiftModel;
+import com.fanwe.live.model.custommsg.CustomMsgGift;
 import com.fanwe.live.utils.GlideUtil;
-import com.fanwe.shortvideo.activity.ShortVideoDetailActivity;
 import com.fanwe.shortvideo.appview.mian.VideoSendMsgView;
 import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
@@ -65,8 +64,8 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rootView:
-                if(callBackValue == null){
-                    callBackValue =(CallBackValue) getActivity();
+                if (callBackValue == null) {
+                    callBackValue = (CallBackValue) getActivity();
                 }
                 callBackValue.SendMessageValue();
                 break;
@@ -207,10 +206,18 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     protected void addSendMsgView() {
         if (videoSendMsgView == null) {
             videoSendMsgView = new VideoSendMsgView(getActivity());
-            SDViewUtil.setVisible(videoSendMsgView);
-            videoSendMsgView.setSvId(detailModel.sv_id);
-            replaceView(R.id.fl_send_msg, videoSendMsgView);
         }
+        SDViewUtil.setVisible(videoSendMsgView);
+        videoSendMsgView.setSvId(detailModel.sv_id);
+        videoSendMsgView.setUpdateCommentNumListener(new VideoSendMsgView.UpdateCommentNum() {
+            @Override
+            public void updateNum() {
+                detailModel.count_comment = Integer.parseInt(detailModel.count_comment) + 1 + "";
+                tv_msg.setText(detailModel.count_comment);
+            }
+        });
+        videoSendMsgView.setContent("");
+        replaceView(R.id.fl_send_msg, videoSendMsgView);
     }
 
     /**
@@ -232,19 +239,27 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                 }
             });
         }
-        mRoomSendGiftView.setIsShortVideo(true, detailModel.sv_id);
+        mRoomSendGiftView.setIsShortVideo(this, true, detailModel.sv_id);
         mRoomSendGiftView.bindData();
         replaceView(R.id.fl_gift, mRoomSendGiftView);
     }
 
     /**
-     * 送礼物动画效果
+     * gif动画
      */
-    protected void addRoomGiftGifView() {
+    public void addRoomGiftGifView(LiveGiftModel model) {
+        detailModel.count_gift = Integer.parseInt(detailModel.count_gift) + 1 + "";
+        tv_gift_num.setText(detailModel.count_gift);
+        CustomMsgGift customMsgGift = new CustomMsgGift();
+        customMsgGift.setProp_id(model.getId());
+        customMsgGift.setIcon(model.getIcon());
+        customMsgGift.setAnimated_url(model.getAnimated_url());
+        customMsgGift.setIs_much(model.getIs_much());
         if (mRoomGiftGifView == null) {
             mRoomGiftGifView = new RoomGiftGifView(getActivity());
-            replaceView(R.id.fl_gift, mRoomGiftGifView);
         }
+        mRoomGiftGifView.onMsgGift(customMsgGift);
+        replaceView(R.id.fl_gift_play, mRoomGiftGifView);
     }
 
     public void updateData(ShortVideoDetailModel.VideoDetail detail) {
@@ -271,7 +286,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     }
 
     //定义一个回调接口
-    public interface CallBackValue{
-         void SendMessageValue();
+    public interface CallBackValue {
+        void SendMessageValue();
     }
 }

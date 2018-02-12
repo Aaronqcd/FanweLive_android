@@ -14,6 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
+        android:gravity="left"
         android:layout_weight="1"
         android:background="@drawable/layer_white_stroke_corner_item_single"
         android:hint="请输入评论内容"

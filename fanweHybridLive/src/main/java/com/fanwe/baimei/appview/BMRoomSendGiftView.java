@@ -28,6 +28,7 @@ import com.fanwe.live.model.App_propActModel;
 import com.fanwe.live.model.Deal_send_propActModel;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgPrivateGift;
+import com.fanwe.shortvideo.fragment.VideoDetailContainerFragment;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.tencent.TIMMessage;
 import com.tencent.TIMValueCallBack;
@@ -61,6 +62,7 @@ public class BMRoomSendGiftView extends RoomView {
 
     private boolean isShortVideo = false;
     private String sv_id = "";
+    private VideoDetailContainerFragment videoDetailContainerFragment;
 
     @Override
     protected int onCreateContentView() {
@@ -96,7 +98,8 @@ public class BMRoomSendGiftView extends RoomView {
      * 是否是小视频中送礼物
      * @param isShortVideo
      */
-    public void setIsShortVideo(boolean isShortVideo,String sv_id){
+    public void setIsShortVideo(VideoDetailContainerFragment fragment,boolean isShortVideo, String sv_id){
+        this.videoDetailContainerFragment=fragment;
         this.isShortVideo = isShortVideo;
         this.sv_id=sv_id;
     }
@@ -224,6 +227,8 @@ public class BMRoomSendGiftView extends RoomView {
                 @Override
                 protected void onSuccess(SDResponse resp) {
                     if (actModel.isOk()) {
+                        SDToast.showToast("发送完成");
+                        videoDetailContainerFragment.addRoomGiftGifView(giftModel);
                         if (isDiamond) {
                             getSendGiftViewDiamond().sendGiftSuccess(giftModel);
                         } else {

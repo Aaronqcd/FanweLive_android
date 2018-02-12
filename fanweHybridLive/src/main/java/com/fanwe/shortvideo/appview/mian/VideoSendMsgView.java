@@ -26,6 +26,7 @@ import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.model.App_pop_msgActModel;
 import com.fanwe.live.model.UserModel;
 import com.fanwe.live.model.custommsg.CustomMsgText;
+import com.fanwei.jubaosdk.common.util.ToastUtil;
 import com.tencent.TIMMessage;
 import com.tencent.TIMValueCallBack;
 
@@ -35,6 +36,7 @@ public class VideoSendMsgView extends RoomView {
     private String strContent;
     private String sv_id;
     private static final int MAX_INPUT_LENGTH = 200;
+    private UpdateCommentNum updateCommentNum;
 
     public VideoSendMsgView(Context context) {
         this(context, null);
@@ -57,13 +59,25 @@ public class VideoSendMsgView extends RoomView {
     protected void init() {
         et_content = find(R.id.et_content);
         tv_send = find(R.id.tv_send);
-        SDViewUtil.setInvisible(this);
+//        SDViewUtil.setInvisible(this);
         register();
     }
 
     public void setSvId(String sv_id){
         this.sv_id=sv_id;
     }
+
+    public void setContent(String content)
+    {
+        if (content == null)
+        {
+            content = "";
+        }
+        et_content.setText(content);
+        et_content.setSelection(et_content.getText().length());
+        SDKeyboardUtil.showKeyboard(et_content, 100);
+    }
+
     private void register() {
 
         et_content.setOnKeyListener(new OnKeyListener() {
@@ -115,7 +129,10 @@ public class VideoSendMsgView extends RoomView {
             @Override
             protected void onSuccess(SDResponse resp) {
                 if (actModel.isOk()) {
-
+                    et_content.setText("");
+                    SDToast.showToast("发布评论成功");
+                    SDViewUtil.setInvisible(VideoSendMsgView.this);
+                    updateCommentNum.updateNum();
                 }
             }
 
@@ -148,5 +165,11 @@ public class VideoSendMsgView extends RoomView {
                 SDKeyboardUtil.hideKeyboard(et_content);
             }
         }
+    }
+    public void setUpdateCommentNumListener(UpdateCommentNum updateCommentNum){
+        this.updateCommentNum=updateCommentNum;
+    }
+    public interface UpdateCommentNum{
+        void updateNum();
     }
 }

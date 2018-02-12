@@ -312,7 +312,7 @@
                 android:layout_height="44dp"
                 android:onClick="onClick"
                 android:padding="6dp"
-                android:src="@drawable/ugc_record_music"/>
+                android:src="@drawable/short_video_upload"/>
 
             <TextView
                 android:id="@+id/tv_upload"
@@ -337,7 +337,7 @@
                 android:layout_height="44dp"
                 android:onClick="onClick"
                 android:padding="6dp"
-                android:src="@drawable/ugc_record_music"/>
+                android:src="@drawable/short_video_countdown"/>
 
             <TextView
                 android:id="@+id/tv_count_down"
