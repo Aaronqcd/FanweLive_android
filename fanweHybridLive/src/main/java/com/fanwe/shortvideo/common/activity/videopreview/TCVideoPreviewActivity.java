@@ -283,6 +283,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
                 this.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
                 insertVideoThumb(newFile.getPath(), mCoverImagePath);
+
+                Uri uri = Uri.fromFile(newFile);
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
             } catch (Exception e) {
                 e.printStackTrace();
             }

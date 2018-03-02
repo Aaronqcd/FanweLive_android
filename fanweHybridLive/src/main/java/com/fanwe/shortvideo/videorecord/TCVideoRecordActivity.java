@@ -10,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
@@ -58,14 +60,19 @@ import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 import com.tencent.ugc.TXRecordCommon;
 import com.tencent.ugc.TXUGCRecord;
+import com.tencent.ugc.TXVideoEditConstants;
+import com.tencent.ugc.TXVideoEditer;
 import com.umeng.socialize.UMShareAPI;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import static android.view.View.GONE;
 
@@ -733,6 +740,17 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             mTXCameraRecord = TXUGCRecord.getInstance(this.getApplicationContext());
         }
 
+
+        TXVideoEditConstants.TXRect rect = new TXVideoEditConstants.TXRect();
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.video_yx_logo);
+        rect.x = 0.75f;
+        rect.y = 0.05f;
+        rect.width = 0.2f;
+        mTXCameraRecord.setWatermark(bitmap,rect);
+
+
+
+
         String customVideoPath = getCustomVideoOutputPath();
         String customCoverPath = customVideoPath.replace(".mp4", ".jpg");
 
@@ -918,17 +936,32 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                         // 视频大小：MediaStore.Audio.Media.SIZE
                         long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
 
-                        // 视频缩略图路径：MediaStore.Images.Media.DATA
-                        String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
                         // 缩略图ID:MediaStore.Audio.Media._ID
                         int imageId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+
+//                        String[] thumbColumns = {MediaStore.Video.Thumbnails.DATA, MediaStore.Video.Thumbnails.VIDEO_ID};
+//                        Cursor thumbCursor = this.getContentResolver().query(
+//                                MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,
+//                                thumbColumns, MediaStore.Video.Thumbnails.VIDEO_ID
+//                                        + "=" + videoId, null, null);
+//                        String imagePath="";
+//                        if (thumbCursor.moveToFirst()) {
+//                            imagePath= thumbCursor.getString(thumbCursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+//                        }
+                        MediaMetadataRetriever media =new MediaMetadataRetriever();
+                        media.setDataSource(videoPath);
+                        Bitmap bitmap = media.getFrameAtTime();
+                        String imagePath=bitmapToStringPath(this,bitmap);
+
+                        // 视频缩略图路径：MediaStore.Images.Media.DATA
+//                        String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
                         // 方法一 Thumbnails 利用createVideoThumbnail 通过路径得到缩略图，保持为视频的默认比例
                         // 第一个参数为 ContentResolver，第二个参数为视频缩略图ID， 第三个参数kind有两种为：MICRO_KIND和MINI_KIND 字面意思理解为微型和迷你两种缩略模式，前者分辨率更低一些。
                         Bitmap bitmap1 = MediaStore.Video.Thumbnails.getThumbnail(cr, imageId, MediaStore.Video.Thumbnails.MICRO_KIND, null);
 
                         // 方法二 ThumbnailUtils 利用createVideoThumbnail 通过路径得到缩略图，保持为视频的默认比例
                         // 第一个参数为 视频/缩略图的位置，第二个依旧是分辨率相关的kind
-                        Bitmap bitmap2 = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MICRO_KIND);
+//                        Bitmap bitmap2 = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MICRO_KIND);
                         // 如果追求更好的话可以利用 ThumbnailUtils.extractThumbnail 把缩略图转化为的制定大小
 //                        ThumbnailUtils.extractThumbnail(bitmap, width,height ,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 //                        setText(tv_VideoPath, R.string.path, videoPath);
@@ -936,11 +969,11 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
 //                        setText(tv_VideoSize, R.string.size, String.valueOf(size));
 //                        setText(tv_VideoTitle, R.string.title, title);
 //                        iv_VideoImage.setImageBitmap(bitmap1);
-                        String imgPath=imagePath.substring(0,imagePath.indexOf("."))+".jpg";
+//                        String imgPath = imagePath.substring(0, imagePath.indexOf(".")) + ".jpg";
                         Intent intent = new Intent(this, UpLoadVideoActivity.class);
                         intent.putExtra(TCConstants.VIDEO_RECORD_TYPE, TCConstants.VIDEO_RECORD_TYPE_UGC_RECORD);
                         intent.putExtra(TCConstants.VIDEO_EDITER_PATH, videoPath);
-                        intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, imgPath);
+                        intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, imagePath);
                         intent.putExtra(TCConstants.VIDEO_RECORD_DURATION, duration);
                         startActivity(intent);
                         finish();
@@ -950,6 +983,36 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+    /**
+     * 将bitmap转化成本地图片路径
+     * @param context
+     * @param bitmap
+     * @return
+     */
+    private static String bitmapToStringPath(Context context, Bitmap bitmap){
+        String savePath;
+        File filePic;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            savePath = "/sdcard/dskgxt/pic/";
+        }else {
+            savePath = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/dskgxt/pic/";
+        }
+        try {
+            filePic = new File(savePath + UUID.randomUUID().toString() + ".jpg");
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(filePic);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        }catch(IOException e){
+            e.printStackTrace();
+            return null;
+        }
+        return filePic.getAbsolutePath();
     }
 
     @Override

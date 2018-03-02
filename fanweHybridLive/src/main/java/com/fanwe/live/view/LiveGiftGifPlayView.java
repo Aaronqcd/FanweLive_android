@@ -31,6 +31,7 @@ public class LiveGiftGifPlayView extends LinearLayout
     private ImageView iv_image;
     private CustomMsgGift msg;
 
+    private boolean isVideo=false;
     private GifConfigModel config;
     private GifDrawable gifDrawable;
     /**
@@ -177,6 +178,11 @@ public class LiveGiftGifPlayView extends LinearLayout
         this.config = config;
     }
 
+    public void setIsVideo(boolean isVideo)
+    {
+        this.isVideo = isVideo;
+    }
+
     /**
      * 设置msg，调用此方法前要先调用setConfig方法设置gif配置
      *
@@ -213,6 +219,9 @@ public class LiveGiftGifPlayView extends LinearLayout
             {
                 gifFile = resource;
                 loadResult(true);
+                if(isVideo){
+                    playGif();
+                }
             }
 
             @Override

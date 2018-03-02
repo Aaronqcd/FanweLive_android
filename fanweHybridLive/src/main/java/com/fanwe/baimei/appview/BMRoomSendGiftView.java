@@ -227,8 +227,8 @@ public class BMRoomSendGiftView extends RoomView {
                 @Override
                 protected void onSuccess(SDResponse resp) {
                     if (actModel.isOk()) {
-                        SDToast.showToast("发送完成");
-                        videoDetailContainerFragment.addRoomGiftGifView(giftModel);
+                        SDToast.showToast(giftModel.getName()+"已送出");
+                        videoDetailContainerFragment.updateRoomGiftGifView(giftModel);
                         if (isDiamond) {
                             getSendGiftViewDiamond().sendGiftSuccess(giftModel);
                         } else {

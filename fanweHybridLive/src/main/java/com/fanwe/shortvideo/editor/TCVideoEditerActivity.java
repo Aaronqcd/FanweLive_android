@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.view.Display;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fanwe.live.R;
+import com.fanwe.shortvideo.activity.UpLoadVideoActivity;
 import com.fanwe.shortvideo.common.activity.videopreview.TCVideoPreviewActivity;
 import com.fanwe.shortvideo.common.utils.FileUtils;
 import com.fanwe.shortvideo.common.utils.TCConstants;
@@ -423,11 +425,11 @@ public class TCVideoEditerActivity extends FragmentActivity implements
     }
 
     private void startPreviewActivity(TXVideoEditConstants.TXGenerateResult result, String thumbPath) {
-        Intent intent = new Intent(getApplicationContext(), TCVideoPreviewActivity.class);
+        Intent intent = new Intent(getApplicationContext(), UpLoadVideoActivity.class);
         intent.putExtra(TCConstants.VIDEO_RECORD_TYPE, TCConstants.VIDEO_RECORD_TYPE_EDIT);
         intent.putExtra(TCConstants.VIDEO_RECORD_RESULT, result.retCode);
         intent.putExtra(TCConstants.VIDEO_RECORD_DESCMSG, result.descMsg);
-        intent.putExtra(TCConstants.VIDEO_RECORD_VIDEPATH, mVideoOutputPath);
+        intent.putExtra(TCConstants.VIDEO_EDITER_PATH, mVideoOutputPath);
         if (thumbPath != null)
             intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, thumbPath);
         intent.putExtra(TCConstants.VIDEO_RECORD_DURATION, getCutterEndTime() - getCutterStartTime());
@@ -605,16 +607,21 @@ public class TCVideoEditerActivity extends FragmentActivity implements
 
         TXVideoEditConstants.TXVideoInfo info = TCVideoEditerWrapper.getInstance().getTXVideoInfo();
 
-        Bitmap tailWaterMarkBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tcloud_logo);
+        Bitmap tailWaterMarkBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.video_yx_logo);
         float widthHeightRatio = tailWaterMarkBitmap.getWidth() / (float) tailWaterMarkBitmap.getHeight();
 
         TXVideoEditConstants.TXRect txRect = new TXVideoEditConstants.TXRect();
         txRect.width = 0.25f; // 归一化的片尾水印，这里设置了一个固定值，水印占屏幕宽度的0.25。
         // 后面根据实际图片的宽高比，计算出对应缩放后的图片的宽度：txRect.width * videoInfo.width 和高度：txRect.width * videoInfo.width / widthHeightRatio，然后计算出水印放中间时的左上角位置
-        txRect.x = (info.width - txRect.width * info.width) / (2f * info.width);
-        txRect.y = (info.height - txRect.width * info.width / widthHeightRatio) / (2f * info.height);
 
-        mTXVideoEditer.setTailWaterMark(tailWaterMarkBitmap, txRect, 3);
+//        txRect.x = (info.width - txRect.width * info.width) / (2f * info.width);
+//        txRect.y = (info.height - txRect.width * info.width / widthHeightRatio) / (2f * info.height);
+
+        txRect.x = (info.width - txRect.width * info.width) / info.width;
+        txRect.y = (info.height - txRect.width * info.width / widthHeightRatio) / info.height;
+
+//        mTXVideoEditer.setTailWaterMark(tailWaterMarkBitmap, txRect, 3);
+        mTXVideoEditer.setWaterMark(tailWaterMarkBitmap, txRect);
     }
 
 

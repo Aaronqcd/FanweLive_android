@@ -113,6 +113,7 @@ import com.fanwe.live.model.Video_check_statusActModel;
 import com.fanwe.live.model.Video_private_room_friendsActModel;
 import com.fanwe.shortvideo.model.MusicDownloadModel;
 import com.fanwe.shortvideo.model.MusicListModel;
+import com.fanwe.shortvideo.model.MusicSearchModel;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
 import com.fanwe.shortvideo.model.ShortVideoListModel;
 import com.fanwe.shortvideo.model.SignModel;
@@ -157,12 +158,13 @@ public class CommonInterface {
     /**
      * 小视频添加评论
      */
-    public static void requestAddComment(String sv_id,String com_content, AppRequestCallback<BaseActModel> listener) {
+    public static void requestAddComment(String sv_id, String com_content,String userid, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("addcomment");
         params.put("sv_id", sv_id);//视频id
         params.put("com_content", com_content);
+        params.put("to_userid", userid);
         AppHttpUtil.getInstance().get(params, listener);
 
     }
@@ -174,7 +176,7 @@ public class CommonInterface {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("commentlist");
-        params.put("page",page);
+        params.put("page", page);
         params.put("sv_id", sv_id);//视频id
         AppHttpUtil.getInstance().get(params, listener);
 
@@ -206,10 +208,21 @@ public class CommonInterface {
     }
 
     /**
+     * 小视频在线音乐列表搜索
+     */
+    public static void requestSearchMusicList(String songStr, AppRequestCallback<MusicSearchModel> listener) {
+        String reqUrl = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.catalogSug&query=" + songStr;
+        AppRequestParams params = new AppRequestParams();
+        params.setUrl(reqUrl);
+        AppHttpUtil.getInstance().get(params, listener);
+
+    }
+
+    /**
      * 小视频在线音乐列表获取音乐下载地址
      */
-    public static void requestDownLoadMusicPath(long songIds,AppRequestCallback<MusicDownloadModel> listener) {
-        String reqUrl = "http://music.baidu.com/data/music/links?songIds="+songIds;
+    public static void requestDownLoadMusicPath(long songIds, AppRequestCallback<MusicDownloadModel> listener) {
+        String reqUrl = "http://music.baidu.com/data/music/links?songIds=" + songIds;
         AppRequestParams params = new AppRequestParams();
         params.setUrl(reqUrl);
         AppHttpUtil.getInstance().get(params, listener);

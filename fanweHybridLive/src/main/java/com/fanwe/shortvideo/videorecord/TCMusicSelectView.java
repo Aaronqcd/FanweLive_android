@@ -3,32 +3,25 @@ package com.fanwe.shortvideo.videorecord;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
-
-import com.fanwe.library.common.SDSelectManager;
 import com.fanwe.library.title.SDTitleItem;
 import com.fanwe.library.title.SDTitleSimple;
 import com.fanwe.library.view.SDTabText;
 import com.fanwe.library.view.select.SDSelectViewManager;
 import com.fanwe.live.R;
-import com.fanwe.shortvideo.common.widget.TCActivityTitle;
-
-import org.xutils.view.annotation.ViewInject;
-
-import java.util.List;
 
 /**
  * Created by Link on 2016/9/14.
  */
-public class TCMusicSelectView extends LinearLayout {
+public class TCMusicSelectView extends FrameLayout {
 
     static private final String TAG = TCMusicSelectView.class.getSimpleName();
     private TCAudioControl mAudioCtrl;
     private SDTitleSimple title;
     private Context mContext;
     public MusicListView mMusicList;
+    public SearchMusicView mSearchMusicView;
     private SDTabText tab_left;
     private SDTabText tab_center;
     private SDTabText tab_right;
@@ -53,14 +46,16 @@ public class TCMusicSelectView extends LinearLayout {
         mAudioCtrl = audioControl;
         LayoutInflater.from(mContext).inflate(R.layout.audio_ctrl_music_list, this);
         mMusicList = (MusicListView) findViewById(R.id.xml_music_list_view);
+        mSearchMusicView = (SearchMusicView) findViewById(R.id.search_music_view);
+        mSearchMusicView.init(audioControl);
         tab_left = (SDTabText) findViewById(R.id.tab_left);
         tab_center = (SDTabText) findViewById(R.id.tab_center);
         tab_right = (SDTabText) findViewById(R.id.tab_right);
         title = (SDTitleSimple) findViewById(R.id.title);
         title.setLeftImageLeft(R.drawable.ic_arrow_left_white);
-//        title.initRightItem(1);
+        title.initRightItem(1);
         title.setMiddleTextBot("音乐列表");
-//        title.setCustomViewRight(R.layout.music_list_title_right);
+        title.getItemRight(0).setImageRight(R.drawable.ic_edit_search_gray);
         title.setmListener(new SDTitleSimple.SDTitleSimpleListener() {
             @Override
             public void onCLickLeft_SDTitleSimple(SDTitleItem v) {
@@ -75,7 +70,7 @@ public class TCMusicSelectView extends LinearLayout {
 
             @Override
             public void onCLickRight_SDTitleSimple(SDTitleItem v, int index) {
-
+                mSearchMusicView.setVisibility(VISIBLE);
             }
         });
         addTab();

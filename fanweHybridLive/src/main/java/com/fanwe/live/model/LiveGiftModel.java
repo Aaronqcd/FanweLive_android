@@ -16,6 +16,9 @@ public class LiveGiftModel implements SDSelectManager.Selectable
     private int sort;
     private int is_red_envelope;// 1-红包
     private String score_fromat; //主播增加的经验
+    public String is_animated; //动画类型
+    public String anim_type;
+    public String gif_url; //gif地址
 
     private long coins; //游戏币
 

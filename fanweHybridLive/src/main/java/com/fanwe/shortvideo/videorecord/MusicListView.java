@@ -185,6 +185,7 @@ class MusicListAdapter extends BaseAdapter {
             public void onSuccess(File file) {
                 isDownloading = false;
                 SDToast.showToast("下载完成");
+                notifyDataSetChanged();
             }
 
             @Override

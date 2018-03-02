@@ -22,16 +22,21 @@ import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.library.view.CircleImageView;
 import com.fanwe.live.R;
 import com.fanwe.live.activity.LiveUserHomeActivity;
-import com.fanwe.live.appview.room.RoomGiftGifView;
 import com.fanwe.live.common.CommonInterface;
+import com.fanwe.live.gif.GifConfigModel;
 import com.fanwe.live.model.App_followActModel;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgGift;
 import com.fanwe.live.utils.GlideUtil;
+import com.fanwe.shortvideo.appview.mian.VideoGiftGifView;
 import com.fanwe.shortvideo.appview.mian.VideoSendMsgView;
 import com.fanwe.shortvideo.dialog.ShortVideoCommentDialog;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
+import com.fanwe.shortvideo.model.VideoCommentListModel;
 import com.fanwe.shortvideo.model.VideoPraiseModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wxy
@@ -52,7 +57,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     private FrameLayout fl_msg;
     private FrameLayout fl_gift_play;
     private FrameLayout fl_gift;
-    private RoomGiftGifView mRoomGiftGifView;
+    private VideoGiftGifView mVideoGiftGifView;
     private BMRoomSendGiftView mRoomSendGiftView;
     private VideoSendMsgView videoSendMsgView;
 
@@ -146,8 +151,8 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         ShortVideoCommentDialog dialog = new ShortVideoCommentDialog(getActivity(), detailModel);
         dialog.setSendMsgListener(new ShortVideoCommentDialog.SendMsgListener() {
             @Override
-            public void onSendMsgClick() {
-                addSendMsgView();
+            public void onSendMsgClick(VideoCommentListModel.CommentItemModel model) {
+                addSendMsgView(model);
             }
         });
         dialog.showBottom();
@@ -186,6 +191,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
         fl_gift_play = (FrameLayout) view.findViewById(R.id.fl_gift_play);
         fl_gift = (FrameLayout) view.findViewById(R.id.fl_gift);
         initListener();
+        addRoomGiftGifView();
     }
 
     private void initListener() {
@@ -203,7 +209,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     /**
      * 写评论
      */
-    protected void addSendMsgView() {
+    protected void addSendMsgView(VideoCommentListModel.CommentItemModel model) {
         if (videoSendMsgView == null) {
             videoSendMsgView = new VideoSendMsgView(getActivity());
         }
@@ -216,6 +222,7 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                 tv_msg.setText(detailModel.count_comment);
             }
         });
+        videoSendMsgView.setHintText("回复给："+model.nick_name,model.user_id);
         videoSendMsgView.setContent("");
         replaceView(R.id.fl_send_msg, videoSendMsgView);
     }
@@ -247,19 +254,35 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
     /**
      * gif动画
      */
-    public void addRoomGiftGifView(LiveGiftModel model) {
+    public void addRoomGiftGifView() {
+        if (mVideoGiftGifView == null) {
+            mVideoGiftGifView = new VideoGiftGifView(getActivity());
+        }
+        replaceView(R.id.fl_gift_play, mVideoGiftGifView);
+    }
+
+    /**
+     * gif动画播放
+     */
+    public void updateRoomGiftGifView(LiveGiftModel model) {
+        SDViewUtil.setInvisible(mRoomSendGiftView);
         detailModel.count_gift = Integer.parseInt(detailModel.count_gift) + 1 + "";
         tv_gift_num.setText(detailModel.count_gift);
         CustomMsgGift customMsgGift = new CustomMsgGift();
         customMsgGift.setProp_id(model.getId());
         customMsgGift.setIcon(model.getIcon());
-        customMsgGift.setAnimated_url(model.getAnimated_url());
+        customMsgGift.setIs_animated(Integer.valueOf(model.is_animated));
+        customMsgGift.setAnim_type(model.anim_type);
+        customMsgGift.setTotal_ticket(model.getTicket());
         customMsgGift.setIs_much(model.getIs_much());
-        if (mRoomGiftGifView == null) {
-            mRoomGiftGifView = new RoomGiftGifView(getActivity());
-        }
-        mRoomGiftGifView.onMsgGift(customMsgGift);
-        replaceView(R.id.fl_gift_play, mRoomGiftGifView);
+        List<GifConfigModel> list=new ArrayList<>();
+        GifConfigModel configModel=new GifConfigModel();
+        configModel.setUrl(model.gif_url);
+        configModel.setPlay_count(1);
+        configModel.setType(2);
+        list.add(configModel);
+        customMsgGift.setAnim_cfg(list);
+        mVideoGiftGifView.playGiftAnimation(customMsgGift);
     }
 
     public void updateData(ShortVideoDetailModel.VideoDetail detail) {

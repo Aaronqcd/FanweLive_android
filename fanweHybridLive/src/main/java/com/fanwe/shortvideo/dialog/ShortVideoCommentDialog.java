@@ -7,6 +7,7 @@ import com.fanwe.live.dialog.LiveBaseDialog;
 import com.fanwe.live.event.ELivePrivateChatDialogDissmis;
 import com.fanwe.shortvideo.appview.mian.VideoCommentView;
 import com.fanwe.shortvideo.model.ShortVideoDetailModel;
+import com.fanwe.shortvideo.model.VideoCommentListModel;
 
 /**
  * @author wxy
@@ -31,8 +32,8 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
             }
 
             @Override
-            public void onClickSendMsg() {
-                msgListener.onSendMsgClick();
+            public void onClickSendMsg(VideoCommentListModel.CommentItemModel model) {
+                msgListener.onSendMsgClick(model);
                 dismiss();
             }
         });
@@ -58,6 +59,6 @@ public class ShortVideoCommentDialog extends LiveBaseDialog {
     }
 
     public interface SendMsgListener{
-        void onSendMsgClick();
+        void onSendMsgClick(VideoCommentListModel.CommentItemModel model);
     }
 }

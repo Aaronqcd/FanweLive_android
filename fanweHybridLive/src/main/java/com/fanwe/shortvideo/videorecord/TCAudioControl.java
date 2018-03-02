@@ -93,7 +93,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
     private boolean mBGMSwitch = false;
     private boolean mScanning = false;
     Context mContext;
-    List<MediaEntity> mMusicListData = new ArrayList<>();
+    public List<MediaEntity> mMusicListData = new ArrayList<>();
     List<MediaEntity> mOnLineMusicListData = new ArrayList<>();
     MusicListView mMusicList;
     public TCMusicSelectView mMusicSelectView;
@@ -148,7 +148,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         return (Activity) mContext;
     }
 
-    private synchronized void playBGM(String name, String path, int pos) {
+    public synchronized void playBGM(String name, String path, int pos) {
         if (pos >= mMusicListData.size()) {
             return;
         }
@@ -606,7 +606,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         return;
     }
 
-    class MediaEntity implements Serializable {
+     class MediaEntity implements Serializable {
         private static final long serialVersionUID = 1L;
         public int id; //id标识
 
@@ -622,7 +622,7 @@ public class TCAudioControl extends LinearLayout implements SeekBar.OnSeekBarCha
         public int isDownLoad = 0;//0为下载已下载
         public char state = 0;//0:idle 1:playing
 
-        MediaEntity() {
+        public MediaEntity() {
 
         }
 

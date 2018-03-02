@@ -90,16 +90,21 @@ public class VideoCommentView extends BaseAppView {
         edit_comment.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (clickListener != null) {
-                    clickListener.onClickSendMsg();
-                }
+               clickSendMsg(null);
             }
         });
 
     }
 
+    public void clickSendMsg(VideoCommentListModel.CommentItemModel model){
+        if (clickListener != null) {
+            clickListener.onClickSendMsg(model);
+        }
+    }
+
     private void setAdapter() {
         adapter = new ShortVideoCommentAdapter(new ArrayList<VideoCommentListModel.CommentItemModel>(), getActivity());
+        adapter.setCommentView(this);
         lv_comment.getRefreshableView().setAdapter(adapter);
     }
 
@@ -154,7 +159,7 @@ public class VideoCommentView extends BaseAppView {
 
     public interface ClickListener {
         void onClickBack();
-        void onClickSendMsg();
+        void onClickSendMsg(VideoCommentListModel.CommentItemModel model);
     }
 
     public void setClickListener(VideoCommentView.ClickListener clickListener) {

@@ -35,6 +35,7 @@ public class VideoSendMsgView extends RoomView {
     private TextView tv_send;
     private String strContent;
     private String sv_id;
+    private String user_id;
     private static final int MAX_INPUT_LENGTH = 200;
     private UpdateCommentNum updateCommentNum;
 
@@ -65,6 +66,11 @@ public class VideoSendMsgView extends RoomView {
 
     public void setSvId(String sv_id){
         this.sv_id=sv_id;
+    }
+
+    public void setHintText(String hintText,String toUserId){
+        et_content.setHint(hintText);
+        this.user_id=toUserId;
     }
 
     public void setContent(String content)
@@ -125,7 +131,7 @@ public class VideoSendMsgView extends RoomView {
     }
 
     protected void sendMessage() {
-        CommonInterface.requestAddComment(sv_id, strContent, new AppRequestCallback<BaseActModel>() {
+        CommonInterface.requestAddComment(sv_id, strContent, user_id,new AppRequestCallback<BaseActModel>() {
             @Override
             protected void onSuccess(SDResponse resp) {
                 if (actModel.isOk()) {

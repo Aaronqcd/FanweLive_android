@@ -31,17 +31,22 @@ import com.fanwe.shortvideo.model.SignModel;
 import com.fanwe.shortvideo.videoupload.TXUGCPublish;
 import com.fanwe.shortvideo.videoupload.TXUGCPublishTypeDef;
 import com.fanwei.jubaosdk.common.util.ToastUtil;
+import com.tencent.rtmp.ITXLivePlayListener;
+import com.tencent.rtmp.TXLiveConstants;
+import com.tencent.rtmp.TXVodPlayer;
+import com.tencent.rtmp.ui.TXCloudVideoView;
 
 import org.xutils.view.annotation.ViewInject;
 
 import java.io.File;
+import java.util.Locale;
 
 
-public class UpLoadVideoActivity extends BaseActivity implements View.OnClickListener {
+public class UpLoadVideoActivity extends BaseActivity implements View.OnClickListener,ITXLivePlayListener {
     private static String TAG = "UpLoadVideoActivity";
 
-    @ViewInject(R.id.img_bg)
-    private ImageView img_bg;
+    @ViewInject(R.id.bg_video_view)
+    private TXCloudVideoView bg_video_view;
     @ViewInject(R.id.img_back)
     private ImageView img_back;
     @ViewInject(R.id.img_edit)
@@ -59,6 +64,7 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
     private String coverPath;
     private String resolution;
     private long duration;
+    private TXVodPlayer mVodPlayer;
 
     @Override
     public void onClick(View v) {
@@ -118,8 +124,12 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
     private void initView() {
         File file = new File(coverPath);
         GlideUtil.load(file).into(img_video_cover);
-        GlideUtil.load(file).into(img_bg);
-
+        //创建player对象
+        mVodPlayer = new TXVodPlayer(getActivity());
+        mVodPlayer.setPlayListener(this);
+        //关键player对象与界面view
+        mVodPlayer.setPlayerView(bg_video_view);
+        mVodPlayer.startPlay(videoPath);
     }
 
     private void initListener() {
@@ -128,6 +138,30 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
         tv_save_local.setOnClickListener(this);
         tv_upload_video.setOnClickListener(this);
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mVodPlayer.resume();
+        bg_video_view.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mVodPlayer.stopPlay(true); // true代表清除最后一帧画面
+        bg_video_view.onDestroy();
+    }
+
+    private void loadVideo(String videoUrl) {
+
+        mVodPlayer.stopPlay(true); // true代表清除最后一帧画面
+        //创建player对象
+        mVodPlayer = new TXVodPlayer(getActivity());
+        mVodPlayer.setPlayListener(this);
+        //关键player对象与界面view
+        mVodPlayer.setPlayerView(bg_video_view);
+        mVodPlayer.startPlay(videoUrl);
     }
 
     private void deleteVideo() {
@@ -294,5 +328,17 @@ public class UpLoadVideoActivity extends BaseActivity implements View.OnClickLis
         } else {
             return super.onKeyDown(keyCode, event);
         }
+    }
+
+    @Override
+    public void onPlayEvent(int i, Bundle bundle) {
+        if (i == TXLiveConstants.PLAY_EVT_PLAY_END) {
+           loadVideo(videoPath);
+        }
+    }
+
+    @Override
+    public void onNetStatus(Bundle bundle) {
+
     }
 }
