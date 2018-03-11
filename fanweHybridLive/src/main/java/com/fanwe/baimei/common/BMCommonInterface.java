@@ -48,6 +48,7 @@ public class BMCommonInterface
         AppRequestParams params = getBMRequestParams();
         params.putCtl("games");
         params.putAct("index");
+        params.put("need_ww",1);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

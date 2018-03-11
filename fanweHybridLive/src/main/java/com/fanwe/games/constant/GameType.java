@@ -19,4 +19,9 @@ public interface GameType
      * 猜大小
      */
     int DICE = 4;
+
+    /**
+     * 抓娃娃
+     */
+    int WAWA = 100;
 }

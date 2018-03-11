@@ -2035,6 +2035,7 @@ public class CommonInterface {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("plugin_init");
+        params.put("need_ww",1);
         BMCommonInterface.setAppRequestParams(params);
         AppHttpUtil.getInstance().post(params, listener);
     }
@@ -2068,6 +2069,20 @@ public class CommonInterface {
         params.put("id", gameId);
         params.put("bet", betPosition);
         params.put("money", betCoin);
+        AppHttpUtil.getInstance().post(params, listener);
+    }
+
+    /**
+     * 投注接口
+     *
+     * @param gameId      游戏id（主键）
+     * @param listener
+     */
+    public static void requestWaWaBet(int gameId,AppRequestCallback<Games_betActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("games");
+        params.putAct("ww_bet");
+        params.put("id", 100);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

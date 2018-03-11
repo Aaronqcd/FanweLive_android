@@ -15,12 +15,15 @@ import com.fanwe.games.model.GameBankerModel;
 import com.fanwe.games.model.Games_betActModel;
 import com.fanwe.games.model.Games_logActModel;
 import com.fanwe.games.model.custommsg.GameMsgModel;
+import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.libgame.dice.view.DiceGameView;
 import com.fanwe.libgame.dice.view.base.DiceScoreBaseBoardView;
 import com.fanwe.libgame.poker.bull.view.BullGameView;
 import com.fanwe.libgame.poker.goldflower.view.GoldFlowerGameView;
 import com.fanwe.libgame.poker.model.PokerGroupResultData;
 import com.fanwe.libgame.poker.view.PokerGameView;
+import com.fanwe.libgame.wawa.view.WawaGameView;
+import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.common.SDHandlerManager;
 import com.fanwe.library.dialog.SDDialogConfirm;
 import com.fanwe.library.dialog.SDDialogCustom;
@@ -28,6 +31,7 @@ import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
 import com.fanwe.live.common.AppRuntimeWorker;
+import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgEndVideo;
 
@@ -37,18 +41,19 @@ import java.util.List;
  * 游戏扩展
  */
 public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity implements
-        PokerGameBusiness.PokerGameBusinessCallback, DiceGameBusiness.GameDiceBusinessListener
-{
+        PokerGameBusiness.PokerGameBusinessCallback, DiceGameBusiness.GameDiceBusinessListener {
     private PokerGameView mPokerGameView;
     private PokerGameBusiness mPokerGameBusiness;
 
     private DiceGameView mDiceGameView;
     private DiceGameBusiness mDiceGameBusiness;
 
+    private WawaGameView mWawaGameView;
+
     @Override
-    protected void init(Bundle savedInstanceState)
-    {
+    protected void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
+        requestWaWaBet(100);
     }
 
     /**
@@ -56,10 +61,8 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
      *
      * @return
      */
-    private PokerGameBusiness getPokerGameBusiness()
-    {
-        if (mPokerGameBusiness == null)
-        {
+    private PokerGameBusiness getPokerGameBusiness() {
+        if (mPokerGameBusiness == null) {
             mPokerGameBusiness = new PokerGameBusiness(getGameBusiness());
             mPokerGameBusiness.setCallback(this);
         }
@@ -71,10 +74,8 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
      *
      * @return
      */
-    private DiceGameBusiness getDiceGameBusiness()
-    {
-        if (mDiceGameBusiness == null)
-        {
+    private DiceGameBusiness getDiceGameBusiness() {
+        if (mDiceGameBusiness == null) {
             mDiceGameBusiness = new DiceGameBusiness(getGameBusiness());
             mDiceGameBusiness.setGameDiceBusinessListener(this);
         }
@@ -82,29 +83,24 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    public void onGameMsg(GameMsgModel msg, boolean isPush)
-    {
+    public void onGameMsg(GameMsgModel msg, boolean isPush) {
         super.onGameMsg(msg, isPush);
         getPokerGameBusiness().onGameMsg(msg, isPush);
         getDiceGameBusiness().onGameMsg(msg, isPush);
     }
 
     @Override
-    public void onGameInitPanel(GameMsgModel msg)
-    {
+    public void onGameInitPanel(GameMsgModel msg) {
         super.onGameInitPanel(msg);
-        switch (msg.getGame_id())
-        {
+        switch (msg.getGame_id()) {
             case GameType.GOLD_FLOWER://扎金花
-                if (mPokerGameView == null)
-                {
+                if (mPokerGameView == null) {
                     mPokerGameView = new GoldFlowerGameView(this);
                     initPokerGameView(msg);
                 }
                 break;
             case GameType.BULL://斗牛
-                if (mPokerGameView == null)
-                {
+                if (mPokerGameView == null) {
                     mPokerGameView = new BullGameView(this);
                     initPokerGameView(msg);
                 }
@@ -112,12 +108,17 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             case GameType.DICE:
                 initDiceGameView(msg);
                 break;
+            case GameType.WAWA:
+                if (mWawaGameView == null) {
+                    mWawaGameView = new WawaGameView(this);
+                    replaceBottomExtend(mWawaGameView);
+                }
+                break;
             default:
                 break;
         }
 
-        if (isSendMsgViewVisible() || isSendGiftViewVisible())
-        {
+        if (isSendMsgViewVisible() || isSendGiftViewVisible()) {
             hideGamePanelView();
         }
     }
@@ -127,24 +128,21 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
      *
      * @param msg
      */
-    private void initDiceGameView(GameMsgModel msg)
-    {
-        if (mDiceGameView == null)
-        {
+    private void initDiceGameView(GameMsgModel msg) {
+        if (mDiceGameView == null) {
             mDiceGameView = new DiceGameView(this);
             mDiceGameView.setCallback(mDiceGameViewCallback);
             mDiceGameView.getManager().setCreater(isCreater());
             mDiceGameView.getManager().setBetMultipleData(msg.getOption());
             mDiceGameView.getManager().setBetCoinsOptionData(msg.getBet_option());
             mDiceGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
-            mDiceGameView.getManager().setUserCoinsImageRes(AppRuntimeWorker.isUseGameCurrency() ? R.drawable.ic_game_coins:R.drawable.ic_user_coins_diamond);
+            mDiceGameView.getManager().setUserCoinsImageRes(AppRuntimeWorker.isUseGameCurrency() ? R.drawable.ic_game_coins : R.drawable.ic_user_coins_diamond);
             replaceBottomExtend(mDiceGameView);
         }
     }
 
     @Override
-    public void onGameRemovePanel()
-    {
+    public void onGameRemovePanel() {
         super.onGameRemovePanel();
         removeGamePanel();
     }
@@ -154,8 +152,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
      *
      * @param msg
      */
-    private void initPokerGameView(GameMsgModel msg)
-    {
+    private void initPokerGameView(GameMsgModel msg) {
         mPokerGameView.setCallback(mPokerGameViewCallback);
         mPokerGameView.getManager().setCreater(isCreater());
         mPokerGameView.getManager().setBetMultipleData(msg.getOption());
@@ -168,17 +165,13 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 猜大小游戏view回调
      */
-    private DiceGameView.DiceGameViewCallback mDiceGameViewCallback = new DiceGameView.DiceGameViewCallback()
-    {
+    private DiceGameView.DiceGameViewCallback mDiceGameViewCallback = new DiceGameView.DiceGameViewCallback() {
         @Override
-        public void onClickBetView(DiceScoreBaseBoardView view, int betPosition, long betCoin)
-        {
-            if (betCoin <= 0)
-            {
+        public void onClickBetView(DiceScoreBaseBoardView view, int betPosition, long betCoin) {
+            if (betCoin <= 0) {
                 return;
             }
-            if (!getGameBusiness().canGameCurrencyPay(betCoin))
-            {
+            if (!getGameBusiness().canGameCurrencyPay(betCoin)) {
                 SDToast.showToast("余额不足，请先充值");
                 return;
             }
@@ -186,30 +179,25 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         }
 
         @Override
-        public void onClockFinish()
-        {
-            if (getGameBusiness().isInGameRound())
-            {
+        public void onClockFinish() {
+            if (getGameBusiness().isInGameRound()) {
                 Log.i("poker", "倒计时结束，但是还处于投注状态，延时调用查询游戏信息接口");
                 getGameBusiness().startRequestGameInfoDelay();
             }
         }
 
         @Override
-        public void onClickRecharge()
-        {
+        public void onClickRecharge() {
             showRechargeDialog();
         }
 
         @Override
-        public void onClickGameLog()
-        {
+        public void onClickGameLog() {
             getPokerGameBusiness().requestGameLog();
         }
 
         @Override
-        public void onClickChangeAutoStartMode()
-        {
+        public void onClickChangeAutoStartMode() {
             showChangeAutoStartModeDialog();
         }
     };
@@ -217,17 +205,13 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 扑克牌游戏view点击回调
      */
-    private PokerGameView.PokerGameViewCallback mPokerGameViewCallback = new PokerGameView.PokerGameViewCallback()
-    {
+    private PokerGameView.PokerGameViewCallback mPokerGameViewCallback = new PokerGameView.PokerGameViewCallback() {
         @Override
-        public void onClickBetView(int betPosition, long betCoin)
-        {
-            if (betCoin <= 0)
-            {
+        public void onClickBetView(int betPosition, long betCoin) {
+            if (betCoin <= 0) {
                 return;
             }
-            if (!getGameBusiness().canGameCurrencyPay(betCoin))
-            {
+            if (!getGameBusiness().canGameCurrencyPay(betCoin)) {
                 SDToast.showToast("余额不足，请先充值");
                 return;
             }
@@ -235,30 +219,25 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         }
 
         @Override
-        public void onClockFinish()
-        {
-            if (getGameBusiness().isInGameRound())
-            {
+        public void onClockFinish() {
+            if (getGameBusiness().isInGameRound()) {
                 Log.i("poker", "倒计时结束，但是还处于投注状态，延时调用查询游戏信息接口");
                 getGameBusiness().startRequestGameInfoDelay();
             }
         }
 
         @Override
-        public void onClickRecharge()
-        {
+        public void onClickRecharge() {
             showRechargeDialog();
         }
 
         @Override
-        public void onClickGameLog()
-        {
+        public void onClickGameLog() {
             getPokerGameBusiness().requestGameLog();
         }
 
         @Override
-        public void onClickChangeAutoStartMode()
-        {
+        public void onClickChangeAutoStartMode() {
             showChangeAutoStartModeDialog();
         }
     };
@@ -266,26 +245,20 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 显示切换自动开始游戏模式窗口
      */
-    private void showChangeAutoStartModeDialog()
-    {
+    private void showChangeAutoStartModeDialog() {
         SDDialogConfirm dialog = new SDDialogConfirm(this);
-        if (getGameBusiness().isAutoStartMode())
-        {
+        if (getGameBusiness().isAutoStartMode()) {
             dialog.setTextContent("是否切换为手动开始游戏模式？");
-        } else
-        {
+        } else {
             dialog.setTextContent("是否切换为自动开始游戏模式？");
         }
-        dialog.setCallback(new SDDialogCustom.SDDialogCustomCallback()
-        {
+        dialog.setCallback(new SDDialogCustom.SDDialogCustomCallback() {
             @Override
-            public void onClickCancel(View v, SDDialogCustom dialog)
-            {
+            public void onClickCancel(View v, SDDialogCustom dialog) {
             }
 
             @Override
-            public void onClickConfirm(View v, SDDialogCustom dialog)
-            {
+            public void onClickConfirm(View v, SDDialogCustom dialog) {
                 getGameBusiness().requestAutoStartGame(!getGameBusiness().isAutoStartMode());
             }
         });
@@ -293,80 +266,64 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    public void onGameUpdateGameCurrency(long value)
-    {
+    public void onGameUpdateGameCurrency(long value) {
         super.onGameUpdateGameCurrency(value);
-        if (mPokerGameView != null)
-        {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setUserCoins(value);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().setUserCoins(value);
         }
     }
 
     @Override
-    public void onGameMsgStopGame()
-    {
+    public void onGameMsgStopGame() {
         super.onGameMsgStopGame();
         getGameBusiness().requestGameCurrency();
         removeGamePanel();
     }
 
     @Override
-    public void onGameHasAutoStartMode(boolean hasAutoStartMode)
-    {
+    public void onGameHasAutoStartMode(boolean hasAutoStartMode) {
         super.onGameHasAutoStartMode(hasAutoStartMode);
-        if (mPokerGameView != null)
-        {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setHasAutoStartMode(hasAutoStartMode);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().setHasAutoStartMode(hasAutoStartMode);
         }
     }
 
     @Override
-    public void onGameAutoStartModeChanged(boolean isAutoStartMode)
-    {
+    public void onGameAutoStartModeChanged(boolean isAutoStartMode) {
         super.onGameAutoStartModeChanged(isAutoStartMode);
-        if (mPokerGameView != null)
-        {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setAutoStartMode(isAutoStartMode);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().setAutoStartMode(isAutoStartMode);
         }
     }
 
     @Override
-    public void onGameRequestGameIncomeSuccess(App_requestGameIncomeActModel actModel)
-    {
+    public void onGameRequestGameIncomeSuccess(App_requestGameIncomeActModel actModel) {
         super.onGameRequestGameIncomeSuccess(actModel);
         //游戏轮数收益
         final int coin = actModel.getGain();
-        if (coin == 0 || getGameView() == null)
-        {
+        if (coin == 0 || getGameView() == null) {
             return;
         }
-        BMDiceResultDialog dialog = new BMDiceResultDialog(this)
-        {
+        BMDiceResultDialog dialog = new BMDiceResultDialog(this) {
             @Override
-            protected boolean isWinner()
-            {
-                if (coin > 0)
-                {
+            protected boolean isWinner() {
+                if (coin > 0) {
                     return true;
                 }
                 return false;
             }
         };
         App_requestGameIncomeActModel.Winner winner = actModel.getWinner();
-        if (winner != null)
-        {
+        if (winner != null) {
             dialog.setWinner(winner.getNick_name(), winner.getMoney());
         }
         dialog.setSelfScore(coin);
@@ -374,69 +331,54 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    public void onBsGameBetMsgBegin(GameMsgModel msg, boolean isPush)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetMsgBegin(GameMsgModel msg, boolean isPush) {
+        if (mPokerGameView != null) {
             //开始游戏，倒计时
             mPokerGameView.getManager().start(msg.getTime() * 1000);
 
             //发牌
-            if (SDViewUtil.isVisible(mPokerGameView) && isPush)
-            {
+            if (SDViewUtil.isVisible(mPokerGameView) && isPush) {
                 mPokerGameView.getManager().startDealPoker(true);
-            } else
-            {
+            } else {
                 mPokerGameView.getManager().startDealPoker(false);
             }
         }
 
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().start(msg.getTime() * 1000);
         }
     }
 
     @Override
-    public void onBsGameBetUpdateTotalBet(List<Integer> listData)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetUpdateTotalBet(List<Integer> listData) {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setTotalBetData(listData);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().setTotalBetData(listData);
         }
     }
 
     @Override
-    public void onBsGameBetUpdateUserBet(List<Integer> listData)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetUpdateUserBet(List<Integer> listData) {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setUserBetData(listData);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().setUserBetData(listData);
         }
     }
 
     @Override
-    public void onBsGameBetUpdateBetCoinsOption(List<Integer> listData)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetUpdateBetCoinsOption(List<Integer> listData) {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setBetCoinsOptionData(listData);
         }
     }
 
     @Override
-    public void onBsGamePokerUpdatePokerDatas(List<PokerGroupResultData> listData, int winPosition, boolean isPush)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGamePokerUpdatePokerDatas(List<PokerGroupResultData> listData, int winPosition, boolean isPush) {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().setResultData(listData);
             mPokerGameView.getManager().setWinPosition(winPosition);
             mPokerGameView.getManager().showResult(isPush);
@@ -444,16 +386,13 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    public void onBsGameBetRequestGameLogSuccess(Games_logActModel actModel)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetRequestGameLogSuccess(Games_logActModel actModel) {
+        if (mPokerGameView != null) {
             GameLogDialog dialog = new GameLogDialog(this);
             dialog.setGameId(getGameBusiness().getGameId());
             dialog.setData(actModel.getList());
             dialog.show();
-        } else if (mDiceGameView != null)
-        {
+        } else if (mDiceGameView != null) {
             BMDiceResultHistoryDialog dialog = new BMDiceResultHistoryDialog(this);
             dialog.setData(actModel.getData());
             dialog.show();
@@ -461,88 +400,71 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    public void onBsGameBetRequestDoBetSuccess(Games_betActModel actModel, int betPosition, long betCoin)
-    {
-        if (mPokerGameView != null)
-        {
+    public void onBsGameBetRequestDoBetSuccess(Games_betActModel actModel, int betPosition, long betCoin) {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().onBetSuccess(betPosition, betCoin);
         }
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().onBetSuccess(betPosition, betCoin);
         }
     }
 
     @Override
-    protected void onShowSendMsgView(View view)
-    {
+    protected void onShowSendMsgView(View view) {
         super.onShowSendMsgView(view);
         hideGamePanelView();
     }
 
     @Override
-    protected void onHideSendMsgView(View view)
-    {
+    protected void onHideSendMsgView(View view) {
         super.onHideSendMsgView(view);
         showGamePanelView();
     }
 
     @Override
-    protected void onShowSendGiftView(View view)
-    {
+    protected void onShowSendGiftView(View view) {
         super.onShowSendGiftView(view);
         hideGamePanelView();
     }
 
     @Override
-    protected void onHideSendGiftView(View view)
-    {
+    protected void onHideSendGiftView(View view) {
         super.onHideSendGiftView(view);
         showGamePanelView();
     }
 
     @Override
-    public void onBsBankerShowBankerInfo(GameBankerModel model)
-    {
+    public void onBsBankerShowBankerInfo(GameBankerModel model) {
         super.onBsBankerShowBankerInfo(model);
 
-        if (getBankerBusiness().isMyBanker())
-        {
+        if (getBankerBusiness().isMyBanker()) {
             getGameBusiness().requestGameCurrency();
-            if (mPokerGameView != null)
-            {
+            if (mPokerGameView != null) {
                 mPokerGameView.getManager().setCanBet(false);
             }
-            if (mDiceGameView != null)
-            {
+            if (mDiceGameView != null) {
                 mDiceGameView.getManager().setCanBet(false);
             }
         }
     }
 
     @Override
-    public void onBsBankerRemoveBankerInfo()
-    {
+    public void onBsBankerRemoveBankerInfo() {
         super.onBsBankerRemoveBankerInfo();
 
-        if (getBankerBusiness().isMyBanker())
-        {
+        if (getBankerBusiness().isMyBanker()) {
             getGameBusiness().requestGameCurrency();
-            if (mPokerGameView != null)
-            {
+            if (mPokerGameView != null) {
                 mPokerGameView.getManager().setCanBet(true);
             }
-            if (mDiceGameView != null)
-            {
+            if (mDiceGameView != null) {
                 mDiceGameView.getManager().setCanBet(true);
             }
         }
     }
 
-    private View getGameView()
-    {
-        switch (getGameBusiness().getGameId())
-        {
+    private View getGameView() {
+        switch (getGameBusiness().getGameId()) {
             case GameType.GOLD_FLOWER:
             case GameType.BULL:
                 return mPokerGameView;
@@ -556,14 +478,11 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 显示游戏面板
      */
-    protected void showGamePanelView()
-    {
+    protected void showGamePanelView() {
         getGameBusiness().refreshGameCurrency();
-        SDHandlerManager.postDelayed(new Runnable()
-        {
+        SDHandlerManager.postDelayed(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 SDViewUtil.setVisible(getGameView());
             }
         }, 100);
@@ -572,8 +491,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 隐藏游戏面板
      */
-    protected void hideGamePanelView()
-    {
+    protected void hideGamePanelView() {
         SDViewUtil.setGone(mPokerGameView);
         SDViewUtil.setGone(mDiceGameView);
     }
@@ -581,17 +499,14 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 移除游戏面板
      */
-    private void removeGamePanel()
-    {
-        if (mPokerGameView != null)
-        {
+    private void removeGamePanel() {
+        if (mPokerGameView != null) {
             mPokerGameView.getManager().onDestroy();
             removeView(mPokerGameView);
             mPokerGameView = null;
         }
 
-        if (mDiceGameView != null)
-        {
+        if (mDiceGameView != null) {
             mDiceGameView.getManager().onDestroy();
             removeView(mDiceGameView);
             mDiceGameView = null;
@@ -599,31 +514,42 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
-        if (mPokerGameBusiness != null)
-        {
+        if (mPokerGameBusiness != null) {
             mPokerGameBusiness.onDestroy();
         }
-        if (mDiceGameBusiness != null)
-        {
+        if (mDiceGameBusiness != null) {
             mDiceGameBusiness.onDestroy();
         }
         removeGamePanel();
     }
 
     @Override
-    public void onMsgEndVideo(CustomMsgEndVideo msg)
-    {
+    public void onMsgEndVideo(CustomMsgEndVideo msg) {
         super.onMsgEndVideo(msg);
         removeGamePanel();
     }
 
     @Override
-    public void onBsGameDiceThrowDice(List<Integer> listData, int winPosition, boolean isPush)
-    {
+    public void onBsGameDiceThrowDice(List<Integer> listData, int winPosition, boolean isPush) {
         mDiceGameView.getManager().setWinPosition(winPosition);
         mDiceGameView.getManager().showResult(listData);
+    }
+
+    /**
+     * 娃娃倍率
+     *
+     */
+    public void requestWaWaBet(int betPosition) {
+        CommonInterface.requestWaWaBet(100, new AppRequestCallback<Games_betActModel>() {
+
+            @Override
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
+
+                }
+            }
+        });
     }
 }
