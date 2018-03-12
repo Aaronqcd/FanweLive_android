@@ -16,7 +16,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 2016120702
-        versionName "1.0.1"
+        versionName "1.0.2"
         buildConfigField 'String', 'SERVER_URL_INIT_URL', '"http://www.xxx.com/app.php?act=init"'
 
         multiDexEnabled true
@@ -106,8 +106,8 @@ android {
         //映秀直播
         yingxiu {
             applicationId "tv.yingxiu.live"
-            versionCode 2017102502
-            versionName "1.0.1"
+            versionCode 2018030502
+            versionName "1.0.2"
             buildConfigField 'String', 'SERVER_URL', '"http://live.yingxiu.tv"'
         }
 
