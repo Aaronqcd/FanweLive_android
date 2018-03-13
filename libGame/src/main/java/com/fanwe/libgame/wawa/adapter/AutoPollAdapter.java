@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fanwe.games.R;
+import com.fanwe.libgame.wawa.model.WawaItemModel;
+
+import java.util.List;
 
 
 /**
@@ -21,10 +24,12 @@ public class AutoPollAdapter extends RecyclerView.Adapter<AutoPollAdapter.BaseVi
     private boolean isTop;
     private BaseViewHolder baseViewHolder;
     private int isInVisiblePos;
-    public AutoPollAdapter(Context context, int[] advance_drawable, boolean isTop) {
+    private List<WawaItemModel> list;
+
+    public AutoPollAdapter(Context context, List<WawaItemModel> list, boolean isTop) {
         this.mContext = context;
-        this.advance_drawable = advance_drawable;
         this.isTop=isTop;
+        this.list = list;
     }
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,13 +45,14 @@ public class AutoPollAdapter extends RecyclerView.Adapter<AutoPollAdapter.BaseVi
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         baseViewHolder=holder;
-        int resDrawable = advance_drawable[position%advance_drawable.length];
-        holder.sort_icon.setImageResource(resDrawable);
-        if(isInVisiblePos==position){
-            holder.sort_icon.setVisibility(View.INVISIBLE);
-        }else {
-            holder.sort_icon.setVisibility(View.VISIBLE);
-        }
+        position=position%list.size();
+        holder.sort_icon.setImageResource(list.get(position).wawaDrawable);
+        holder.sort_name.setText("x"+list.get(position).rate);
+//        if(isInVisiblePos==position){
+//            holder.sort_icon.setVisibility(View.INVISIBLE);
+//        }else {
+//            holder.sort_icon.setVisibility(View.VISIBLE);
+//        }
     }
     public void updateIcon(int position){
         this.isInVisiblePos=position;

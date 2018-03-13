@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.fanwe.games.model.PluginModel;
@@ -49,6 +50,8 @@ public class LiveLayoutActivity extends LiveActivity
     protected RoomHeartView mRoomHeartView;
     protected RoomGiftGifView mRoomGiftGifView;
     protected RoomPrivateRemoveViewerView mRoomPrivateRemoveViewerView;
+    protected ImageView wawa_line;
+    protected ImageView wawa_stub;
 
     private RelativeLayout rl_root_layout; // UI表现层根部局
     private SDReplaceableLayout fl_bottom_extend; // 底部扩展
@@ -90,6 +93,8 @@ public class LiveLayoutActivity extends LiveActivity
     protected void initLayout(View view)
     {
         rl_root_layout = (RelativeLayout) view.findViewById(R.id.rl_root_layout);
+        wawa_line = (ImageView) view.findViewById(R.id.wawa_line);
+        wawa_stub = (ImageView) view.findViewById(R.id.wawa_stub);
         initBottomExtend();
 
         addRoomInfoView();

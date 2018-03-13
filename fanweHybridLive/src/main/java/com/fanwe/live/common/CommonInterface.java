@@ -2073,7 +2073,7 @@ public class CommonInterface {
     }
 
     /**
-     * 投注接口
+     *娃娃倍率
      *
      * @param gameId      游戏id（主键）
      * @param listener

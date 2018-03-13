@@ -53,7 +53,6 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     @Override
     protected void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
-        requestWaWaBet(100);
     }
 
     /**
@@ -109,10 +108,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 initDiceGameView(msg);
                 break;
             case GameType.WAWA:
-                if (mWawaGameView == null) {
-                    mWawaGameView = new WawaGameView(this);
-                    replaceBottomExtend(mWawaGameView);
-                }
+                initWawaGameView(msg);
                 break;
             default:
                 break;
@@ -138,6 +134,24 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mDiceGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
             mDiceGameView.getManager().setUserCoinsImageRes(AppRuntimeWorker.isUseGameCurrency() ? R.drawable.ic_game_coins : R.drawable.ic_user_coins_diamond);
             replaceBottomExtend(mDiceGameView);
+        }
+    }
+
+    /**
+     * 初始化抓娃娃游戏view
+     *
+     * @param msg
+     */
+    private void initWawaGameView(GameMsgModel msg) {
+        if (mWawaGameView == null) {
+            mWawaGameView = new WawaGameView(this);
+            mWawaGameView.setCallback(mWawaGameViewCallback);
+            mWawaGameView.setTopView(wawa_line,wawa_stub);
+            mWawaGameView.getManager().setCreater(isCreater());
+            mWawaGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
+            replaceBottomExtend(mWawaGameView);
+            wawa_line.setVisibility(View.VISIBLE);
+            wawa_stub.setVisibility(View.VISIBLE);
         }
     }
 
@@ -243,6 +257,23 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     };
 
     /**
+     * 抓娃娃游戏view点击回调
+     */
+    private WawaGameView.WawaGameViewCallback mWawaGameViewCallback = new WawaGameView.WawaGameViewCallback(){
+
+
+        @Override
+        public void onClickBetView(int betPosition, long betCoin) {
+
+        }
+
+        @Override
+        public void onClickRecharge() {
+            showRechargeDialog();
+        }
+    };
+
+    /**
      * 显示切换自动开始游戏模式窗口
      */
     private void showChangeAutoStartModeDialog() {
@@ -273,6 +304,9 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         }
         if (mDiceGameView != null) {
             mDiceGameView.getManager().setUserCoins(value);
+        }
+        if (mWawaGameView != null) {
+            mWawaGameView.getManager().setUserCoins(value);
         }
     }
 
@@ -470,6 +504,10 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 return mPokerGameView;
             case GameType.DICE:
                 return mDiceGameView;
+            case GameType.WAWA:
+                wawa_line.setVisibility(View.VISIBLE);
+                wawa_stub.setVisibility(View.VISIBLE);
+                return mWawaGameView;
             default:
                 return null;
         }
@@ -494,6 +532,9 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     protected void hideGamePanelView() {
         SDViewUtil.setGone(mPokerGameView);
         SDViewUtil.setGone(mDiceGameView);
+        SDViewUtil.setGone(mWawaGameView);
+        wawa_line.setVisibility(View.INVISIBLE);
+        wawa_stub.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -510,6 +551,11 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mDiceGameView.getManager().onDestroy();
             removeView(mDiceGameView);
             mDiceGameView = null;
+        }
+        if (mWawaGameView != null) {
+            mWawaGameView.getManager().onDestroy();
+            removeView(mWawaGameView);
+            mWawaGameView = null;
         }
     }
 
@@ -535,21 +581,5 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     public void onBsGameDiceThrowDice(List<Integer> listData, int winPosition, boolean isPush) {
         mDiceGameView.getManager().setWinPosition(winPosition);
         mDiceGameView.getManager().showResult(listData);
-    }
-
-    /**
-     * 娃娃倍率
-     *
-     */
-    public void requestWaWaBet(int betPosition) {
-        CommonInterface.requestWaWaBet(100, new AppRequestCallback<Games_betActModel>() {
-
-            @Override
-            protected void onSuccess(SDResponse sdResponse) {
-                if (actModel.isOk()) {
-
-                }
-            }
-        });
     }
 }

@@ -32,8 +32,7 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
         GameBusiness.GameBusinessCallback,
         GameBusiness.GameCtrlViewClickCallback,
         BankerBusiness.BankerBusinessCallback,
-        BankerBusiness.BankerCtrlViewClickCallback
-{
+        BankerBusiness.BankerCtrlViewClickCallback {
 
     private GameBusiness mGameBusiness;
 
@@ -46,8 +45,7 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
 
 
     @Override
-    protected void initLayout(View view)
-    {
+    protected void initLayout(View view) {
         super.initLayout(view);
         iv_bm_live_bg = find(R.id.iv_bm_live_bg);
     }
@@ -57,10 +55,8 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
      *
      * @return
      */
-    public GameBusiness getGameBusiness()
-    {
-        if (mGameBusiness == null)
-        {
+    public GameBusiness getGameBusiness() {
+        if (mGameBusiness == null) {
             mGameBusiness = new GameBusiness(this);
             mGameBusiness.setCallback(this);
         }
@@ -72,31 +68,26 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
      *
      * @return
      */
-    public BankerBusiness getBankerBusiness()
-    {
-        if (mBankerBusiness == null)
-        {
+    public BankerBusiness getBankerBusiness() {
+        if (mBankerBusiness == null) {
             mBankerBusiness = new BankerBusiness(this);
             mBankerBusiness.setCallback(this);
         }
         return mBankerBusiness;
     }
 
-    public void onEventMainThread(EUpdateUserInfo event)
-    {
+    public void onEventMainThread(EUpdateUserInfo event) {
         getGameBusiness().refreshGameCurrency();
     }
 
     @Override
-    protected void onSuccessJoinGroup(String groupId)
-    {
+    protected void onSuccessJoinGroup(String groupId) {
         super.onSuccessJoinGroup(groupId);
         getGameBusiness().requestGameInfo();
     }
 
     @Override
-    public void onMsgGame(MsgModel msg)
-    {
+    public void onMsgGame(MsgModel msg) {
         super.onMsgGame(msg);
         getGameBusiness().onMsgGame(msg);
         LogUtil.e("onMsgGame==================================");
@@ -104,162 +95,132 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
     }
 
     @Override
-    public void onMsgGameBanker(CustomMsgGameBanker msg)
-    {
+    public void onMsgGameBanker(CustomMsgGameBanker msg) {
         super.onMsgGameBanker(msg);
         getBankerBusiness().onMsgGameBanker(msg);
     }
 
     @Override
-    protected void onClickCreaterPluginGame(PluginModel model)
-    {
+    protected void onClickCreaterPluginGame(PluginModel model) {
         super.onClickCreaterPluginGame(model);
         getGameBusiness().selectGame(model);
     }
 
     @Override
-    public void onClickGameCtrlStart(View view)
-    {
+    public void onClickGameCtrlStart(View view) {
         getGameBusiness().requestStartGame();
     }
 
     @Override
-    public void onClickGameCtrlClose(View view)
-    {
+    public void onClickGameCtrlClose(View view) {
         SDDialogConfirm dialog = new SDDialogConfirm(this);
         dialog.setTextContent("确定要关闭游戏？")
-                .setCallback(new SDDialogCustom.SDDialogCustomCallback()
-                {
+                .setCallback(new SDDialogCustom.SDDialogCustomCallback() {
                     @Override
-                    public void onClickCancel(View v, SDDialogCustom dialog)
-                    {
+                    public void onClickCancel(View v, SDDialogCustom dialog) {
                     }
 
                     @Override
-                    public void onClickConfirm(View v, SDDialogCustom dialog)
-                    {
+                    public void onClickConfirm(View v, SDDialogCustom dialog) {
                         getGameBusiness().requestStopGame();
                     }
                 }).show();
     }
 
     @Override
-    public void onGameInitPanel(GameMsgModel msg)
-    {
+    public void onGameInitPanel(GameMsgModel msg) {
     }
 
     @Override
-    public void onGameRemovePanel()
-    {
+    public void onGameRemovePanel() {
 
     }
 
     @Override
-    public void onGameMsg(GameMsgModel msg, boolean isPush)
-    {
+    public void onGameMsg(GameMsgModel msg, boolean isPush) {
         getBankerBusiness().onGameMsg(msg);
     }
 
     @Override
-    public void onGameMsgStopGame()
-    {
+    public void onGameMsgStopGame() {
         getBankerBusiness().setState(BankerBusiness.State.GAME_STOPPED);
     }
 
     @Override
-    public void onGameRequestGameIncomeSuccess(App_requestGameIncomeActModel actModel)
-    {
+    public void onGameRequestGameIncomeSuccess(App_requestGameIncomeActModel actModel) {
     }
 
     @Override
-    public void onGameRequestStartGameSuccess(App_startGameActModel actModel)
-    {
-
-    }
-
-    @Override
-    public void onGameRequestStopGameSuccess(BaseActModel actModel)
-    {
-    }
-
-    @Override
-    public void onGameHasAutoStartMode(boolean hasAutoStartMode)
-    {
+    public void onGameRequestStartGameSuccess(App_startGameActModel actModel) {
 
     }
 
     @Override
-    public void onGameAutoStartModeChanged(boolean isAutoStartMode)
-    {
+    public void onGameRequestStopGameSuccess(BaseActModel actModel) {
+    }
+
+    @Override
+    public void onGameHasAutoStartMode(boolean hasAutoStartMode) {
 
     }
 
     @Override
-    public void onGameCtrlShowStart(boolean show, int gameId)
-    {
+    public void onGameAutoStartModeChanged(boolean isAutoStartMode) {
+
     }
 
     @Override
-    public void onGameCtrlShowClose(boolean show, int gameId)
-    {
+    public void onGameCtrlShowStart(boolean show, int gameId) {
     }
 
     @Override
-    public void onGameCtrlShowWaiting(boolean show, int gameId)
-    {
+    public void onGameCtrlShowClose(boolean show, int gameId) {
     }
 
     @Override
-    public void onGameUpdateGameCurrency(long value)
-    {
+    public void onGameCtrlShowWaiting(boolean show, int gameId) {
     }
 
     @Override
-    protected void onDestroy()
-    {
+    public void onGameUpdateGameCurrency(long value) {
+    }
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        if (mGameBusiness != null)
-        {
+        if (mGameBusiness != null) {
             mGameBusiness.onDestroy();
         }
 
-        if (mBankerBusiness != null)
-        {
+        if (mBankerBusiness != null) {
             mBankerBusiness.onDestroy();
         }
     }
 
     //----------Banker start----------
     @Override
-    public void onBankerCtrlCreaterShowOpenBanker(boolean show)
-    {
+    public void onBankerCtrlCreaterShowOpenBanker(boolean show) {
     }
 
     @Override
-    public void onBankerCtrlCreaterShowOpenBankerList(boolean show)
-    {
+    public void onBankerCtrlCreaterShowOpenBankerList(boolean show) {
     }
 
     @Override
-    public void onBankerCtrlCreaterShowStopBanker(boolean show)
-    {
+    public void onBankerCtrlCreaterShowStopBanker(boolean show) {
     }
 
     @Override
-    public void onBankerCtrlViewerShowApplyBanker(boolean show)
-    {
+    public void onBankerCtrlViewerShowApplyBanker(boolean show) {
     }
 
     @Override
-    public void onBsBankerCreaterShowHasViewerApplyBanker(boolean show)
-    {
+    public void onBsBankerCreaterShowHasViewerApplyBanker(boolean show) {
     }
 
     @Override
-    public void onBsBankerShowBankerInfo(GameBankerModel model)
-    {
-        if (mGameBankerView == null)
-        {
+    public void onBsBankerShowBankerInfo(GameBankerModel model) {
+        if (mGameBankerView == null) {
             mGameBankerView = new RoomGameBankerView(this);
             replaceBankerView(mGameBankerView);
         }
@@ -267,26 +228,21 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
     }
 
     @Override
-    public void onBsBankerRemoveBankerInfo()
-    {
+    public void onBsBankerRemoveBankerInfo() {
         removeView(mGameBankerView);
         mGameBankerView = null;
     }
 
     @Override
-    public void onClickBankerCtrlCreaterOpenBanker()
-    {
+    public void onClickBankerCtrlCreaterOpenBanker() {
         getBankerBusiness().requestOpenGameBanker();
     }
 
     @Override
-    public void onClickBankerCtrlCreaterOpenBankerList()
-    {
-        GamesBankerListDialog dialog = new GamesBankerListDialog(this, new GamesBankerListDialog.BankerSubmitListener()
-        {
+    public void onClickBankerCtrlCreaterOpenBankerList() {
+        GamesBankerListDialog dialog = new GamesBankerListDialog(this, new GamesBankerListDialog.BankerSubmitListener() {
             @Override
-            public void onClickChoose(SDDialogCustom dialog, String bankerLogId)
-            {
+            public void onClickChoose(SDDialogCustom dialog, String bankerLogId) {
                 getBankerBusiness().requestChooseBanker(bankerLogId);
             }
         });
@@ -294,35 +250,28 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
     }
 
     @Override
-    public void onClickBankerCtrlCreaterStopBanker()
-    {
+    public void onClickBankerCtrlCreaterStopBanker() {
         SDDialogConfirm dialog = new SDDialogConfirm(this);
         dialog.setTextContent("确定要移除该庄家？")
                 .setTextGravity(Gravity.CENTER)
                 .setTextConfirm("移除")
-                .setCallback(new SDDialogCustom.SDDialogCustomCallback()
-                {
+                .setCallback(new SDDialogCustom.SDDialogCustomCallback() {
                     @Override
-                    public void onClickCancel(View v, SDDialogCustom dialog)
-                    {
+                    public void onClickCancel(View v, SDDialogCustom dialog) {
                     }
 
                     @Override
-                    public void onClickConfirm(View v, SDDialogCustom dialog)
-                    {
+                    public void onClickConfirm(View v, SDDialogCustom dialog) {
                         getBankerBusiness().requestStopGameBanker();
                     }
                 }).show();
     }
 
     @Override
-    public void onClickBankerCtrlViewerApplyBanker()
-    {
-        GamesBankerDialog dialog = new GamesBankerDialog(this, new GamesBankerDialog.BankerSubmitListener()
-        {
+    public void onClickBankerCtrlViewerApplyBanker() {
+        GamesBankerDialog dialog = new GamesBankerDialog(this, new GamesBankerDialog.BankerSubmitListener() {
             @Override
-            public void onClickSubmit(long coins)
-            {
+            public void onClickSubmit(long coins) {
                 getBankerBusiness().requestApplyBanker(coins);
             }
         });
@@ -332,12 +281,9 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
     //百媚=================================start
 
     @Override
-    public void onBsLiveBackgroundChanged(int imageResId)
-    {
-        if (getGameBusiness().getGameId() > 0)
-        {
-            switch (getGameBusiness().getGameId())
-            {
+    public void onBsLiveBackgroundChanged(int imageResId) {
+        if (getGameBusiness().getGameId() > 0) {
+            switch (getGameBusiness().getGameId()) {
                 case GameType.GOLD_FLOWER:
                     setLiveBackground(R.drawable.bm_bg_live_game_gold_flower);
                     break;
@@ -347,17 +293,18 @@ public class LiveLayoutGameActivity extends LiveLayoutActivity implements
                 case GameType.DICE:
                     setLiveBackground(R.drawable.bm_bg_live_game_dice);
                     break;
+                case GameType.WAWA:
+                    setLiveBackground(R.drawable.bm_bg_live_game_wawa);
+                    break;
                 default:
                     break;
             }
-        }else
-        {
+        } else {
             setLiveBackground(imageResId);
         }
     }
 
-    protected void setLiveBackground(int imageResId)
-    {
+    protected void setLiveBackground(int imageResId) {
         iv_bm_live_bg.setImageResource(imageResId);
     }
 
