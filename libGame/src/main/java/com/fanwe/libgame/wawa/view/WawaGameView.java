@@ -173,18 +173,18 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     public WawaGameView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_wawa_game, this);
-        list.add(new WawaItemModel(R.drawable.prizeitem_06, 99));
-        list.add(new WawaItemModel(R.drawable.prizeitem_04, 10));
-        list.add(new WawaItemModel(R.drawable.prizeitem_03, 5));
         list.add(new WawaItemModel(R.drawable.prizeitem_01, 2));
         list.add(new WawaItemModel(R.drawable.prizeitem_02, 3));
         list.add(new WawaItemModel(R.drawable.prizeitem_01, 2));
+        list.add(new WawaItemModel(R.drawable.prizeitem_03, 5));
+        list.add(new WawaItemModel(R.drawable.prizeitem_04, 10));
         list.add(new WawaItemModel(R.drawable.prizeitem_05, 25));
-        list.add(new WawaItemModel(R.drawable.prizeitem_04, 10));
-        list.add(new WawaItemModel(R.drawable.prizeitem_03, 5));
         list.add(new WawaItemModel(R.drawable.prizeitem_01, 2));
         list.add(new WawaItemModel(R.drawable.prizeitem_02, 3));
         list.add(new WawaItemModel(R.drawable.prizeitem_01, 2));
+        list.add(new WawaItemModel(R.drawable.prizeitem_03, 5));
+        list.add(new WawaItemModel(R.drawable.prizeitem_04, 10));
+        list.add(new WawaItemModel(R.drawable.prizeitem_06, 99));
         initView();
     }
 
