@@ -181,5 +181,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/fl_live_room_info">
     </FrameLayout>
+    <!-- 抓娃娃线与底部view -->
+    <FrameLayout
+        android:id="@+id/fl_live_wawa"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </FrameLayout>
 
 </RelativeLayout>

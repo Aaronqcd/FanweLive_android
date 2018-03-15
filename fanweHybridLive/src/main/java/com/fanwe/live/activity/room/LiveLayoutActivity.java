@@ -23,6 +23,7 @@ import com.fanwe.live.appview.room.RoomPopMsgView;
 import com.fanwe.live.appview.room.RoomPrivateRemoveViewerView;
 import com.fanwe.live.appview.room.RoomSendMsgView;
 import com.fanwe.live.appview.room.RoomViewerJoinRoomView;
+import com.fanwe.live.appview.room.RoomWawaView;
 import com.fanwe.live.dialog.LiveAddViewerDialog;
 import com.fanwe.live.dialog.LiveChatC2CDialog;
 import com.fanwe.live.dialog.LiveRechargeDialog;
@@ -50,6 +51,7 @@ public class LiveLayoutActivity extends LiveActivity
     protected RoomHeartView mRoomHeartView;
     protected RoomGiftGifView mRoomGiftGifView;
     protected RoomPrivateRemoveViewerView mRoomPrivateRemoveViewerView;
+    protected RoomWawaView mRoomWawaView;
     protected ImageView wawa_line;
     protected ImageView wawa_stub;
 
@@ -93,8 +95,8 @@ public class LiveLayoutActivity extends LiveActivity
     protected void initLayout(View view)
     {
         rl_root_layout = (RelativeLayout) view.findViewById(R.id.rl_root_layout);
-        wawa_line = (ImageView) view.findViewById(R.id.wawa_line);
-        wawa_stub = (ImageView) view.findViewById(R.id.wawa_stub);
+//        wawa_line = (ImageView) view.findViewById(R.id.wawa_line);
+//        wawa_stub = (ImageView) view.findViewById(R.id.wawa_stub);
         initBottomExtend();
 
         addRoomInfoView();
@@ -106,6 +108,7 @@ public class LiveLayoutActivity extends LiveActivity
         addRoomSendMsgView();
         addRoomHeartView();
         addRoomBottomView();
+        addRoomWawaView();
     }
 
     /**
@@ -329,6 +332,18 @@ public class LiveLayoutActivity extends LiveActivity
                 }
             });
             replaceView(R.id.fl_live_send_msg, mRoomSendMsgView);
+        }
+    }
+
+    /**
+     * 娃娃
+     */
+    protected void addRoomWawaView()
+    {
+        if (mRoomWawaView == null)
+        {
+            mRoomWawaView = new RoomWawaView(this);
+            replaceView(R.id.fl_live_wawa, mRoomWawaView);
         }
     }
 

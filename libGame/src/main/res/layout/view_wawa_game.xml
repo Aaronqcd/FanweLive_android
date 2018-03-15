@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
-    android:layout_height="236dp"
+    android:layout_height="200dp"
     >
 
     <FrameLayout
@@ -146,8 +146,4 @@
             </LinearLayout>
         </FrameLayout>
     </FrameLayout>
-
-
-
-
 </RelativeLayout>
