@@ -50,6 +50,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private ImageView start_grab_animation;
     private ImageView select_coin_bg;
     private ImageView img_chongzhi;
+    private ImageView img_coin;
     private TextView txt_coin;
     private RadioGroup radioGroup;
     private List<WawaItemModel> list = new ArrayList<>();
@@ -202,6 +203,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         rootView = (RelativeLayout) findViewById(R.id.rootView);
         start_grab_animation = (ImageView) findViewById(R.id.start_grab_animation);
         select_coin_bg = (ImageView) findViewById(R.id.select_coin_bg);
+        img_coin = (ImageView) findViewById(R.id.img_coin);
 //        bottom_iv = (ImageView) findViewById(R.id.bottom_iv);
         img_chongzhi = (ImageView) findViewById(R.id.img_chongzhi);
         txt_coin = (TextView) findViewById(R.id.txt_coin);
