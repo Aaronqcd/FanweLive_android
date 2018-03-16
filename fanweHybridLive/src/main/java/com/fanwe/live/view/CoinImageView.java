@@ -1,4 +1,4 @@
-package com.fanwe.libgame.wawa.view;
+package com.fanwe.live.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -38,7 +38,7 @@ public class CoinImageView extends android.support.v7.widget.AppCompatImageView 
         super(context, attrs, defStyleAttr);
         this.mContext=context;
         setLayoutParams(new RadioGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        setImageDrawable(getResources().getDrawable(R.drawable.ove_ic_coin));
+        setImageResource(R.drawable.ove_ic_coin);
     }
 
     public void setStartPosition(Point startPosition) {

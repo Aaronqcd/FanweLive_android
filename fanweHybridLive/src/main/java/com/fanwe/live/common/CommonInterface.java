@@ -9,6 +9,7 @@ import com.fanwe.games.model.App_getGamesActModel;
 import com.fanwe.games.model.App_plugin_initActModel;
 import com.fanwe.games.model.App_requestGameIncomeActModel;
 import com.fanwe.games.model.App_startGameActModel;
+import com.fanwe.games.model.GamesWawaModel;
 import com.fanwe.games.model.Games_betActModel;
 import com.fanwe.games.model.Games_logActModel;
 import com.fanwe.hybrid.constant.ApkConstant;
@@ -2091,7 +2092,7 @@ public class CommonInterface {
      *
      * @param listener
      */
-    public static void requestWaWaEditCoin(int coin,int times,int gameid,int type,AppRequestCallback<Games_betActModel> listener) {
+    public static void requestWaWaEditCoin(int coin,int times,int gameid,int type,AppRequestCallback<GamesWawaModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("edit_coin");

@@ -1,8 +1,11 @@
 package com.fanwe.live.activity.room;
 
+import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.fanwe.baimei.dialog.BMDiceResultDialog;
 import com.fanwe.baimei.dialog.BMDiceResultHistoryDialog;
@@ -12,7 +15,7 @@ import com.fanwe.games.constant.GameType;
 import com.fanwe.games.dialog.GameLogDialog;
 import com.fanwe.games.model.App_requestGameIncomeActModel;
 import com.fanwe.games.model.GameBankerModel;
-import com.fanwe.games.model.GameBetDataModel;
+import com.fanwe.games.model.GamesWawaModel;
 import com.fanwe.games.model.Games_betActModel;
 import com.fanwe.games.model.Games_logActModel;
 import com.fanwe.games.model.custommsg.GameMsgModel;
@@ -23,6 +26,7 @@ import com.fanwe.libgame.poker.bull.view.BullGameView;
 import com.fanwe.libgame.poker.goldflower.view.GoldFlowerGameView;
 import com.fanwe.libgame.poker.model.PokerGroupResultData;
 import com.fanwe.libgame.poker.view.PokerGameView;
+import com.fanwe.live.view.CoinImageView;
 import com.fanwe.libgame.wawa.view.WawaGameView;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.common.SDHandlerManager;
@@ -33,10 +37,10 @@ import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
 import com.fanwe.live.common.AppRuntimeWorker;
 import com.fanwe.live.common.CommonInterface;
-import com.fanwe.live.model.LiveGiftModel;
 import com.fanwe.live.model.custommsg.CustomMsgEndVideo;
 
 import java.util.List;
+
 
 /**
  * 游戏扩展
@@ -50,6 +54,8 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     private DiceGameBusiness mDiceGameBusiness;
 
     private WawaGameView mWawaGameView;
+
+    private GameMsgModel mMsgModel;
 
     @Override
     protected void init(Bundle savedInstanceState) {
@@ -109,6 +115,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 initDiceGameView(msg);
                 break;
             case GameType.WAWA:
+                mMsgModel = msg;
                 initWawaGameView(msg);
                 break;
             default:
@@ -263,8 +270,27 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
 
 
         @Override
-        public void onClickBetView(int betPosition, long betCoin) {
+        public void onClickBetView(int coin, int times, int type) {
+            requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type);
+            if (type == 1) {
+                MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this,R.raw.pz_win);
+                player.start();
 
+                final int stubLocation[] = new int[2];
+                mRoomWawaView.wawa_stub.getLocationInWindow(stubLocation);
+                Point startPosition = new Point(stubLocation[0], stubLocation[1]);
+                int coinLocation[] = new int[2];
+                mWawaGameView.getImg_coin().getLocationInWindow(coinLocation);
+                Point endPosition = new Point(coinLocation[0], coinLocation[1]);
+
+                CoinImageView coinImageView = new CoinImageView(LiveLayoutGameExtendActivity.this);
+                coinImageView.setStartPosition(startPosition);
+                coinImageView.setEndPosition(endPosition);
+                ViewGroup rootView = (ViewGroup) LiveLayoutGameExtendActivity.this.getWindow().getDecorView();
+                rootView.addView(coinImageView);
+                coinImageView.startBeizerAnimation();
+                mRoomWawaView.bottom_view.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -554,6 +580,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mWawaGameView.getManager().onDestroy();
             removeView(mWawaGameView);
             mWawaGameView = null;
+            mRoomWawaView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -581,4 +608,15 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         mDiceGameView.getManager().showResult(listData);
     }
 
+    public void requestWaWaEditCoin(int coin, int times, int game_log_id, int type) {
+        CommonInterface.requestWaWaEditCoin(coin, times, game_log_id, type, new AppRequestCallback<GamesWawaModel>() {
+
+            @Override
+            protected void onSuccess(SDResponse sdResponse) {
+                if (actModel.isOk()) {
+                    mWawaGameView.setTxtCoin(actModel.coin);
+                }
+            }
+        });
+    }
 }

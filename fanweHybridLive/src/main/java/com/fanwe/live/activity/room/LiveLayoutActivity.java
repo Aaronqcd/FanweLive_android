@@ -344,6 +344,7 @@ public class LiveLayoutActivity extends LiveActivity
         {
             mRoomWawaView = new RoomWawaView(this);
             replaceView(R.id.fl_live_wawa, mRoomWawaView);
+            mRoomWawaView.setVisibility(View.INVISIBLE);
         }
     }
 
