@@ -158,7 +158,7 @@ public class CommonInterface {
     /**
      * 小视频添加评论
      */
-    public static void requestAddComment(String sv_id, String com_content,String userid, AppRequestCallback<BaseActModel> listener) {
+    public static void requestAddComment(String sv_id, String com_content, String userid, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("videosmall");
         params.putAct("addcomment");
@@ -1255,6 +1255,7 @@ public class CommonInterface {
         params.putCtl("index");
         params.putAct("index");
         params.put("p", p);
+        params.put("need_ww", 1);
         params.put("sex", sex);
         params.put("cate_id", cate_id);
         if (!TextUtils.isEmpty(city)) {
@@ -2035,7 +2036,7 @@ public class CommonInterface {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("app");
         params.putAct("plugin_init");
-        params.put("need_ww",1);
+        params.put("need_ww", 1);
         BMCommonInterface.setAppRequestParams(params);
         AppHttpUtil.getInstance().post(params, listener);
     }
@@ -2073,16 +2074,31 @@ public class CommonInterface {
     }
 
     /**
-     *娃娃倍率
+     * 娃娃倍率
      *
-     * @param gameId      游戏id（主键）
      * @param listener
      */
-    public static void requestWaWaBet(int gameId,AppRequestCallback<Games_betActModel> listener) {
+    public static void requestWaWaBet(AppRequestCallback<Games_betActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("games");
         params.putAct("ww_bet");
         params.put("id", 100);
+        AppHttpUtil.getInstance().post(params, listener);
+    }
+
+    /**
+     * 抓娃娃修改金额
+     *
+     * @param listener
+     */
+    public static void requestWaWaEditCoin(int coin,int times,int gameid,int type,AppRequestCallback<Games_betActModel> listener) {
+        AppRequestParams params = new AppRequestParams();
+        params.putCtl("games");
+        params.putAct("edit_coin");
+        params.put("coin", coin);
+        params.put("times", times);
+        params.put("game_log_id", gameid);
+        params.put("type", type);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

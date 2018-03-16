@@ -65,9 +65,9 @@ public class AutoPollAdapter extends RecyclerView.Adapter<AutoPollAdapter.BaseVi
     }
 
     public static class BaseViewHolder extends RecyclerView.ViewHolder {
-        TextView sort_name;
-        ImageView sort_icon;
-        ImageView sort_icon_bottom;
+       public TextView sort_name;
+       public ImageView sort_icon;
+       public ImageView sort_icon_bottom;
 
         public BaseViewHolder(View convertView) {
             super(convertView);

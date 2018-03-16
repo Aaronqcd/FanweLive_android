@@ -12,6 +12,7 @@ import com.fanwe.games.constant.GameType;
 import com.fanwe.games.dialog.GameLogDialog;
 import com.fanwe.games.model.App_requestGameIncomeActModel;
 import com.fanwe.games.model.GameBankerModel;
+import com.fanwe.games.model.GameBetDataModel;
 import com.fanwe.games.model.Games_betActModel;
 import com.fanwe.games.model.Games_logActModel;
 import com.fanwe.games.model.custommsg.GameMsgModel;
@@ -146,12 +147,11 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         if (mWawaGameView == null) {
             mWawaGameView = new WawaGameView(this);
             mWawaGameView.setCallback(mWawaGameViewCallback);
-            mWawaGameView.setTopView(wawa_line,wawa_stub);
+            mWawaGameView.setTopView(mRoomWawaView.wawa_line, mRoomWawaView.wawa_stub, mRoomWawaView.bottom_view, mRoomWawaView.bottom_iv);
             mWawaGameView.getManager().setCreater(isCreater());
             mWawaGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
             replaceBottomExtend(mWawaGameView);
-            wawa_line.setVisibility(View.VISIBLE);
-            wawa_stub.setVisibility(View.VISIBLE);
+            mRoomWawaView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -259,7 +259,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
     /**
      * 抓娃娃游戏view点击回调
      */
-    private WawaGameView.WawaGameViewCallback mWawaGameViewCallback = new WawaGameView.WawaGameViewCallback(){
+    private WawaGameView.WawaGameViewCallback mWawaGameViewCallback = new WawaGameView.WawaGameViewCallback() {
 
 
         @Override
@@ -505,8 +505,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             case GameType.DICE:
                 return mDiceGameView;
             case GameType.WAWA:
-                wawa_line.setVisibility(View.VISIBLE);
-                wawa_stub.setVisibility(View.VISIBLE);
+                mRoomWawaView.setVisibility(View.VISIBLE);
                 return mWawaGameView;
             default:
                 return null;
@@ -533,8 +532,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         SDViewUtil.setGone(mPokerGameView);
         SDViewUtil.setGone(mDiceGameView);
         SDViewUtil.setGone(mWawaGameView);
-        wawa_line.setVisibility(View.INVISIBLE);
-        wawa_stub.setVisibility(View.INVISIBLE);
+        mRoomWawaView.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -582,4 +580,5 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         mDiceGameView.getManager().setWinPosition(winPosition);
         mDiceGameView.getManager().showResult(listData);
     }
+
 }

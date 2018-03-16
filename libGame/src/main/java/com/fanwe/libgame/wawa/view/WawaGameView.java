@@ -17,7 +17,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -32,6 +32,7 @@ import com.fanwe.libgame.wawa.model.WawaItemModel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -44,6 +45,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private AutoPollRecyclerView mRecyclerView2;
     private LinearLayoutManager mLineManager;
     private AutoPollAdapter adapter1;
+    private FrameLayout bottom_view;
     private ImageView bottom_iv;
     private ImageView wawa_line;
     private ImageView wawa_stub;
@@ -57,6 +59,19 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private WawaGameViewCallback mCallback;
     private WawaManager mManager;
     private Context mContext;
+    private HashSet<Integer> mHashSet1;
+    private HashSet<Integer> mHashSet2;
+    private HashSet<Integer> mHashSet3;
+    private HashSet<Integer> mHashSet4;
+    private HashSet<Integer> mHashSet5;
+    private int grabTimes1 = 0;
+    private int grabTimes2 = 0;
+    private int grabTimes3 = 0;
+    private int grabTimes4 = 0;
+    private int grabTimes5 = 0;
+    private int winType=2;//1赢2输
+    private int coin=100;//投注金额
+    private int times;//投注倍数
 
     @Override
     public void onClick(View v) {
@@ -76,9 +91,23 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         }
         return mManager;
     }
-    public void setTopView(ImageView line,ImageView stub){
-        wawa_line=line;
-        wawa_stub=stub;
+
+    public void setTopView(ImageView line, ImageView stub, FrameLayout bottom_view, ImageView bottom_iv) {
+        this.wawa_line = line;
+        this.wawa_stub = stub;
+        this.bottom_view = bottom_view;
+        this.bottom_iv = bottom_iv;
+    }
+
+    private HashSet<Integer> testRandom3(int size) {
+        HashSet<Integer> integerHashSet = new HashSet<>();
+        do {
+            int randomInt = (int) (Math.random() * 100 + 1);
+            if (!integerHashSet.contains(randomInt)) {
+                integerHashSet.add(randomInt);
+            }
+        } while (integerHashSet.size() < size);
+        return integerHashSet;
     }
 
     private WawaManager.WawaManagerCallback mDiceManagerCallback = new WawaManager.WawaManagerCallback() {
@@ -182,7 +211,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
     public WawaGameView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.mContext=context;
+        this.mContext = context;
         LayoutInflater.from(context).inflate(R.layout.view_wawa_game, this);
         list.add(new WawaItemModel(R.drawable.prizeitem_01, 2));
         list.add(new WawaItemModel(R.drawable.prizeitem_02, 3));
@@ -196,6 +225,11 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         list.add(new WawaItemModel(R.drawable.prizeitem_03, 5));
         list.add(new WawaItemModel(R.drawable.prizeitem_04, 10));
         list.add(new WawaItemModel(R.drawable.prizeitem_06, 99));
+        mHashSet1 = testRandom3(50);
+        mHashSet2 = testRandom3(33);
+        mHashSet3 = testRandom3(20);
+        mHashSet4 = testRandom3(10);
+        mHashSet5 = testRandom3(4);
         initView();
     }
 
@@ -204,7 +238,6 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         start_grab_animation = (ImageView) findViewById(R.id.start_grab_animation);
         select_coin_bg = (ImageView) findViewById(R.id.select_coin_bg);
         img_coin = (ImageView) findViewById(R.id.img_coin);
-//        bottom_iv = (ImageView) findViewById(R.id.bottom_iv);
         img_chongzhi = (ImageView) findViewById(R.id.img_chongzhi);
         txt_coin = (TextView) findViewById(R.id.txt_coin);
         setOnClickListener(img_chongzhi, this);
@@ -214,15 +247,19 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.btn_0) {
+                    coin=100;
                     select_coin_bg.setBackgroundResource(R.drawable.prizeclaw_docker_2);
 
                 } else if (checkedId == R.id.btn_1) {
+                    coin=1000;
                     select_coin_bg.setBackgroundResource(R.drawable.prizeclaw_docker_3);
 
                 } else if (checkedId == R.id.btn_2) {
+                    coin=10000;
                     select_coin_bg.setBackgroundResource(R.drawable.prizeclaw_docker_4);
 
                 } else if (checkedId == R.id.btn_3) {
+                    coin=100000;
                     select_coin_bg.setBackgroundResource(R.drawable.prizeclaw_docker_5);
 
                 }
@@ -276,11 +313,11 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             public void onAnimationEnd(Animator animation) {
                 int position = getCurrentViewIndex();
                 int firstItemPosition = mLineManager.findFirstVisibleItemPosition();
+                getGameData(position);
                 if (position - firstItemPosition >= 0) {
                     View view = mRecyclerView2.getChildAt((position - firstItemPosition) % list.size());
                     AutoPollAdapter.BaseViewHolder viewHolder = (AutoPollAdapter.BaseViewHolder) mRecyclerView2.getChildViewHolder(view);
                     viewHolder.sort_icon.setVisibility(View.GONE);
-//                            adapter1.notifyDataSetChanged();
                 }
                 bottom_view.setVisibility(View.VISIBLE);
                 bottom_iv.setImageResource(list.get(position % list.size()).wawaDrawable);
@@ -318,13 +355,14 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        mCallback.onClickBetView(coin,times,winType);
                         adapter1.notifyDataSetChanged();
                         final int stubLocation[] = new int[2];
                         wawa_stub.getLocationInWindow(stubLocation);
-                        Point startPosition=new Point(stubLocation[0],stubLocation[1]);
-                        int coinLocation[]=new int[2];
+                        Point startPosition = new Point(stubLocation[0], stubLocation[1]);
+                        int coinLocation[] = new int[2];
                         img_coin.getLocationInWindow(coinLocation);
-                        Point endPosition=new Point(coinLocation[0],coinLocation[1]);
+                        Point endPosition = new Point(coinLocation[0], coinLocation[1]);
 
                         CoinImageView coinImageView = new CoinImageView(mContext);
                         coinImageView.setStartPosition(startPosition);
@@ -348,7 +386,6 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                     }
                 });
                 animator1.start();
-//                        down2UpRun2(wawa_stub);
             }
 
             @Override
@@ -362,86 +399,105 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             }
         });
         animator.start();
-        // 2晃动===========================================
-//                wawa_stub.postDelayed(new Runnable() {
+
+//        final int lineHeight=wawa_line.getHeight();
+//        // 1先下来
+//        ValueAnimator animator = ValueAnimator.ofFloat(lineHeight, rootView.getHeight() - mRecyclerView2.getHeight() - radioGroup.getHeight());
+//        animator.setTarget(wawa_stub);
+//        animator.setDuration(2000);
+//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                float currentValue = (float) animation.getAnimatedValue();
+//                wawa_stub.setTranslationY(currentValue);
+//                ViewGroup.LayoutParams params = wawa_line.getLayoutParams();
+//                params.height = (int) currentValue;
+//                wawa_line.setLayoutParams(params);
+//            }
+//        });
+//        animator.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                ValueAnimator animator1=ValueAnimator.ofFloat(rootView.getHeight() - mRecyclerView2.getY(),lineHeight);
+//                animator1.setDuration(2000);
+//                animator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 //                    @Override
-//                    public void run() {
-//                        //抓中了
+//                    public void onAnimationUpdate(ValueAnimator animation) {
+//                        float currentY= (float) animation.getAnimatedValue();
+//                        ViewGroup.LayoutParams params= wawa_line.getLayoutParams();
+//                        params.height= (int) currentY;
+//                        wawa_line.setLayoutParams(params);
+//                        wawa_stub.setTranslationY(currentY);
 //
 //                    }
-//                }, 0);
-        // 3双飞 向上============================================
-
-//                wawa_line.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        down2UpRun(wawa_line);
-//                    }
-//                }, 3000);
-        wawa_stub.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-            }
-        }, 3000);
-
-
-
-
-
-
-
-        final int lineHeight=wawa_line.getHeight();
-        // 1先下来
-        ValueAnimator animator = ValueAnimator.ofFloat(lineHeight, rootView.getHeight() - mRecyclerView2.getHeight() - radioGroup.getHeight());
-        animator.setTarget(wawa_stub);
-        animator.setDuration(2000);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float currentValue = (float) animation.getAnimatedValue();
-                wawa_stub.setTranslationY(currentValue);
-                ViewGroup.LayoutParams params = wawa_line.getLayoutParams();
-                params.height = (int) currentValue;
-                wawa_line.setLayoutParams(params);
-            }
-        });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                ValueAnimator animator1=ValueAnimator.ofFloat(rootView.getHeight() - mRecyclerView2.getY(),lineHeight);
-                animator1.setDuration(2000);
-                animator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float currentY= (float) animation.getAnimatedValue();
-                        ViewGroup.LayoutParams params= wawa_line.getLayoutParams();
-                        params.height= (int) currentY;
-                        wawa_line.setLayoutParams(params);
-                        wawa_stub.setTranslationY(currentY);
-
-                    }
-                });
-                animator1.start();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        animator.start();
+//                });
+//                animator1.start();
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//
+//            }
+//        });
+//        animator.start();
 
     }
+
+    private void getGameData(int position) {
+        switch (position%list.size()) {
+            case 0:case 2:case 6:case 8:
+                times=2;
+                grabTimes1 += 1;
+                if(mHashSet1.contains(grabTimes1)){
+                    winType=1;
+                }
+                break;
+            case 1:case 7:
+                times=3;
+                grabTimes2 += 1;
+                if(mHashSet2.contains(grabTimes2)){
+                    winType=1;
+                }
+                break;
+            case 3:case 9:
+                times=5;
+                grabTimes3 += 1;
+                if(mHashSet3.contains(grabTimes3)){
+                    winType=1;
+                }
+                break;
+            case 4:case 10:
+                times=10;
+                grabTimes4 += 1;
+                if(mHashSet4.contains(grabTimes4)){
+                    winType=1;
+                }
+                break;
+            case 5:
+                times=25;
+                grabTimes5 += 1;
+                if(mHashSet5.contains(grabTimes5)){
+                    winType=1;
+                }
+                break;
+            case 11:
+                times=99;
+                break;
+            default:
+                break;
+        }
+    }
+
     public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
@@ -544,12 +600,8 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
 
     public interface WawaGameViewCallback {
-        /**
-         * 投注倍数
-         *
-         * @param betCoin 投注金额
-         */
-        void onClickBetView(int betPosition, long betCoin);
+        //抓娃娃修改金额
+        void onClickBetView(int coin, int times,int type);
 
         void onClickRecharge();
 

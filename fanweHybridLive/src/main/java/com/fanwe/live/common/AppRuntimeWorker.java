@@ -1093,7 +1093,11 @@ public class AppRuntimeWorker
             data.setRoomId(model.getRoom_id());
             data.setSdkType(model.getSdk_type());
             data.setCreate_type(model.getCreate_type());
-            joinLive(data, activity);
+            if(model.getRoom_type()==9)
+            {
+                data.setPrivateKey(model.getPassword());
+            }
+                joinLive(data, activity);
         } else if (model.getLive_in() == 3)
         {
             //回放

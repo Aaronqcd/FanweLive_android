@@ -42,6 +42,16 @@ public class LiveRoomModel
     private int create_type; //直播类型 0：移动端；1:PC直播
     private int is_gaming;//该直播间是否正在游戏
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;//游戏房间邀请码
+
     public String getLive_state()
     {
         if (TextUtils.isEmpty(live_state))
