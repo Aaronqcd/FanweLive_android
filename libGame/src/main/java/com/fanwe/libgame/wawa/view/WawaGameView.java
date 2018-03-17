@@ -34,6 +34,7 @@ import com.fanwe.libgame.view.BaseGameView;
 import com.fanwe.libgame.wawa.WawaManager;
 import com.fanwe.libgame.wawa.adapter.AutoPollAdapter;
 import com.fanwe.libgame.wawa.model.WawaItemModel;
+import com.fanwe.library.utils.SDToast;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private ImageView wawa_stub;
     private ImageView start_grab_animation;
     private ImageView select_coin_bg;
+    private ImageView select_coin_bg_bottom;
     private ImageView img_chongzhi;
     private ImageView img_coin;
     private TextView txt_coin;
@@ -84,8 +86,16 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         int viewId = v.getId();
         if (viewId == R.id.img_chongzhi) {
             mCallback.onClickRecharge();
-        } else if (viewId == R.id.start_grab_animation) {
-            startClick();
+        } else if (viewId == R.id.start_grab_animation || viewId == R.id.select_coin_bg || viewId == R.id.select_coin_bg_bottom) {
+            if(coin>Integer.valueOf(txt_coin.getText().toString())){
+                SDToast.showToast("余额不足，请充值！");
+            }else {
+                startClick();
+                start_grab_animation.setClickable(false);
+                select_coin_bg.setClickable(false);
+                select_coin_bg_bottom.setClickable(false);
+                disableRadioGroup();
+            }
         }
     }
 
@@ -104,6 +114,17 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         this.bottom_iv = bottom_iv;
     }
 
+    public void disableRadioGroup() {
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(false);
+        }
+    }
+
+    public void enableRadioGroup() {
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(true);
+        }
+    }
     private HashSet<Integer> testRandom3(int size) {
         HashSet<Integer> integerHashSet = new HashSet<>();
         do {
@@ -242,12 +263,19 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         rootView = (RelativeLayout) findViewById(R.id.rootView);
         start_grab_animation = (ImageView) findViewById(R.id.start_grab_animation);
         select_coin_bg = (ImageView) findViewById(R.id.select_coin_bg);
+        select_coin_bg_bottom = (ImageView) findViewById(R.id.select_coin_bg_bottom);
         img_coin = (ImageView) findViewById(R.id.img_coin);
         img_chongzhi = (ImageView) findViewById(R.id.img_chongzhi);
         txt_coin = (TextView) findViewById(R.id.txt_coin);
         setOnClickListener(img_chongzhi, this);
         setOnClickListener(start_grab_animation, this);
+        setOnClickListener(select_coin_bg, this);
+        setOnClickListener(select_coin_bg_bottom, this);
+        start_grab_animation.setClickable(true);
+        select_coin_bg.setClickable(true);
+        select_coin_bg_bottom.setClickable(true);
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
+        enableRadioGroup();
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -356,6 +384,9 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        start_grab_animation.setClickable(true);
+                        select_coin_bg.setClickable(true);
+                        select_coin_bg_bottom.setClickable(true);
                         mCallback.onClickBetView(coin, times, winType);
                         adapter1.notifyDataSetChanged();
                         if (winType == 2) {
@@ -415,57 +446,6 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             }
         });
         animator.start();
-
-//        final int lineHeight=wawa_line.getHeight();
-//        // 1先下来
-//        ValueAnimator animator = ValueAnimator.ofFloat(lineHeight, rootView.getHeight() - mRecyclerView2.getHeight() - radioGroup.getHeight());
-//        animator.setTarget(wawa_stub);
-//        animator.setDuration(2000);
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                float currentValue = (float) animation.getAnimatedValue();
-//                wawa_stub.setTranslationY(currentValue);
-//                ViewGroup.LayoutParams params = wawa_line.getLayoutParams();
-//                params.height = (int) currentValue;
-//                wawa_line.setLayoutParams(params);
-//            }
-//        });
-//        animator.addListener(new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                ValueAnimator animator1=ValueAnimator.ofFloat(rootView.getHeight() - mRecyclerView2.getY(),lineHeight);
-//                animator1.setDuration(2000);
-//                animator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(ValueAnimator animation) {
-//                        float currentY= (float) animation.getAnimatedValue();
-//                        ViewGroup.LayoutParams params= wawa_line.getLayoutParams();
-//                        params.height= (int) currentY;
-//                        wawa_line.setLayoutParams(params);
-//                        wawa_stub.setTranslationY(currentY);
-//
-//                    }
-//                });
-//                animator1.start();
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//
-//            }
-//        });
-//        animator.start();
 
     }
 

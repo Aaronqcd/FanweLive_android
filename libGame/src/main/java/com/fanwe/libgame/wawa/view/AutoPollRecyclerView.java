@@ -58,16 +58,17 @@ public class AutoPollRecyclerView extends RecyclerView {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
-                if (running)
-                    stop();
+//                if (running)
+//                    stop();
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_OUTSIDE:
-                if (canRun)
-                    start();
+//                if (canRun)
+//                    start();
                 break;
         }
-        return super.onTouchEvent(e);
+//        return super.onTouchEvent(e);
+        return false;
     }
 }

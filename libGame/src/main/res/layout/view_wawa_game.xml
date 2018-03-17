@@ -24,6 +24,7 @@
             android:background="@drawable/prizeclaw_bg">
 
             <ImageView
+                android:id="@+id/select_coin_bg_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_gravity="bottom"

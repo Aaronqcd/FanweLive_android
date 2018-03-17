@@ -616,6 +616,13 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 if (actModel.isOk()) {
                     mWawaGameView.setTxtCoin(actModel.coin);
                 }
+                mWawaGameView.enableRadioGroup();
+            }
+
+            @Override
+            protected void onError(SDResponse resp) {
+                super.onError(resp);
+                mWawaGameView.enableRadioGroup();
             }
         });
     }
