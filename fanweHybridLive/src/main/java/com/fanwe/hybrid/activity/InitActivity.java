@@ -23,7 +23,7 @@ public class InitActivity extends BaseActivity
         setFullScreen(true);
         setContentView(R.layout.act_init);
         mInitBusiness = new InitBusiness();
-        mInitBusiness.init(this);
+        mInitBusiness.initNoDelay(this);
          findViewById(R.id.btn_skip).setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {

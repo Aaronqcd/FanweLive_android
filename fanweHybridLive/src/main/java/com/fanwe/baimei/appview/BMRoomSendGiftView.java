@@ -172,6 +172,7 @@ public class BMRoomSendGiftView extends RoomView {
         if (mGiftActModel != null) {
             view_send_gift_diamond.setDataGift(mGiftActModel.getList());
         }
+        view_send_gift_diamond.bindUserData();
         return view_send_gift_diamond;
     }
 
@@ -193,6 +194,7 @@ public class BMRoomSendGiftView extends RoomView {
         if (mGiftActModel != null) {
             view_send_gift_coin.setDataGift(mGiftActModel.getCoins_list());
         }
+        view_send_gift_coin.bindUserData();
         return view_send_gift_coin;
     }
 

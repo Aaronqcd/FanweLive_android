@@ -332,7 +332,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         final int recycle2Location[] = new int[2];
         mRecyclerView2.getLocationInWindow(recycle2Location);
         ValueAnimator animator = ValueAnimator.ofFloat(lineLocation[1], recycle2Location[1] - mRecyclerView2.getHeight() / 2);
-        animator.setDuration(2000);
+        animator.setDuration(2500);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {

@@ -26,6 +26,7 @@ import com.fanwe.libgame.poker.bull.view.BullGameView;
 import com.fanwe.libgame.poker.goldflower.view.GoldFlowerGameView;
 import com.fanwe.libgame.poker.model.PokerGroupResultData;
 import com.fanwe.libgame.poker.view.PokerGameView;
+import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.view.CoinImageView;
 import com.fanwe.libgame.wawa.view.WawaGameView;
 import com.fanwe.library.adapter.http.model.SDResponse;
@@ -615,6 +616,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             protected void onSuccess(SDResponse sdResponse) {
                 if (actModel.isOk()) {
                     mWawaGameView.setTxtCoin(actModel.coin);
+                    UserModelDao.updateCoins(Long.parseLong(actModel.coin));
                 }
                 mWawaGameView.enableRadioGroup();
             }
