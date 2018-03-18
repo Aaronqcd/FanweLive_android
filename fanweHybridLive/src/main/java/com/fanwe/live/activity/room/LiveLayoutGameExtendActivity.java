@@ -94,6 +94,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         super.onGameMsg(msg, isPush);
         getPokerGameBusiness().onGameMsg(msg, isPush);
         getDiceGameBusiness().onGameMsg(msg, isPush);
+
     }
 
     @Override
@@ -160,6 +161,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mWawaGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
             replaceBottomExtend(mWawaGameView);
             mRoomWawaView.setVisibility(View.VISIBLE);
+            onBsLiveBackgroundChanged(R.drawable.bm_bg_live_game_wawa);
         }
     }
 
