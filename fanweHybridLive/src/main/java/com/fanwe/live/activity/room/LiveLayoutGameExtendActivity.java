@@ -158,7 +158,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mWawaGameView.setCallback(mWawaGameViewCallback);
             mWawaGameView.setTopView(mRoomWawaView.wawa_line, mRoomWawaView.wawa_stub, mRoomWawaView.bottom_view, mRoomWawaView.bottom_iv);
             mWawaGameView.getManager().setCreater(isCreater());
-            mWawaGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
+            mWawaGameView.getManager().setUserCoins(UserModelDao.query().getCoin());
             replaceBottomExtend(mWawaGameView);
             mRoomWawaView.setVisibility(View.VISIBLE);
             onBsLiveBackgroundChanged(R.drawable.bm_bg_live_game_wawa);
@@ -273,8 +273,8 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
 
 
         @Override
-        public void onClickBetView(int coin, int times, int type) {
-            requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type);
+        public void onClickBetView(int coin, int times, int type,boolean isAnimation) {
+            requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type,isAnimation);
             if (type == 1) {
                 MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this,R.raw.pz_win);
                 player.start();
@@ -611,7 +611,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         mDiceGameView.getManager().showResult(listData);
     }
 
-    public void requestWaWaEditCoin(int coin, int times, int game_log_id, int type) {
+    public void requestWaWaEditCoin(int coin, int times, int game_log_id, int type, final boolean isAnimation) {
         CommonInterface.requestWaWaEditCoin(coin, times, game_log_id, type, new AppRequestCallback<GamesWawaModel>() {
 
             @Override
@@ -619,6 +619,9 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 if (actModel.isOk()) {
                     mWawaGameView.setTxtCoin(actModel.coin);
                     UserModelDao.updateCoins(Long.parseLong(actModel.coin));
+                    if(isAnimation){
+                        mWawaGameView.startClick();
+                    }
                 }
                 mWawaGameView.enableRadioGroup();
             }

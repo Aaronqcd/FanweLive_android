@@ -78,7 +78,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private int grabTimes5 = 0;
     private int winType = 2;//1赢2输
     private int coin = 100;//投注金额
-    private int times;//投注倍数
+    private int times=0;//投注倍数
 
     @Override
     public void onClick(View v) {
@@ -90,11 +90,8 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             if(coin>Integer.valueOf(txt_coin.getText().toString())){
                 SDToast.showToast("余额不足，请充值！");
             }else {
-                startClick();
-                start_grab_animation.setClickable(false);
-                select_coin_bg.setClickable(false);
-                select_coin_bg_bottom.setClickable(false);
-                disableRadioGroup();
+                mCallback.onClickBetView(coin,times,winType,true);
+//                startClick();
             }
         }
     }
@@ -324,8 +321,11 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
         txt_coin.setText(money);
     }
 
-    private void startClick() {
-
+    public void startClick() {
+        start_grab_animation.setClickable(false);
+        select_coin_bg.setClickable(false);
+        select_coin_bg_bottom.setClickable(false);
+        disableRadioGroup();
         // 1先下来
         final int lineLocation[] = new int[2];
         wawa_line.getLocationInWindow(lineLocation);
@@ -387,7 +387,6 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                         start_grab_animation.setClickable(true);
                         select_coin_bg.setClickable(true);
                         select_coin_bg_bottom.setClickable(true);
-                        mCallback.onClickBetView(coin, times, winType);
                         adapter1.notifyDataSetChanged();
                         if (winType == 2) {
                             MediaPlayer player = MediaPlayer.create(mContext,R.raw.pz_lose);
@@ -418,6 +417,8 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                                 }
                             });
                             bottom_view.startAnimation(set);
+                        }else {
+                            mCallback.onClickBetView(coin, times, winType,false);
                         }
 
                     }
@@ -614,7 +615,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
     public interface WawaGameViewCallback {
         //抓娃娃修改金额
-        void onClickBetView(int coin, int times, int type);
+        void onClickBetView(int coin, int times, int type,boolean isAnination);
 
         void onClickRecharge();
 
