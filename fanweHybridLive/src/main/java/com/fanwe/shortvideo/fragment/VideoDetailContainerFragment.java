@@ -222,7 +222,9 @@ public class VideoDetailContainerFragment extends BaseFragment implements View.O
                 tv_msg.setText(detailModel.count_comment);
             }
         });
-        videoSendMsgView.setHintText("回复给："+model.nick_name,model.user_id);
+        if(model!=null) {
+            videoSendMsgView.setHintText("回复给：" + model.nick_name, model.user_id);
+        }
         videoSendMsgView.setContent("");
         replaceView(R.id.fl_send_msg, videoSendMsgView);
     }

@@ -8,7 +8,6 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -90,7 +89,11 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
             if(coin>Integer.valueOf(txt_coin.getText().toString())){
                 SDToast.showToast("余额不足，请充值！");
             }else {
-                mCallback.onClickBetView(coin,times,winType,true);
+                mCallback.onClickBetView(coin,times,2,true);
+                start_grab_animation.setClickable(false);
+                select_coin_bg.setClickable(false);
+                select_coin_bg_bottom.setClickable(false);
+                disableRadioGroup();
 //                startClick();
             }
         }
@@ -322,10 +325,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     }
 
     public void startClick() {
-        start_grab_animation.setClickable(false);
-        select_coin_bg.setClickable(false);
-        select_coin_bg_bottom.setClickable(false);
-        disableRadioGroup();
+
         // 1先下来
         final int lineLocation[] = new int[2];
         wawa_line.getLocationInWindow(lineLocation);
@@ -409,6 +409,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
                                      bottom_view.setVisibility(INVISIBLE);
+                                     enableRadioGroup();
                                 }
 
                                 @Override

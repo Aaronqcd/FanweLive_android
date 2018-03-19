@@ -158,7 +158,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
             mWawaGameView.setCallback(mWawaGameViewCallback);
             mWawaGameView.setTopView(mRoomWawaView.wawa_line, mRoomWawaView.wawa_stub, mRoomWawaView.bottom_view, mRoomWawaView.bottom_iv);
             mWawaGameView.getManager().setCreater(isCreater());
-            mWawaGameView.getManager().setUserCoins(UserModelDao.query().getCoin());
+            mWawaGameView.getManager().setUserCoins(getGameBusiness().getGameCurrency());
             replaceBottomExtend(mWawaGameView);
             mRoomWawaView.setVisibility(View.VISIBLE);
             onBsLiveBackgroundChanged(R.drawable.bm_bg_live_game_wawa);
@@ -273,10 +273,10 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
 
 
         @Override
-        public void onClickBetView(int coin, int times, int type,boolean isAnimation) {
-            requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type,isAnimation);
+        public void onClickBetView(int coin, int times, int type, boolean isAnimation) {
+            requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type, isAnimation);
             if (type == 1) {
-                MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this,R.raw.pz_win);
+                MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this, R.raw.pz_win);
                 player.start();
 
                 final int stubLocation[] = new int[2];
@@ -619,11 +619,12 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 if (actModel.isOk()) {
                     mWawaGameView.setTxtCoin(actModel.coin);
                     UserModelDao.updateCoins(Long.parseLong(actModel.coin));
-                    if(isAnimation){
+                    if (isAnimation) {
                         mWawaGameView.startClick();
+                    } else {
+                        mWawaGameView.enableRadioGroup();
                     }
                 }
-                mWawaGameView.enableRadioGroup();
             }
 
             @Override

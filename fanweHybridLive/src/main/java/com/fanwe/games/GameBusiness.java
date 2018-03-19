@@ -447,7 +447,7 @@ public class GameBusiness extends LiveBaseBusiness
      *
      * @param coins
      */
-    void updateAccount(long diamonds, long coins)
+    public void updateAccount(long diamonds, long coins)
     {
         if (AppRuntimeWorker.isUseGameCurrency())
         {
