@@ -77,7 +77,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     private int grabTimes5 = 0;
     private int winType = 2;//1赢2输
     private int coin = 100;//投注金额
-    private int times=0;//投注倍数
+    private int times=1;//投注倍数
 
     @Override
     public void onClick(View v) {
