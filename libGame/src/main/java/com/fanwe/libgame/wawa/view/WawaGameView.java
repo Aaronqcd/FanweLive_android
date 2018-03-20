@@ -90,11 +90,7 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                 SDToast.showToast("余额不足，请充值！");
             }else {
                 mCallback.onClickBetView(coin,times,2,true);
-                start_grab_animation.setClickable(false);
-                select_coin_bg.setClickable(false);
-                select_coin_bg_bottom.setClickable(false);
                 disableRadioGroup();
-//                startClick();
             }
         }
     }
@@ -115,12 +111,18 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
     }
 
     public void disableRadioGroup() {
+        start_grab_animation.setClickable(false);
+        select_coin_bg.setClickable(false);
+        select_coin_bg_bottom.setClickable(false);
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             radioGroup.getChildAt(i).setEnabled(false);
         }
     }
 
     public void enableRadioGroup() {
+        start_grab_animation.setClickable(true);
+        select_coin_bg.setClickable(true);
+        select_coin_bg_bottom.setClickable(true);
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             radioGroup.getChildAt(i).setEnabled(true);
         }
@@ -384,9 +386,6 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        start_grab_animation.setClickable(true);
-                        select_coin_bg.setClickable(true);
-                        select_coin_bg_bottom.setClickable(true);
                         adapter1.notifyDataSetChanged();
                         if (winType == 2) {
                             MediaPlayer player = MediaPlayer.create(mContext,R.raw.pz_lose);

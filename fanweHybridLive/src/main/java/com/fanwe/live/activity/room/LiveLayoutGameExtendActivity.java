@@ -275,25 +275,6 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         @Override
         public void onClickBetView(int coin, int times, int type, boolean isAnimation) {
             requestWaWaEditCoin(coin, times, mMsgModel.getGame_log_id(), type, isAnimation);
-            if (type == 1) {
-                MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this, R.raw.pz_win);
-                player.start();
-
-                final int stubLocation[] = new int[2];
-                mRoomWawaView.wawa_stub.getLocationInWindow(stubLocation);
-                Point startPosition = new Point(stubLocation[0], stubLocation[1]);
-                int coinLocation[] = new int[2];
-                mWawaGameView.getImg_coin().getLocationInWindow(coinLocation);
-                Point endPosition = new Point(coinLocation[0], coinLocation[1]);
-
-                CoinImageView coinImageView = new CoinImageView(LiveLayoutGameExtendActivity.this);
-                coinImageView.setStartPosition(startPosition);
-                coinImageView.setEndPosition(endPosition);
-                ViewGroup rootView = (ViewGroup) LiveLayoutGameExtendActivity.this.getWindow().getDecorView();
-                rootView.addView(coinImageView);
-                coinImageView.startBeizerAnimation();
-                mRoomWawaView.bottom_view.setVisibility(View.INVISIBLE);
-            }
         }
 
         @Override
@@ -611,7 +592,7 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
         mDiceGameView.getManager().showResult(listData);
     }
 
-    public void requestWaWaEditCoin(int coin, int times, int game_log_id, int type, final boolean isAnimation) {
+    public void requestWaWaEditCoin(int coin, int times, int game_log_id, final int type, final boolean isAnimation) {
         CommonInterface.requestWaWaEditCoin(coin, times, game_log_id, type, new AppRequestCallback<GamesWawaModel>() {
 
             @Override
@@ -619,6 +600,24 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                 if (actModel.isOk()) {
                     mWawaGameView.setTxtCoin(actModel.coin);
                     UserModelDao.updateCoins(Long.parseLong(actModel.coin));
+                    if (type == 1) {
+                        MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this, R.raw.pz_win);
+                        player.start();
+                        final int stubLocation[] = new int[2];
+                        mRoomWawaView.wawa_stub.getLocationInWindow(stubLocation);
+                        Point startPosition = new Point(stubLocation[0], stubLocation[1]);
+                        int coinLocation[] = new int[2];
+                        mWawaGameView.getImg_coin().getLocationInWindow(coinLocation);
+                        Point endPosition = new Point(coinLocation[0], coinLocation[1]);
+
+                        CoinImageView coinImageView = new CoinImageView(LiveLayoutGameExtendActivity.this);
+                        coinImageView.setStartPosition(startPosition);
+                        coinImageView.setEndPosition(endPosition);
+                        ViewGroup rootView = (ViewGroup) LiveLayoutGameExtendActivity.this.getWindow().getDecorView();
+                        rootView.addView(coinImageView);
+                        coinImageView.startBeizerAnimation();
+                        mRoomWawaView.bottom_view.setVisibility(View.INVISIBLE);
+                    }
                     if (isAnimation) {
                         mWawaGameView.startClick();
                     } else {
