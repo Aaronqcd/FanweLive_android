@@ -39,6 +39,7 @@ import com.fanwe.live.R;
 import com.fanwe.live.common.AppRuntimeWorker;
 import com.fanwe.live.common.CommonInterface;
 import com.fanwe.live.model.custommsg.CustomMsgEndVideo;
+import com.fanwe.live.view.WinCoinTextView;
 
 import java.util.List;
 
@@ -617,6 +618,12 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                         rootView.addView(coinImageView);
                         coinImageView.startBeizerAnimation();
                         mRoomWawaView.bottom_view.setVisibility(View.INVISIBLE);
+
+                        WinCoinTextView textView=new WinCoinTextView(LiveLayoutGameExtendActivity.this);
+                        textView.setPoint(new Point(stubLocation[0],stubLocation[1]+200));
+                        textView.setText("+"+String.valueOf(Long.parseLong(actModel.coin)-Long.parseLong(actModel.before_coin)));
+                        textView.startAnimation();
+                        rootView.addView(textView);
                     }
                     if (isAnimation) {
                         mWawaGameView.startClick();
