@@ -8,7 +8,6 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,11 +32,11 @@ import com.fanwe.libgame.view.BaseGameView;
 import com.fanwe.libgame.wawa.WawaManager;
 import com.fanwe.libgame.wawa.adapter.AutoPollAdapter;
 import com.fanwe.libgame.wawa.model.WawaItemModel;
+import com.fanwe.library.media.player.SDMediaPlayer;
 import com.fanwe.library.utils.SDToast;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -330,8 +329,8 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                MediaPlayer player = MediaPlayer.create(mContext, R.raw.pz_hit);
-                player.start();
+                SDMediaPlayer.getInstance().setDataRawResId(R.raw.pz_hit,mContext);
+                SDMediaPlayer.getInstance().performRestartPlayStop();
                 int position = getCurrentViewIndex();
                 int firstItemPosition = mLineManager.findFirstVisibleItemPosition();
                 getGameData(position);
@@ -365,8 +364,8 @@ public class WawaGameView extends BaseGameView implements View.OnClickListener {
                     public void onAnimationEnd(Animator animation) {
                         adapter1.notifyDataSetChanged();
                         if (winType == 2) {
-                            MediaPlayer player = MediaPlayer.create(mContext, R.raw.pz_lose);
-                            player.start();
+                            SDMediaPlayer.getInstance().setDataRawResId(R.raw.pz_lose,mContext);
+                            SDMediaPlayer.getInstance().performRestartPlayStop();
                             final int bottomLocation[] = new int[2];
                             bottom_view.getLocationInWindow(bottomLocation);
                             TranslateAnimation trananimation = new TranslateAnimation(0, 0, bottomLocation[1], 1000f);

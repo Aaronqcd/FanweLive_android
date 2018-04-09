@@ -26,6 +26,7 @@ import com.fanwe.libgame.poker.bull.view.BullGameView;
 import com.fanwe.libgame.poker.goldflower.view.GoldFlowerGameView;
 import com.fanwe.libgame.poker.model.PokerGroupResultData;
 import com.fanwe.libgame.poker.view.PokerGameView;
+import com.fanwe.library.media.player.SDMediaPlayer;
 import com.fanwe.live.dao.UserModelDao;
 import com.fanwe.live.view.CoinImageView;
 import com.fanwe.libgame.wawa.view.WawaGameView;
@@ -602,8 +603,8 @@ public class LiveLayoutGameExtendActivity extends LiveLayoutGameActivity impleme
                     mWawaGameView.setTxtCoin(actModel.coin);
                     UserModelDao.updateCoins(Long.parseLong(actModel.coin));
                     if (type == 1) {
-                        MediaPlayer player = MediaPlayer.create(LiveLayoutGameExtendActivity.this, R.raw.pz_win);
-                        player.start();
+                        SDMediaPlayer.getInstance().setDataRawResId(R.raw.pz_win,LiveLayoutGameExtendActivity.this);
+                        SDMediaPlayer.getInstance().performRestartPlayStop();
                         final int stubLocation[] = new int[2];
                         mRoomWawaView.wawa_stub.getLocationInWindow(stubLocation);
                         Point startPosition = new Point(stubLocation[0], stubLocation[1]);
