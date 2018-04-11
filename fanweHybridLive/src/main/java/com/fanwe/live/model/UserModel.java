@@ -84,6 +84,33 @@ public class UserModel implements SDSelectManager.Selectable, Serializable
 
 
     //add
+    private String is_jjr;
+    private String jjr_money;
+    private String has_edit_num;
+
+    public int getIs_jjr() {
+        return Integer.valueOf(is_jjr);
+    }
+
+    public void setIs_jjr(String is_jjr) {
+        this.is_jjr = is_jjr;
+    }
+
+    public String getJjr_money() {
+        return jjr_money;
+    }
+
+    public void setJjr_money(String jjr_money) {
+        this.jjr_money = jjr_money;
+    }
+
+    public int getHas_edit_num() {
+        return Integer.valueOf(has_edit_num);
+    }
+
+    public void setHas_edit_num(String has_edit_num) {
+        this.has_edit_num = has_edit_num;
+    }
 
     /**
      * 是否可以在直播间发言

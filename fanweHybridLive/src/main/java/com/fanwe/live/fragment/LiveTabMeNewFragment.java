@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.fanwe.auction.adapter.AuctionTabMeItemNewAdapter;
 import com.fanwe.auction.model.AuctionTabMeItemModel;
+import com.fanwe.baimei.dialog.BMLiveVerifyDialog;
 import com.fanwe.hybrid.fragment.BaseFragment;
 import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.library.adapter.http.model.SDResponse;
@@ -71,6 +73,7 @@ import com.fanwe.o2o.activity.O2OShoppingMystoreActivity;
 import com.fanwe.pay.activity.PayBalanceActivity;
 import com.fanwe.shop.activity.ShopMyStoreActivity;
 import com.fanwe.shortvideo.activity.MyVideoListActivity;
+import com.fanwei.jubaosdk.common.util.ToastUtil;
 
 import org.xutils.view.annotation.ViewInject;
 
@@ -166,6 +169,11 @@ public class LiveTabMeNewFragment extends BaseFragment {
     @ViewInject(R.id.tv_income)
     private TextView tv_income;
 
+    @ViewInject(R.id.rl_share_income)
+    private RelativeLayout rl_share_income;//分享收益
+    @ViewInject(R.id.tv_share_income)
+    private TextView tv_share_income;
+
     @ViewInject(R.id.ll_auction_gll_info)
     private LinearLayout ll_auction_gll_info;
     @ViewInject(R.id.auction_gll_info)
@@ -209,6 +217,9 @@ public class LiveTabMeNewFragment extends BaseFragment {
     private RelativeLayout rel_setting;//设置
     @ViewInject(R.id.iv_short_video)
     private RelativeLayout rel_short_video;//小视频
+
+    @ViewInject(R.id.rel_invitation_code)
+    private RelativeLayout rel_invitation_code;//邀请码
     @ViewInject(R.id.lv_head)
     private LinearLayout lv_head;//整个头部
     @ViewInject(R.id.bg_img_head_bur)
@@ -221,6 +232,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
 
     private LiveAddNewFamilyDialog dialogFam;
     private LiveJoinCreateSociatyDialog dialogSoc;
+    private BMLiveVerifyDialog dialogVerify;
 
     @Override
     protected int onCreateContentView() {
@@ -230,6 +242,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
     @Override
     protected void init() {
         super.init();
+        dialogVerify = new BMLiveVerifyDialog(getActivity());
         register();
         bindAuctionAdapter();
     }
@@ -247,6 +260,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
         rl_level.setOnClickListener(this);
         rl_accout.setOnClickListener(this);
         rl_income.setOnClickListener(this);
+        rl_share_income.setOnClickListener(this);
         include_cont_linear.setOnClickListener(this);
         rel_upgrade.setOnClickListener(this);
         rel_family.setOnClickListener(this);
@@ -255,6 +269,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
         rel_distribution.setOnClickListener(this);
         rel_setting.setOnClickListener(this);
         rel_short_video.setOnClickListener(this);
+        rel_invitation_code.setOnClickListener(this);
         ll_vip.setOnClickListener(this);
         ll_game_currency_exchange.setOnClickListener(this);
     }
@@ -360,6 +375,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
                 if (actModel.getStatus() == 1) {
                     app_userinfoActModel = actModel;
                     UserModelDao.insertOrUpdate(actModel.getUser());
+                    dialogVerify.setTip(actModel.getUser() != null ? actModel.getUser().getNick_name() : "");
                     bindAuctionData(actModel);
                 }
             }
@@ -461,6 +477,12 @@ public class LiveTabMeNewFragment extends BaseFragment {
                 tv_vip.setText(user.getVip_expire_time());
                 tv_vip.setTextColor(SDResourcesUtil.getColor(R.color.user_home_text_gray));
             }
+            if (user.getIs_jjr() == 1) {
+                SDViewUtil.setVisible(rl_share_income);
+                tv_share_income.setText(user.getJjr_money());
+            } else {
+                SDViewUtil.setGone(rl_share_income);
+            }
 
             SDViewBinder.setTextView(tv_game_currency, LiveUtils.getFormatNumber(user.getCoin()) + SDResourcesUtil.getString(R.string.game_currency));
         }
@@ -540,6 +562,9 @@ public class LiveTabMeNewFragment extends BaseFragment {
             case R.id.rl_income:
                 clickRlIncome();
                 break;
+            case R.id.rl_share_income:
+                clickRlShareIncome();
+                break;
             case R.id.include_cont_linear:
                 clickIncludeContLinear();
                 break;
@@ -560,6 +585,9 @@ public class LiveTabMeNewFragment extends BaseFragment {
                 break;
             case R.id.iv_short_video:
                 clickShortVideo();
+                break;
+            case R.id.rel_invitation_code:
+                clickInvatationCode();
                 break;
             case R.id.ll_vip:
                 clickVip();
@@ -690,6 +718,10 @@ public class LiveTabMeNewFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), LiveUserProfitActivity.class);
         startActivity(intent);
     }
+    //分享收益
+    private void clickRlShareIncome() {
+
+    }
 
     //秀豆贡献榜
     private void clickIncludeContLinear() {
@@ -769,12 +801,23 @@ public class LiveTabMeNewFragment extends BaseFragment {
         startActivity(intent);
     }
 
-  /**
+    /**
      * 我的小视频
      */
     private void clickShortVideo() {
         Intent intent = new Intent(getActivity(), MyVideoListActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * 邀请码
+     */
+    private void clickInvatationCode() {
+        if(app_userinfoActModel.getUser().getHas_edit_num()==1){
+            dialogVerify.show();
+        }else {
+            ToastUtil.showToast(getActivity(),"已经输过邀请码", Toast.LENGTH_LONG);
+        }
     }
 
     /**
