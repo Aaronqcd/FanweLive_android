@@ -79,7 +79,8 @@ public class BMLiveVerifyDialog extends SDDialogCustom {
     public void onClick(View v) {
         super.onClick(v);
         if (v == iv_logout) {
-            requestCommitVerify();
+            dismiss();
+//            requestCommitVerify();
         } else if (v == fl_progress) {
             if (isFailed) {
                 requestVerifyStatus();

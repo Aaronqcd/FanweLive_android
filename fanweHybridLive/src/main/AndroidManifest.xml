@@ -298,6 +298,13 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"/>
+        <!-- 分享收益界面 -->
+        <activity
+            android:name=".activity.LiveUserShareIncomeActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <!-- 收益-领取记录界面 -->
         <activity

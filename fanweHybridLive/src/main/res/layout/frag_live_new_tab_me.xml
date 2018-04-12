@@ -373,6 +373,13 @@
 
                 </LinearLayout>
             </RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/white"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@color/gray_press"/>
             <RelativeLayout
                 android:id="@+id/rl_share_income"
                 style="@style/fra_tab_me_btn">
@@ -400,14 +407,6 @@
                         style="@style/fra_tab_me_tv"
                         android:text="0"
                         android:textColor="@color/main_color"/>
-
-                    <com.fanwe.live.view.LiveStringTicketTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="2dp"
-                        android:textColor="@color/main_color"
-                        android:textSize="14sp"/>
 
                     <ImageView
                         android:layout_width="17dp"

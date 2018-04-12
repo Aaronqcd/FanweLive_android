@@ -50,6 +50,7 @@ import com.fanwe.live.activity.LiveUserHomeReplayActivity;
 import com.fanwe.live.activity.LiveUserPhotoActivity;
 import com.fanwe.live.activity.LiveUserProfitActivity;
 import com.fanwe.live.activity.LiveUserSettingActivity;
+import com.fanwe.live.activity.LiveUserShareIncomeActivity;
 import com.fanwe.live.activity.LiveWebViewActivity;
 import com.fanwe.live.activity.UserCenterAuthentActivity;
 import com.fanwe.live.common.AppRuntimeWorker;
@@ -479,7 +480,7 @@ public class LiveTabMeNewFragment extends BaseFragment {
             }
             if (user.getIs_jjr() == 1) {
                 SDViewUtil.setVisible(rl_share_income);
-                tv_share_income.setText(user.getJjr_money());
+                tv_share_income.setText("￥" + user.getJjr_money());
             } else {
                 SDViewUtil.setGone(rl_share_income);
             }
@@ -718,9 +719,14 @@ public class LiveTabMeNewFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), LiveUserProfitActivity.class);
         startActivity(intent);
     }
+
     //分享收益
     private void clickRlShareIncome() {
-
+        if (app_userinfoActModel.getUser() != null) {
+            Intent intent = new Intent(getActivity(), LiveUserShareIncomeActivity.class);
+            intent.putExtra("jjr_money", app_userinfoActModel.getUser().getJjr_money());
+            startActivity(intent);
+        }
     }
 
     //秀豆贡献榜
@@ -813,10 +819,10 @@ public class LiveTabMeNewFragment extends BaseFragment {
      * 邀请码
      */
     private void clickInvatationCode() {
-        if(app_userinfoActModel.getUser().getHas_edit_num()==1){
+        if (app_userinfoActModel.getUser().getHas_edit_num() == 1) {
             dialogVerify.show();
-        }else {
-            ToastUtil.showToast(getActivity(),"已经输过邀请码", Toast.LENGTH_LONG);
+        } else {
+            ToastUtil.showToast(getActivity(), "邀请码已填写！", Toast.LENGTH_LONG);
         }
     }
 
