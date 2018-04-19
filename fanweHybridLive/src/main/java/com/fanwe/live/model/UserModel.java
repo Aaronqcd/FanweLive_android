@@ -84,12 +84,40 @@ public class UserModel implements SDSelectManager.Selectable, Serializable
 
 
     //add
+    private String is_payed;
     private String is_jjr;
     private String jjr_money;
     private String has_edit_num;
 
+    public UserModel() {
+    }
+
+    public int getIs_payed() {
+        if (TextUtils.isEmpty(is_payed)) {
+            return 0;
+        }
+        try {
+            return Integer.valueOf(is_payed);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public void setIs_payed(String is_payed) {
+        this.is_payed = is_payed;
+    }
+
     public int getIs_jjr() {
-        return Integer.valueOf(is_jjr);
+        if (TextUtils.isEmpty(is_jjr)) {
+            return 0;
+        }
+        try {
+            return Integer.valueOf(is_jjr);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public void setIs_jjr(String is_jjr) {
@@ -105,7 +133,15 @@ public class UserModel implements SDSelectManager.Selectable, Serializable
     }
 
     public int getHas_edit_num() {
-        return Integer.valueOf(has_edit_num);
+        if (TextUtils.isEmpty(has_edit_num)) {
+            return 0;
+        }
+        try {
+            return Integer.valueOf(has_edit_num);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return  0;
+        }
     }
 
     public void setHas_edit_num(String has_edit_num) {

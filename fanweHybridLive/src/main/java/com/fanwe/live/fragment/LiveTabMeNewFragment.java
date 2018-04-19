@@ -670,8 +670,14 @@ public class LiveTabMeNewFragment extends BaseFragment {
 
     //账户
     private void clickRlAccout() {
-        Intent intent = new Intent(getActivity(), LiveRechargeDiamondsActivity.class);
-        startActivity(intent);
+        if (app_userinfoActModel != null) {
+            UserModel user = app_userinfoActModel.getUser();
+            if (user != null) {
+                Intent intent = new Intent(getActivity(), LiveRechargeDiamondsActivity.class);
+                intent.putExtra("is_payed", app_userinfoActModel.getUser().getIs_payed());
+                startActivity(intent);
+            }
+        }
     }
 
     /**

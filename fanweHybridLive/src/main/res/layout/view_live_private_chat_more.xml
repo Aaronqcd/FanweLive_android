@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.flexbox.FlexboxLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="200dp"
@@ -10,48 +9,25 @@
     app:flexWrap="wrap"
     app:justifyContent="flex_start">
 
-    <ImageView
-        android:id="@+id/iv_gift"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/selector_white_gray"
-        android:padding="10dp"
-        android:src="@drawable/ic_private_chat_more_gift"
-        app:layout_flexBasisPercent="25%"/>
+    <include
+        android:id="@+id/lin_iv_gift"
+        layout="@layout/view_live_private_chat_more_child"
+        />
 
-    <ImageView
-        android:id="@+id/iv_camera"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/selector_white_gray"
-        android:padding="10dp"
-        app:layout_flexBasisPercent="25%"
-        android:src="@drawable/ic_private_chat_more_camera"/>
+    <include
+        android:id="@+id/lin_iv_camera"
+        layout="@layout/view_live_private_chat_more_child"/>
 
-    <ImageView
-        android:id="@+id/iv_photo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/selector_white_gray"
-        android:padding="10dp"
-        app:layout_flexBasisPercent="25%"
-        android:src="@drawable/ic_private_chat_more_photo"/>
+    <include
+        android:id="@+id/lin_iv_photo"
+        layout="@layout/view_live_private_chat_more_child" />
 
-    <ImageView
-        android:id="@+id/iv_send_coin"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/selector_white_gray"
-        android:padding="10dp"
-        app:layout_flexBasisPercent="25%"
-        android:src="@drawable/ic_private_chat_send_coins"/>
+    <include
+        android:id="@+id/lin_iv_send_coin"
+        layout="@layout/view_live_private_chat_more_child" />
 
-    <ImageView
-        android:id="@+id/iv_send_diamond"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/selector_white_gray"
-        android:padding="10dp"
-        app:layout_flexBasisPercent="25%"
-        android:src="@drawable/ic_private_chat_send_diamonds"/>
+    <include
+        android:id="@+id/lin_iv_send_diamond"
+        layout="@layout/view_live_private_chat_more_child" />
+
 </com.google.android.flexbox.FlexboxLayout>

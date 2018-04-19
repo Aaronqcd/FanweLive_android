@@ -17,6 +17,7 @@ import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.model.InitActModel;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.customview.SDSendValidateButton;
+import com.fanwe.library.utils.LogUtil;
 import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
@@ -216,7 +217,11 @@ public class LiveMobielRegisterActivity extends BaseTitleActivity
                 if (actModel.getStatus() == 1)
                 {
                     dealSuccess(actModel);
-                    setFirstLoginAndNewLevel(actModel);
+//                    setFirstLoginAndNewLevel(actModel);
+                } else {
+                    if (!TextUtils.isEmpty(actModel.getError())) {
+                        SDToast.showToast(actModel.getError());
+                    }
                 }
             }
 
@@ -224,6 +229,7 @@ public class LiveMobielRegisterActivity extends BaseTitleActivity
             protected void onError(SDResponse resp)
             {
                 super.onError(resp);
+                SDToast.showToast(resp.getResult());
             }
 
             @Override
@@ -263,8 +269,13 @@ public class LiveMobielRegisterActivity extends BaseTitleActivity
             {
                 if (UserModel.dealLoginSuccess(user, true))
                 {
-                    InitBusiness.finishLoginActivity();
                     InitBusiness.startMainActivity(LiveMobielRegisterActivity.this);
+                    try {
+                        InitBusiness.finishLoginActivity();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LogUtil.e("LiveMobielRegisterActivity:" + e.getMessage());
+                    }
                 } else
                 {
                     SDToast.showToast("保存用户信息失败");

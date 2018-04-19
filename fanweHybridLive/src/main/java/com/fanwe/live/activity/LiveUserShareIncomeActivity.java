@@ -62,7 +62,7 @@ public class LiveUserShareIncomeActivity extends BaseTitleActivity implements SD
     }
 
     private void initTitle() {
-        mTitle.setMiddleTextTop("分享收益");
+        mTitle.setMiddleTextTop("我的分享收益");
         mTitle.setLeftImageLeft(R.drawable.ic_arrow_left_white);
         mTitle.setOnClickListener(this);
     }

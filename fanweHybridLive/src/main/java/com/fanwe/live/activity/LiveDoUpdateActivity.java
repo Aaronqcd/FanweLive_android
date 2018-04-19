@@ -16,6 +16,7 @@ import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.common.SDSelectManager;
 import com.fanwe.library.dialog.SDDialogMenu;
 import com.fanwe.library.handler.PhotoHandler;
+import com.fanwe.library.utils.LogUtil;
 import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.view.SDTabImage;
 import com.fanwe.library.view.select.SDSelectViewManager;
@@ -345,25 +346,39 @@ public class LiveDoUpdateActivity extends BaseTitleActivity
                     {
                         if (UserModel.dealLoginSuccess(user, true))
                         {
-                            InitBusiness.finishLoginActivity();
-                            InitBusiness.finishMobileRegisterActivity();
                             InitBusiness.startMainActivity(LiveDoUpdateActivity.this);
+                            dismissProgressDialog();
+                            try {
+                                InitBusiness.finishLoginActivity();
+                                InitBusiness.finishMobileRegisterActivity();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                LogUtil.e("LiveDoUpdateActivity:" + e.getMessage());
+                            }
                         } else
                         {
+                            dismissProgressDialog();
                             SDToast.showToast("保存用户信息失败");
                         }
                     } else
                     {
+                        dismissProgressDialog();
                         SDToast.showToast("user_info字段为空");
+                    }
+                } else {
+                    dismissProgressDialog();
+                    if (!TextUtils.isEmpty(actModel.getError())) {
+                        SDToast.showToast(actModel.getError());
                     }
                 }
             }
 
             @Override
-            protected void onFinish(SDResponse resp)
-            {
-                super.onFinish(resp);
+            protected void onError(SDResponse resp) {
+                super.onError(resp);
                 dismissProgressDialog();
+                LogUtil.e(resp.getResult());
+                SDToast.showToast(resp.getResult());
             }
         });
     }

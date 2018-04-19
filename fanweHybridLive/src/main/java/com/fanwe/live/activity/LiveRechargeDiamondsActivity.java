@@ -86,6 +86,7 @@ public class LiveRechargeDiamondsActivity extends BaseTitleActivity
     private int paymentId;
     private int paymentRuleId;
     private int exchangeMoney;
+    private int is_payed;
 
     /**
      * 充值秀豆页面
@@ -103,6 +104,7 @@ public class LiveRechargeDiamondsActivity extends BaseTitleActivity
     protected void init(Bundle savedInstanceState)
     {
         super.init(savedInstanceState);
+        is_payed=getIntent().getIntExtra("is_payed",0);
         mTitle.setMiddleTextTop("充值");
 
         //支付方式
@@ -141,6 +143,7 @@ public class LiveRechargeDiamondsActivity extends BaseTitleActivity
 
         //支付金额
         adapterPaymentRule = new LiveRechrgeDiamondsPaymentRuleAdapter(listPaymentRule, this);
+        adapterPaymentRule.setIs_payed(is_payed);
         adapterPaymentRule.setItemClickCallback(new SDItemClickCallback<RuleItemModel>()
         {
             @Override

@@ -38,6 +38,15 @@
                 android:textColor="@color/black"
                 android:textSize="15sp"/>
 
+            <TextView
+                android:id="@+id/tv_first_recharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="(首充多送30%)"
+                android:textColor="@color/main_color"
+                android:textSize="13sp"/>
+
         </LinearLayout>
 
         <TextView

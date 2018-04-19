@@ -394,7 +394,7 @@
                     style="@style/fra_tab_me_tv"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/ic_share_income"
-                    android:text="分享收益"/>
+                    android:text="我的分享收益"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
