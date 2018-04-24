@@ -139,7 +139,7 @@ public abstract class AppRequestCallback<D> extends SDModelRequestCallback<D>
 
         if (getAppRequestParams().isNeedShowActInfo())
         {
-            SDToast.showToast(getBaseActModel().getError());
+//            SDToast.showToast(getBaseActModel().getError());
         }
         if (getAppRequestParams().isNeedCheckLoginState())
         {

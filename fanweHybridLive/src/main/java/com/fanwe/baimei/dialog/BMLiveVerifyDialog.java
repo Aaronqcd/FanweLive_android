@@ -16,11 +16,8 @@ import com.fanwe.hybrid.http.AppRequestCallback;
 import com.fanwe.hybrid.model.BaseActModel;
 import com.fanwe.library.adapter.http.model.SDResponse;
 import com.fanwe.library.dialog.SDDialogCustom;
-import com.fanwe.library.utils.SDToast;
 import com.fanwe.library.utils.SDViewUtil;
 import com.fanwe.live.R;
-import com.fanwe.live.dao.UserModelDao;
-import com.fanwe.live.model.UserModel;
 
 /**
  * 登录输入验证码窗口

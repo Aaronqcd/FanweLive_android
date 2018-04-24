@@ -144,6 +144,11 @@ public class LiveMobielRegisterActivity extends BaseTitleActivity
             SDToast.showToast("请输入手机号码");
             return;
         }
+        if (strMobile.trim().length()<11)
+        {
+            SDToast.showToast("请输入正确的手机号码");
+            return;
+        }
         if (ll_image_code.getVisibility() == View.VISIBLE)
         {
             if (TextUtils.isEmpty(strImageCode)){
@@ -169,6 +174,8 @@ public class LiveMobielRegisterActivity extends BaseTitleActivity
             protected void onError(SDResponse resp)
             {
                 super.onError(resp);
+                SDToast.showToast("获取验证码失败");
+
             }
         });
     }
