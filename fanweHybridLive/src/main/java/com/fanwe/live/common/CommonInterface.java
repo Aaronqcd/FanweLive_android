@@ -1506,7 +1506,7 @@ public class CommonInterface {
      * @param map
      * @param listener
      */
-    public static void requestCommitUserInfo(Map<String, String> map, AppRequestCallback<BaseActModel> listener) {
+    public static void requestCommitUserInfo(String nickName,Map<String, String> map, AppRequestCallback<BaseActModel> listener) {
         AppRequestParams params = new AppRequestParams();
         params.putCtl("user_center");
         params.putAct("user_save");
@@ -1515,6 +1515,7 @@ public class CommonInterface {
                 params.put(key, map.get(key));
             }
         }
+        params.put("nick_name",nickName);
         AppHttpUtil.getInstance().post(params, listener);
     }
 

@@ -121,8 +121,7 @@ public abstract class AppRequestCallback<D> extends SDModelRequestCallback<D>
     }
 
     private void dealRequestParams()
-    {
-        if (getAppRequestParams() == null || getBaseActModel() == null)
+    { if (getAppRequestParams() == null || getBaseActModel() == null)
         {
             return;
         }
@@ -139,7 +138,7 @@ public abstract class AppRequestCallback<D> extends SDModelRequestCallback<D>
 
         if (getAppRequestParams().isNeedShowActInfo())
         {
-//            SDToast.showToast(getBaseActModel().getError());
+            SDToast.showToast(getBaseActModel().getError());
         }
         if (getAppRequestParams().isNeedCheckLoginState())
         {

@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.fanwe.hybrid.activity.BaseTitleActivity;
@@ -36,6 +37,7 @@ import com.fanwe.live.model.RegionModel;
 import com.fanwe.live.model.SelectLabelModel;
 import com.fanwe.live.model.UserModel;
 import com.fanwe.live.utils.GlideUtil;
+import com.fanwei.jubaosdk.common.util.ToastUtil;
 import com.jzxiang.pickerview.data.Type;
 import com.jzxiang.pickerview.listener.OnDateSetDialogListener;
 import com.sunday.eventbus.SDEventManager;
@@ -433,7 +435,7 @@ public class LiveUserEditActivity extends BaseTitleActivity implements OnDateSet
      */
     private void requestCommitInfo()
     {
-        CommonInterface.requestCommitUserInfo(mModifyElement, new AppRequestCallback<BaseActModel>()
+        CommonInterface.requestCommitUserInfo(nick_name,mModifyElement, new AppRequestCallback<BaseActModel>()
         {
             @Override
             protected void onSuccess(SDResponse resp)
